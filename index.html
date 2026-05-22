@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>养娃成本大冒险 🎮</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 背景装饰 */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* 容器 */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* 顶部进度条 */
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* 关卡指示器 */
+        .level-indicator {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .level-title {
+            font-size: 1.1rem;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        /* 对话卡片 */
+        .chat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .chat-avatar {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .chat-message {
+            font-size: 1.1rem;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .chat-tip {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+            color: #d63031;
+            margin-top: 15px;
+            border-left: 4px solid #e17055;
+        }
+
+        /* 选项按钮 */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 18px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .option-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* 输入框 */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* 滑块 */
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .slider-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 下一步按钮 */
+        .next-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 结果展示 */
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            animation: tada 1s;
+        }
+
+        @keyframes tada {
+            0%, 100% { transform: scale(1) rotate(0); }
+            10%, 20% { transform: scale(0.9) rotate(-3deg); }
+            30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+            40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* 详细分类卡片 */
+        .breakdown-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .breakdown-label {
+            flex: 1;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .breakdown-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* 成就徽章 */
+        .achievement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .achievement-badge {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .achievement-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* 重新开始按钮 */
+        .restart-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 开场动画 */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 1s 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        .intro-emoji {
+            font-size: 5rem;
+            animation: zoomIn 1s;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .intro-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: fadeInUp 1s 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .intro-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-top: 10px;
+            animation: fadeInUp 1s 0.8s both;
+        }
+
+        /* 城市选择器 */
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .city-btn {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .city-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .city-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        /* 多选项 */
+        .multi-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tag-btn {
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tag-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .tag-btn.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* 加载动画 */
+        .calculating {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .calculating-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 开场动画 -->
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-emoji">👶💰</div>
+        <div class="intro-title">养娃成本大冒险</div>
+        <div class="intro-subtitle">老司机帮你算算账</div>
+    </div>
+
+    <!-- 背景装饰 -->
+    <div class="bg-decoration" id="bgDecoration"></div>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 进度条 -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- 关卡指示器 -->
+        <div class="level-indicator" id="levelIndicator">
+            <div class="level-badge" id="levelBadge">第1关</div>
+            <div class="level-title" id="levelTitle">新手村</div>
+        </div>
+
+        <!-- 问题容器 -->
+        <div id="questionContainer"></div>
+    </div>
+
+    <script>
+        // 游戏数据
+        const gameData = {
+            currentLevel: 0,
+            totalLevels: 10,
+            answers: {},
+            costs: {
+                education: 0,
+                living: 0,
+                medical: 0,
+                housing: 0,
+                transport: 0,
+                misc: 0
+            }
+        };
+
+        // 关卡配置
+        const levels = [
+            {
+                id: 'city',
+                badge: '第1关',
+                title: '选择你的战场',
+                avatar: '🗺️',
+                message: '嘿！准备开启养娃大冒险了吗？先告诉我，你在哪个城市打拼？',
+                tip: '老司机提示：一线城市养娃成本是二三线的2-3倍哦！',
+                type: 'city-select',
+                options: [
+                    { value: 'beijing', label: '北京', tier: 1 },
+                    { value: 'shanghai', label: '上海', tier: 1 },
+                    { value: 'guangzhou', label: '广州', tier: 1 },
+                    { value: 'shenzhen', label: '深圳', tier: 1 },
+                    { value: 'hangzhou', label: '杭州', tier: 2 },
+                    { value: 'chengdu', label: '成都', tier: 2 },
+                    { value: 'wuhan', label: '武汉', tier: 2 },
+                    { value: 'xian', label: '西安', tier: 2 }
+                ]
+            },
+            {
+                id: 'status',
+                badge: '第2关',
+                title: '了解你的现状',
+                avatar: '👨‍👩‍👧',
+                message: '咱先摸个底，你现在是什么状态呢？',
+                tip: '不同起点，养娃成本差异可大了！',
+                type: 'single-select',
+                options: [
+                    { value: 'single', label: '单身贵族 💃', emoji: '💃' },
+                    { value: 'married', label: '已婚无娃 💑', emoji: '💑' },
+                    { value: 'married-kid', label: '已婚有娃 👨‍👩‍👧', emoji: '👨‍👩‍👧' },
+                    { value: 'single-kid', label: '单亲带娃 💪', emoji: '💪' }
+                ]
+            },
+            {
+                id: 'kids',
+                badge: '第3关',
+                title: '生育大计',
+                avatar: '👶',
+                message: '准备要几个娃？别怕，就是算算账！',
+                tip: '过来人经验：第二个娃比第一个省30%左右',
+                type: 'number-select',
+                min: 0,
+                max: 3,
+                unit: '个'
+            },
+            {
+                id: 'education-level',
+                badge: '第4关',
+                title: '教育野心',
+                avatar: '🎓',
+                message: '打算把娃培养到啥程度？这可是大头支出！',
+                tip: '从幼儿园到博士，差距能有10倍以上！',
+                type: 'single-select',
+                options: [
+                    { value: 'college', label: '本科就够了 📚', cost: 1 },
+                    { value: 'master', label: '研究生走起 🎓', cost: 1.3 },
+                    { value: 'phd', label: '博士才罢休 👨‍🎓', cost: 1.5 }
+                ]
+            },
+            {
+                id: 'school-type',
+                badge: '第5关',
+                title: '学校选择',
+                avatar: '🏫',
+                message: '公立还是私立？国际学校要不要考虑？',
+                tip: '国际学校一年学费=普通学校10年！',
+                type: 'multi-stage',
+                stages: [
+                    {
+                        name: '小学',
+                        options: [
+                            { value: 'public', label: '公立 😊', cost: 1 },
+                            { value: 'private', label: '私立 💰', cost: 3 },
+                            { value: 'international', label: '国际 💎', cost: 8 }
+                        ]
+                    },
+                    {
+                        name: '初中',
+                        options: [
+                            { value: 'public', label: '公立 😊', cost: 1 },
+                            { value: 'private', label: '私立 💰', cost: 3 },
+                            { value: 'international', label: '国际 💎', cost: 8 }
+                        ]
+                    },
+                    {
+                        name: '高中',
+                        options: [
+                            { value: 'public', label: '公立 😊', cost: 1 },
+                            { value: 'private', label: '私立 💰', cost: 3 },
+                            { value: 'international', label: '国际 💎', cost: 8 }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'living-standard',
+                badge: '第6关',
+                title: '生活水准',
+                avatar: '🏠',
+                message: '想给娃什么样的生活条件？',
+                tip: '养娃不是比钱多，合适最重要！',
+                type: 'single-select',
+                options: [
+                    { value: 'basic', label: '够用就行 🌱', cost: 1 },
+                    { value: 'comfort', label: '舒适小康 🌸', cost: 1.5 },
+                    { value: 'luxury', label: '精致养娃 🌟', cost: 2.5 }
+                ]
+            },
+            {
+                id: 'extra-class',
+                badge: '第7关',
+                title: '课外培养',
+                avatar: '🎨',
+                message: '兴趣班、补习班，打算怎么安排？',
+                tip: '现在的娃，哪个不是十八般武艺样样会？',
+                type: 'multi-select',
+                options: [
+                    { value: 'art', label: '艺术类 🎨', cost: 5000 },
+                    { value: 'sport', label: '体育类 ⚽', cost: 4000 },
+                    { value: 'music', label: '音乐类 🎵', cost: 8000 },
+                    { value: 'coding', label: '编程类 💻', cost: 6000 },
+                    { value: 'english', label: '英语培训 🗣️', cost: 10000 }
+                ]
+            },
+            {
+                id: 'housing',
+                badge: '第8关',
+                title: '住房规划',
+                avatar: '🏘️',
+                message: '为了娃的学区房，你准备怎么办？',
+                tip: '学区房一套，相当于小城市一栋楼！',
+                type: 'single-select',
+                options: [
+                    { value: 'rent', label: '租房住 🏠', cost: 0.5 },
+                    { value: 'normal', label: '普通住宅 🏡', cost: 1 },
+                    { value: 'school', label: '学区房 🏫', cost: 2 }
+                ]
+            },
+            {
+                id: 'medical',
+                badge: '第9关',
+                title: '医疗保障',
+                avatar: '🏥',
+                message: '商业保险、体检，准备投入多少？',
+                tip: '娃的健康，多少钱都不嫌多！',
+                type: 'slider',
+                min: 5000,
+                max: 50000,
+                step: 5000,
+                unit: '元/年',
+                default: 15000
+            },
+            {
+                id: 'travel',
+                badge: '第10关',
+                title: '旅行见世面',
+                avatar: '✈️',
+                message: '每年带娃出去玩玩，预算多少？',
+                tip: '读万卷书不如行万里路！',
+                type: 'slider',
+                min: 0,
+                max: 100000,
+                step: 10000,
+                unit: '元/年',
+                default: 20000
+            }
+        ];
+
+        // 初始化
+        function init() {
+            createBackgroundEmojis();
+            setTimeout(() => {
+                document.getElementById('introScreen').style.display = 'none';
+                showLevel(0);
+            }, 3000);
+        }
+
+        // 创建背景emoji
+        function createBackgroundEmojis() {
+            const emojis = ['👶', '🍼', '🎓', '🎨', '⚽', '🎵', '📚', '🎮', '🧸', '🎪'];
+            const container = document.getElementById('bgDecoration');
+            
+            for (let i = 0; i < 15; i++) {
+                const emoji = document.createElement('div');
+                emoji.className = 'floating-emoji';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + '%';
+                emoji.style.top = Math.random() * 100 + '%';
+                emoji.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(emoji);
+            }
+        }
+
+        // 显示关卡
+        function showLevel(levelIndex) {
+            gameData.currentLevel = levelIndex;
+            updateProgress();
+            
+            const level = levels[levelIndex];
+            document.getElementById('levelBadge').textContent = level.badge;
+            document.getElementById('levelTitle').textContent = level.title;
+
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+
+            const card = document.createElement('div');
+            card.className = 'chat-card';
+
+            let html = `
+                <div class="chat-avatar">${level.avatar}</div>
+                <div class="chat-message">${level.message}</div>
+            `;
+
+            // 根据类型渲染不同的输入组件
+            if (level.type === 'city-select') {
+                html += `<div class="city-grid">`;
+                level.options.forEach(option => {
+                    html += `
+                        <button class="city-btn" onclick="selectCity('${option.value}', ${option.tier})">
+                            ${option.label}
+                        </button>
+                    `;
+                });
+                html += `</div>`;
+            } else if (level.type === 'single-select') {
+                html += `<div class="options">`;
+                level.options.forEach(option => {
+                    html += `
+                        <button class="option-btn" onclick="selectOption('${level.id}', '${option.value}', ${option.cost || 1})">
+                            ${option.label}
+                        </button>
+                    `;
+                });
+                html += `</div>`;
+            } else if (level.type === 'number-select') {
+                html += `
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>娃的数量</span>
+                            <span class="slider-value" id="kidsValue">${level.min}</span>
+                        </div>
+                        <input type="range" class="slider" min="${level.min}" max="${level.max}" value="${level.min}" 
+                               oninput="updateKidsValue(this.value)">
+                    </div>
+                    <button class="next-btn" onclick="nextLevel()">确定就是这个数！</button>
+                `;
+            } else if (level.type === 'multi-stage') {
+                html += `<div id="stageContainer"></div>`;
+            } else if (level.type === 'multi-select') {
+                html += `<div class="multi-select">`;
+                level.options.forEach(option => {
+                    html += `
+                        <button class="tag-btn" onclick="toggleMultiSelect('${level.id}', '${option.value}', ${option.cost})">
+                            ${option.label}
+                        </button>
+                    `;
+                });
+                html += `</div>`;
+                html += `<button class="next-btn" onclick="nextLevel()">选好了！</button>`;
+            } else if (level.type === 'slider') {
+                html += `
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>年度预算</span>
+                            <span class="slider-value" id="sliderValue">${level.default.toLocaleString()}</span>
+                        </div>
+                        <input type="range" class="slider" min="${level.min}" max="${level.max}" 
+                               step="${level.step}" value="${level.default}" 
+                               oninput="updateSliderValue(this.value, '${level.unit}')">
+                    </div>
+                    <button class="next-btn" onclick="nextLevel()">就这么定了！</button>
+                `;
+            }
+
+            if (level.tip) {
+                html += `<div class="chat-tip">💡 ${level.tip}</div>`;
+            }
+
+            card.innerHTML = html;
+            container.appendChild(card);
+
+            // 如果是多阶段选择，渲染第一个阶段
+            if (level.type === 'multi-stage') {
+                gameData.answers[level.id] = {};
+                renderStage(level, 0);
+            }
+        }
+
+        // 渲染多阶段选择
+        let currentStage = 0;
+        function renderStage(level, stageIndex) {
+            const stage = level.stages[stageIndex];
+            const container = document.getElementById('stageContainer');
+            
+            let html = `
+                <div class="input-label" style="margin: 20px 0 15px; font-size: 1.1rem; color: #333;">
+                    ${stage.name}阶段
+                </div>
+                <div class="options">
+            `;
+            
+            stage.options.forEach(option => {
+                html += `
+                    <button class="option-btn" onclick="selectStageOption('${level.id}', ${stageIndex}, '${option.value}', ${option.cost})">
+                        ${option.label}
+                    </button>
+                `;
+            });
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function selectStageOption(levelId, stageIndex, value, cost) {
+            const level = levels.find(l => l.id === levelId);
+            const stage = level.stages[stageIndex];
+            
+            gameData.answers[levelId][stage.name] = { value, cost };
+            
+            // 高亮选中的按钮
+            const buttons = document.querySelectorAll('#stageContainer .option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            setTimeout(() => {
+                if (stageIndex < level.stages.length - 1) {
+                    renderStage(level, stageIndex + 1);
+                } else {
+                    nextLevel();
+                }
+            }, 500);
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const progress = ((gameData.currentLevel) / gameData.totalLevels) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // 选择城市
+        function selectCity(city, tier) {
+            gameData.answers.city = city;
+            gameData.answers.cityTier = tier;
+            
+            // 高亮选中的城市
+            const buttons = document.querySelectorAll('.city-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            setTimeout(() => nextLevel(), 500);
+        }
+
+        // 单选
+        function selectOption(id, value, cost) {
+            gameData.answers[id] = { value, cost };
+            
+            // 高亮选中的按钮
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            setTimeout(() => nextLevel(), 500);
+        }
+
+        // 多选
+        function toggleMultiSelect(id, value, cost) {
+            if (!gameData.answers[id]) {
+                gameData.answers[id] = [];
+            }
+            
+            const index = gameData.answers[id].findIndex(item => item.value === value);
+            if (index > -1) {
+                gameData.answers[id].splice(index, 1);
+                event.target.classList.remove('selected');
+            } else {
+                gameData.answers[id].push({ value, cost });
+                event.target.classList.add('selected');
+            }
+        }
+
+        // 更新娃数量
+        function updateKidsValue(value) {
+            document.getElementById('kidsValue').textContent = value;
+            gameData.answers.kids = parseInt(value);
+        }
+
+        // 更新滑块值
+        function updateSliderValue(value, unit) {
+            document.getElementById('sliderValue').textContent = parseInt(value).toLocaleString() + ' ' + unit;
+            const level = levels[gameData.currentLevel];
+            gameData.answers[level.id] = parseInt(value);
+        }
+
+        // 下一关
+        function nextLevel() {
+            if (gameData.currentLevel < gameData.totalLevels - 1) {
+                showLevel(gameData.currentLevel + 1);
+            } else {
+                calculateResults();
+            }
+        }
+
+        // 计算结果
+        function calculateResults() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = `
+                <div class="chat-card calculating">
+                    <div class="spinner"></div>
+                    <div class="calculating-text">老司机正在帮你算账...</div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const result = calculate();
+                showResults(result);
+            }, 2000);
+        }
+
+        // 计算逻辑
+        function calculate() {
+            const answers = gameData.answers;
+            let totalCost = 0;
+            let breakdown = {};
+
+            // 基础系数（根据城市）
+            const cityMultiplier = answers.cityTier === 1 ? 1.5 : 1;
+            
+            // 娃的数量
+            const numKids = answers.kids || 1;
+            
+            // 教育成本（最大头）
+            let educationBase = 300000; // 公立本科基础成本
+            if (answers['education-level']) {
+                educationBase *= answers['education-level'].cost;
+            }
+            
+            // 学校类型加成
+            if (answers['school-type']) {
+                let schoolMultiplier = 1;
+                Object.values(answers['school-type']).forEach(stage => {
+                    schoolMultiplier += (stage.cost - 1) * 0.3;
+                });
+                educationBase *= schoolMultiplier;
+            }
+            
+            breakdown.education = educationBase * numKids * cityMultiplier;
+
+            // 基础生活成本（0-18岁）
+            let livingBase = 150000;
+            if (answers['living-standard']) {
+                livingBase *= answers['living-standard'].cost;
+            }
+            breakdown.living = livingBase * numKids * cityMultiplier;
+
+            // 课外班
+            let extraClassCost = 0;
+            if (answers['extra-class'] && answers['extra-class'].length > 0) {
+                answers['extra-class'].forEach(item => {
+                    extraClassCost += item.cost * 12 * 10; // 12个月 * 10年
+                });
+            }
+            breakdown.misc = extraClassCost * numKids;
+
+            // 医疗
+            breakdown.medical = (answers.medical || 15000) * 18 * numKids;
+
+            // 住房
+            let housingCost = 500000; // 基础住房成本
+            if (answers.housing) {
+                housingCost *= answers.housing.cost;
+            }
+            breakdown.housing = housingCost * cityMultiplier;
+
+            // 旅行
+            breakdown.transport = (answers.travel || 20000) * 18 * numKids;
+
+            // 总计
+            Object.values(breakdown).forEach(cost => {
+                totalCost += cost;
+            });
+
+            // 第二个娃打7折
+            if (numKids > 1) {
+                totalCost = breakdown.education + 
+                           breakdown.living * 0.85 + 
+                           breakdown.misc * 0.85 + 
+                           breakdown.medical * 0.9 + 
+                           breakdown.housing + 
+                           breakdown.transport * 0.85;
+            }
+
+            return { totalCost, breakdown, numKids };
+        }
+
+        // 显示结果
+        function showResults(result) {
+            const container = document.getElementById('questionContainer');
+            const { totalCost, breakdown, numKids } = result;
+            
+            // 确定称号
+            let achievement = getAchievement(totalCost);
+            
+            container.innerHTML = `
+                <div class="result-card">
+                    <div class="result-emoji">${achievement.emoji}</div>
+                    <div class="result-title">养${numKids}个娃的总成本</div>
+                    <div class="result-amount">¥${Math.round(totalCost / 10000)}万</div>
+                    <div class="result-subtitle">这是从出生到成年的总预算</div>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-badge">${achievement.badge}</div>
+                    <div class="achievement-title">${achievement.title}</div>
+                    <div class="achievement-desc">${achievement.desc}</div>
+                </div>
+
+                <div class="breakdown-card">
+                    <div class="breakdown-item">
+                        <span class="breakdown-icon">🎓</span>
+                        <span class="breakdown-label">教育培养</span>
+                        <span class="breakdown-value">¥${Math.round(breakdown.education / 10000)}万</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-icon">🍚</span>
+                        <span class="breakdown-label">生活开销</span>
+                        <span class="breakdown-value">¥${Math.round(breakdown.living / 10000)}万</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-icon">🏥</span>
+                        <span class="breakdown-label">医疗保健</span>
+                        <span class="breakdown-value">¥${Math.round(breakdown.medical / 10000)}万</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-icon">🏠</span>
+                        <span class="breakdown-label">住房成本</span>
+                        <span class="breakdown-value">¥${Math.round(breakdown.housing / 10000)}万</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-icon">✈️</span>
+                        <span class="breakdown-label">旅行娱乐</span>
+                        <span class="breakdown-value">¥${Math.round(breakdown.transport / 10000)}万</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-icon">🎨</span>
+                        <span class="breakdown-label">课外培养</span>
+                        <span class="breakdown-value">¥${Math.round(breakdown.misc / 10000)}万</span>
+                    </div>
+                </div>
+
+                <div class="chat-card">
+                    <div class="chat-message" style="text-align: center;">
+                        💡 这个数字看起来吓人，但别慌！<br>
+                        这是按18年分摊的，平均每年约 <strong>¥${Math.round(totalCost / 18 / 10000)}万</strong><br>
+                        每个月大概 <strong>¥${Math.round(totalCost / 18 / 12).toLocaleString()}元</strong>
+                    </div>
+                </div>
+
+                <button class="next-btn" onclick="location.reload()">再算一次</button>
+                <button class="restart-btn" onclick="shareResults()">分享给朋友</button>
+            `;
+
+            updateProgress();
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        // 获取成就称号
+        function getAchievement(totalCost) {
+            const costInWan = totalCost / 10000;
+            
+            if (costInWan < 50) {
+                return {
+                    emoji: '🌱',
+                    badge: '🏅',
+                    title: '佛系养娃大师',
+                    desc: '养娃不在钱多少，陪伴才是真谛！'
+                };
+            } else if (costInWan < 100) {
+                return {
+                    emoji: '🌸',
+                    badge: '🥈',
+                    title: '小康养娃专家',
+                    desc: '不奢侈不寒酸，刚刚好的幸福！'
+                };
+            } else if (costInWan < 200) {
+                return {
+                    emoji: '🌟',
+                    badge: '🥇',
+                    title: '品质养娃高手',
+                    desc: '给娃最好的，自己也要好好的！'
+                };
+            } else if (costInWan < 300) {
+                return {
+                    emoji: '💎',
+                    badge: '👑',
+                    title: '精英养娃王者',
+                    desc: '起跑线上的王者，未来可期！'
+                };
+            } else {
+                return {
+                    emoji: '🚀',
+                    badge: '🏆',
+                    title: '壕气养娃传说',
+                    desc: '这届父母真的太拼了，敬佩！'
+                };
+            }
+        }
+
+        // 分享结果
+        function shareResults() {
+            alert('分享功能开发中... 🎉\n\n可以截图分享给朋友哦！');
+        }
+
+        // 启动游戏
+        init();
+    </script>
+</body>
+</html>
