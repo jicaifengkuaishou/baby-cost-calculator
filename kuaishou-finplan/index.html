@@ -223,6 +223,70 @@
     .compare-bar.savings { background: var(--ks-red); }
     .compare-bar.annuity { background: linear-gradient(90deg, #e8112d, #ff6b4a); }
 
+    /* ─── 期限产品推荐 ─── */
+    .term-card {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 16px; margin-bottom: 12px;
+      border: 1px solid var(--gray-2);
+    }
+    .term-card-title {
+      font-size: 14px; font-weight: 700; color: var(--gray-9);
+      display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+    }
+    .term-card-sub {
+      font-size: 12px; color: var(--gray-5); margin-bottom: 14px;
+    }
+    .term-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .term-tab {
+      flex: 1; padding: 10px 0; border-radius: 10px; cursor: pointer;
+      background: var(--gray-1); border: 1.5px solid transparent;
+      text-align: center; transition: all 0.2s;
+    }
+    .term-tab.active {
+      background: linear-gradient(135deg, #fff5f6 0%, #ffeee0 100%);
+      border-color: var(--ks-red);
+    }
+    .term-tab-period { font-size: 13px; font-weight: 700; color: var(--gray-9); margin-bottom: 2px; }
+    .term-tab.active .term-tab-period { color: var(--ks-red); }
+    .term-tab-rate { font-size: 11px; color: var(--gray-6); }
+    .term-tab.active .term-tab-rate { color: var(--ks-red); font-weight: 600; }
+
+    .term-product {
+      background: linear-gradient(135deg, #fff8f4 0%, #fffaf6 100%);
+      border: 1px solid #ffe0d0; border-radius: 12px;
+      padding: 14px;
+    }
+    .tp-row1 {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .tp-name { font-size: 15px; font-weight: 700; color: var(--gray-9); margin-bottom: 4px; }
+    .tp-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tp-tag { font-size: 10px; background: #fff; border: 1px solid #ffd0bb; color: var(--ks-red); padding: 2px 6px; border-radius: 8px; }
+    .tp-rate-box { text-align: right; flex-shrink: 0; }
+    .tp-rate-num { font-size: 24px; font-weight: 800; color: var(--ks-red); line-height: 1; }
+    .tp-rate-unit { font-size: 13px; }
+    .tp-rate-desc { font-size: 10px; color: var(--gray-6); margin-top: 2px; }
+    .tp-row2 {
+      display: flex; gap: 12px; margin-bottom: 12px;
+      padding: 8px 10px; background: rgba(255,255,255,0.7); border-radius: 8px;
+    }
+    .tp-feat { flex: 1; }
+    .tp-feat-label { font-size: 10px; color: var(--gray-6); margin-bottom: 1px; }
+    .tp-feat-val { font-size: 12px; font-weight: 600; color: var(--gray-9); }
+    .tp-earn-bar {
+      font-size: 12px; color: var(--gray-7);
+      background: rgba(255,107,74,0.08); border-left: 3px solid var(--ks-red);
+      padding: 7px 10px; border-radius: 4px; margin-bottom: 10px;
+    }
+    .tp-earn-bar strong { color: var(--ks-red); font-size: 14px; }
+    .tp-btn {
+      width: 100%; padding: 10px; border: none;
+      background: linear-gradient(90deg, #e8112d 0%, #ff6b4a 100%);
+      color: #fff; font-size: 14px; font-weight: 600;
+      border-radius: 22px; cursor: pointer;
+    }
+
     /* 信任背书栏 */
     .trust-bar {
       display: flex; gap: 8px; overflow-x: auto;
@@ -620,6 +684,64 @@
       </div>
     </div>
 
+    <!-- ─── 按期限选产品 ─── -->
+    <div class="term-card">
+      <div class="term-card-title">⏰ 按期限选产品</div>
+      <div class="term-card-sub">同样存¥10,000，根据资金可锁定期限选择最优收益</div>
+
+      <div class="term-tabs">
+        <div class="term-tab" data-term="30" onclick="switchTerm(this)">
+          <div class="term-tab-period">30天</div>
+          <div class="term-tab-rate">2.60%</div>
+        </div>
+        <div class="term-tab active" data-term="365" onclick="switchTerm(this)">
+          <div class="term-tab-period">1年</div>
+          <div class="term-tab-rate">3.00%</div>
+        </div>
+        <div class="term-tab" data-term="1095" onclick="switchTerm(this)">
+          <div class="term-tab-period">3年</div>
+          <div class="term-tab-rate">3.20%</div>
+        </div>
+      </div>
+
+      <!-- 产品卡（动态填充） -->
+      <div class="term-product" id="term-product">
+        <div class="tp-row1">
+          <div>
+            <div class="tp-name" id="tp-name">国民养老·稳享1年</div>
+            <div class="tp-tags" id="tp-tags">
+              <span class="tp-tag">100元起投</span>
+              <span class="tp-tag">写入合同</span>
+              <span class="tp-tag">国民养老承保</span>
+            </div>
+          </div>
+          <div class="tp-rate-box">
+            <div class="tp-rate-num" id="tp-rate">3.00<span class="tp-rate-unit">%</span></div>
+            <div class="tp-rate-desc">年化保证利率</div>
+          </div>
+        </div>
+        <div class="tp-row2">
+          <div class="tp-feat">
+            <div class="tp-feat-label">持有期限</div>
+            <div class="tp-feat-val" id="tp-period">365天</div>
+          </div>
+          <div class="tp-feat">
+            <div class="tp-feat-label">起投金额</div>
+            <div class="tp-feat-val" id="tp-min">¥100</div>
+          </div>
+          <div class="tp-feat">
+            <div class="tp-feat-label">风险等级</div>
+            <div class="tp-feat-val" id="tp-risk">R1低风险</div>
+          </div>
+        </div>
+        <div class="tp-earn-bar">
+          存¥10,000到期可得 <strong id="tp-earn">¥10,300</strong>，
+          比银行活期多赚 <strong id="tp-extra">¥280</strong>
+        </div>
+        <button class="tp-btn" onclick="goToTermProduct()">立即查看 →</button>
+      </div>
+    </div>
+
     <!-- 信任背书 -->
     <div class="trust-bar">
       <div class="trust-item">
@@ -931,6 +1053,70 @@ const MOCK_USER = {
 //   页面状态
 // ═══════════════════════════════════════════════════
 let currentPage = 'page-welcome';
+
+// ═══════════════════════════════════════════════════
+//   按期限选产品（30天/1年/3年）
+// ═══════════════════════════════════════════════════
+const TERM_PRODUCTS = {
+  '30': {
+    name: '快手稳享·30天',
+    rate: 2.60,
+    period: '30天',
+    min: 100,
+    risk: 'R1低风险',
+    tags: ['100元起投', '到期自动续投', '银保监会监管'],
+    extraRate: 0.2, // vs 银行活期
+    href: '../kuaishou-active-bao/index.html'
+  },
+  '365': {
+    name: '国民养老·稳享1年',
+    rate: 3.00,
+    period: '365天',
+    min: 100,
+    risk: 'R1低风险',
+    tags: ['100元起投', '写入合同', '国民养老承保'],
+    extraRate: 0.2,
+    href: '../kuaishou-finplan/index.html'
+  },
+  '1095': {
+    name: '快手稳盈·3年期',
+    rate: 3.20,
+    period: '3年',
+    min: 500,
+    risk: 'R1低风险',
+    tags: ['500元起投', '锁定3年', '国寿/平安承保'],
+    extraRate: 0.2,
+    href: '../kuaishou-finplan/index.html'
+  }
+};
+let currentTerm = '365';
+function switchTerm(el) {
+  document.querySelectorAll('.term-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentTerm = el.dataset.term;
+  renderTermProduct();
+}
+function renderTermProduct() {
+  const p = TERM_PRODUCTS[currentTerm];
+  document.getElementById('tp-name').textContent = p.name;
+  document.getElementById('tp-rate').innerHTML = p.rate.toFixed(2) + '<span class="tp-rate-unit">%</span>';
+  document.getElementById('tp-period').textContent = p.period;
+  document.getElementById('tp-min').textContent = '¥' + p.min;
+  document.getElementById('tp-risk').textContent = p.risk;
+  document.getElementById('tp-tags').innerHTML = p.tags.map(t => `<span class="tp-tag">${t}</span>`).join('');
+  // 收益计算（10000元到期）
+  const days = parseInt(currentTerm);
+  const earn = Math.round(10000 * p.rate / 100 * days / 365);
+  const bankEarn = Math.round(10000 * 0.2 / 100 * days / 365);
+  document.getElementById('tp-earn').textContent = '¥' + (10000 + earn).toLocaleString();
+  document.getElementById('tp-extra').textContent = '¥' + (earn - bankEarn);
+}
+function goToTermProduct() {
+  window.location.href = TERM_PRODUCTS[currentTerm].href;
+}
+// 初始化
+document.addEventListener('DOMContentLoaded', renderTermProduct);
+if (document.readyState !== 'loading') renderTermProduct();
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
