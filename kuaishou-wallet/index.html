@@ -167,24 +167,40 @@
     .fc-earn-desc { font-size: 11px; color: rgba(255,255,255,0.8); }
     .fc-btn { margin-top: 8px; display: inline-block; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.4); border-radius: 16px; padding: 4px 14px; font-size: 12px; color: #fff; font-weight: 600; }
 
-    /* ─── 借钱 + 右侧双列 ─── */
-    .dual-row { margin: 0 12px 10px; display: flex; gap: 10px; }
-    .loan-card { flex: 0 0 48%; background: var(--white); border-radius: var(--radius-lg); padding: 14px; position: relative; }
-    .loan-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .loan-badge { position: absolute; top: 10px; right: 10px; background: var(--red); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
-    .loan-earn { font-size: 14px; margin: 4px 0 6px; }
-    .loan-earn strong { color: var(--red); font-size: 18px; }
-    .loan-desc { font-size: 12px; color: var(--gray-6); margin-bottom: 12px; }
-    .loan-btn { background: var(--blue); color: #fff; border: none; border-radius: var(--radius-pill); padding: 7px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .right-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .right-item { flex: 1; background: var(--white); border-radius: var(--radius-lg); padding: 11px 12px; }
-    .right-item-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-    .right-item-sub { font-size: 12px; color: var(--gray-6); margin-bottom: 4px; }
-    .right-item-link { font-size: 12px; color: var(--gray-6); cursor: pointer; }
-    .right-two { display: flex; gap: 8px; }
-    .right-two-item { flex: 1; background: var(--white); border-radius: var(--radius-md); padding: 10px; }
-    .right-two-item-title { font-size: 12px; font-weight: 600; }
-    .right-two-item-link { font-size: 11px; color: var(--gray-6); cursor: pointer; margin-top: 4px; }
+    /* ─── 三栏卡片：理财保/借钱/银行卡支付 ─── */
+    .dual-row { margin: 0 12px 10px; display: flex; gap: 8px; }
+    .loan-card {
+      flex: 1; background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 14px 12px; position: relative;
+      cursor: pointer; min-width: 0;
+    }
+    .loan-card.finplan-mini { background: linear-gradient(135deg, #fff5f6 0%, #ffeee0 100%); border: 1px solid #ffd0d8; }
+    .loan-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .loan-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--red); color: #fff;
+      font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 8px;
+    }
+    .loan-earn { font-size: 13px; margin: 4px 0 4px; line-height: 1.2; }
+    .loan-earn strong { color: var(--red); font-size: 18px; font-weight: 700; }
+    .loan-desc { font-size: 11px; color: var(--gray-6); margin-bottom: 10px; min-height: 16px; }
+    .loan-btn {
+      background: var(--blue); color: #fff;
+      border: none; border-radius: var(--radius-pill);
+      padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      width: 100%;
+    }
+
+    /* 月付 + 先用后付 */
+    .mp-row { margin: 0 12px 10px; display: flex; gap: 8px; }
+    .mp-cell {
+      flex: 1; background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px; cursor: pointer;
+    }
+    .mp-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .mp-link { font-size: 12px; color: var(--gray-6); }
 
     /* ─── 银行卡积分 ─── */
     .points-card { margin: 0 12px 10px; background: var(--white); border-radius: var(--radius-lg); padding: 14px 16px; }
@@ -334,31 +350,17 @@
   </div>
 </div>
 
-<!-- ✨ 快手理财保大入口卡（宫格下方） -->
-<a class="finplan-card" href="../kuaishou-finplan/index.html">
-  <div class="fc-tag">🏆 快手理财保 · 保险严选</div>
-  <div class="fc-body">
-    <div class="fc-left">
-      <div class="fc-rate"><sup>最高</sup>3.5<sub>%</sub></div>
-      <div class="fc-sub">年化保证利率 · 写入保险合同</div>
-      <div class="fc-pills">
-        <div class="fc-pill">小金保 1.8%</div>
-        <div class="fc-pill">年金险 3.2%</div>
-        <div class="fc-pill">储蓄险 3.5%</div>
-      </div>
-    </div>
-    <div class="fc-right">
-      <div class="fc-earn-box">
-        <div class="fc-earn-num">+¥<span id="fc-earn-num">--</span></div>
-        <div class="fc-earn-desc">余额存储蓄险年化多赚</div>
-      </div>
-      <div class="fc-btn">查看专属方案 →</div>
-    </div>
-  </div>
-</a>
-
-<!-- 借钱 + 右侧双列 -->
+<!-- 三大入口：快手理财保 + 借钱 + 银行卡支付（统一卡片形式） -->
 <div class="dual-row">
+  <!-- ✨ 快手理财保（与借钱同样的卡片形式） -->
+  <a class="loan-card finplan-mini" href="../kuaishou-finplan/index.html" style="text-decoration:none;color:inherit;">
+    <div class="loan-badge" style="background:#ff8c00;">高收益</div>
+    <div class="loan-title">快手理财保</div>
+    <div class="loan-earn">最高 <strong>3.5%</strong></div>
+    <div class="loan-desc">保证利率·写入合同</div>
+    <button class="loan-btn" style="background:var(--red);" onclick="event.preventDefault();window.location.href='../kuaishou-finplan/index.html'">立即查看</button>
+  </a>
+  <!-- 借钱 -->
   <div class="loan-card">
     <div class="loan-badge">现金红包</div>
     <div class="loan-title">借钱</div>
@@ -366,22 +368,24 @@
     <div class="loan-desc">查额成功·即可领取</div>
     <button class="loan-btn" onclick="toast('借钱功能即将上线')">立即领取</button>
   </div>
-  <div class="right-col">
-    <div class="right-item">
-      <div class="right-item-title">银行卡支付</div>
-      <div class="right-item-sub">笔笔享优惠</div>
-      <div class="right-item-link">去看看 ›</div>
-    </div>
-    <div class="right-two">
-      <div class="right-two-item">
-        <div class="right-two-item-title">快手月付</div>
-        <div class="right-two-item-link">查看详情 ›</div>
-      </div>
-      <div class="right-two-item">
-        <div class="right-two-item-title">先用后付</div>
-        <div class="right-two-item-link">查看详情 ›</div>
-      </div>
-    </div>
+  <!-- 银行卡支付 -->
+  <div class="loan-card">
+    <div class="loan-title">银行卡支付</div>
+    <div class="loan-earn"><strong style="font-size:15px;color:var(--gray-9);">笔笔享优惠</strong></div>
+    <div class="loan-desc">绑卡支付返现</div>
+    <button class="loan-btn" style="background:#1a1a1a;" onclick="toast('银行卡支付功能即将上线')">去看看</button>
+  </div>
+</div>
+
+<!-- 月付 + 先用后付 双格 -->
+<div class="mp-row">
+  <div class="mp-cell" onclick="toast('快手月付功能即将上线')">
+    <div class="mp-title">快手月付</div>
+    <div class="mp-link">查看详情 ›</div>
+  </div>
+  <div class="mp-cell" onclick="toast('先用后付功能即将上线')">
+    <div class="mp-title">先用后付</div>
+    <div class="mp-link">查看详情 ›</div>
   </div>
 </div>
 
