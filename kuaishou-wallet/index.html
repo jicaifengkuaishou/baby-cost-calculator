@@ -3,228 +3,204 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>余额</title>
+  <title>我的钱包</title>
   <style>
     :root {
+      --ks-blue-bg: #d6eaf8;
+      --ks-blue-card: #e8f4fb;
+      --white: #ffffff;
+      --gray-1: #f5f6f8;
+      --gray-2: #ebebeb;
+      --gray-4: #bbbbbb;
+      --gray-6: #666666;
+      --gray-9: #1a1a1a;
       --red: #e8112d;
       --red-light: #fff0f2;
-      --red-pill: #fde8eb;
-      --gray-1: #f7f7f7;
-      --gray-2: #eeeeee;
-      --gray-4: #bbbbbb;
-      --gray-6: #888888;
-      --gray-9: #1a1a1a;
-      --white: #ffffff;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 18px;
+      --green: #00a870;
+      --blue: #1677ff;
+      --radius-md: 12px;
+      --radius-lg: 16px;
       --radius-pill: 50px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, 'PingFang SC', sans-serif;
-      background: var(--gray-1);
-      color: var(--gray-9);
-      min-height: 100vh;
+      background: linear-gradient(180deg, var(--ks-blue-bg) 0%, var(--ks-blue-card) 160px, var(--gray-1) 220px);
+      color: var(--gray-9); min-height: 100vh;
     }
 
     /* ─── 顶部导航 ─── */
     .nav {
-      background: var(--white);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px;
+      display: flex; align-items: center;
+      padding: 14px 16px 10px;
       padding-top: calc(14px + env(safe-area-inset-top));
     }
-    .nav-back { font-size: 22px; color: var(--gray-9); background: none; border: none; cursor: pointer; padding: 4px; }
-    .nav-title { font-size: 17px; font-weight: 600; }
-    .nav-more { font-size: 22px; color: var(--gray-9); background: none; border: none; cursor: pointer; letter-spacing: -2px; }
+    .nav-back { font-size: 24px; background: none; border: none; cursor: pointer; padding: 2px 10px 2px 0; color: var(--gray-9); }
+    .nav-title { font-size: 22px; font-weight: 700; flex: 1; }
+    .nav-icons { display: flex; gap: 16px; }
+    .nav-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.6); border-radius: 50%; border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 
-    /* ─── 余额主卡 ─── */
-    .balance-card {
+    /* ─── 顶部 Banner ─── */
+    .top-banner {
+      margin: 4px 12px 8px;
       background: var(--white);
-      margin: 10px 12px;
       border-radius: var(--radius-lg);
-      padding: 20px 20px 16px;
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+      position: relative;
     }
-    .balance-label-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-    }
-    .balance-label { font-size: 14px; color: var(--gray-6); }
-    .balance-eye { font-size: 16px; color: var(--gray-4); cursor: pointer; }
-    .balance-protect {
-      display: flex; align-items: center; gap: 3px;
-      background: #fff5ec; border-radius: 12px; padding: 2px 8px;
-      font-size: 11px; color: #ff6b00;
-    }
-    .balance-amount {
-      font-size: 46px; font-weight: 700; color: var(--gray-9);
-      line-height: 1.1; margin-bottom: 10px;
-    }
-    .balance-hint {
-      font-size: 13px; color: var(--gray-6); margin-bottom: 18px;
-      cursor: pointer;
-    }
-    .balance-hint strong { color: var(--red); }
-    .balance-hint span { color: var(--gray-4); }
+    .banner-logo { background: var(--green); border-radius: 6px; padding: 2px 6px; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; }
+    .banner-text { font-size: 13px; flex: 1; }
+    .banner-cta { font-size: 12px; font-weight: 600; color: var(--gray-9); cursor: pointer; border: none; background: none; }
+    .banner-fold { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--white); }
 
-    /* 充值/提现按钮 */
-    .balance-actions {
-      display: flex; gap: 12px; margin-bottom: 16px;
-    }
-    .btn-recharge {
-      flex: 1; height: 48px;
-      background: var(--red); color: #fff;
-      border: none; border-radius: var(--radius-pill);
-      font-size: 17px; font-weight: 600; cursor: pointer;
-      box-shadow: 0 4px 14px rgba(232,17,45,0.3);
-    }
-    .btn-withdraw {
-      flex: 1; height: 48px;
-      background: var(--red-pill); color: var(--red);
-      border: none; border-radius: var(--radius-pill);
-      font-size: 17px; font-weight: 600; cursor: pointer;
-    }
-
-    /* 明细行 */
-    .bill-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 12px;
-      border-top: 1px solid var(--gray-2);
-    }
-    .bill-left { display: flex; align-items: center; gap: 6px; }
-    .bill-title { font-size: 14px; font-weight: 600; }
-    .bill-desc { font-size: 13px; color: var(--gray-6); }
-    .bill-earn { color: var(--red); font-weight: 500; }
-    .bill-date { font-size: 12px; color: var(--gray-4); cursor: pointer; }
-    .bill-date-arrow { color: var(--gray-4); }
-
-    /* ─── 快捷功能宫格 ─── */
-    .grid-card {
-      background: var(--white);
+    /* ─── 资金主卡 ─── */
+    .fund-card {
       margin: 0 12px 10px;
+      background: var(--white);
       border-radius: var(--radius-lg);
-      padding: 16px 8px 12px;
+      padding: 18px 18px 16px;
     }
-    .grid-row { display: flex; justify-content: space-around; }
-    .grid-item {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      cursor: pointer; min-width: 58px;
+    .fund-label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .fund-label { font-size: 13px; color: var(--gray-6); }
+    .fund-eye { font-size: 16px; color: var(--gray-4); cursor: pointer; }
+
+    .fund-amount-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .fund-amount { font-size: 40px; font-weight: 700; color: var(--gray-9); }
+    .fund-arrow { font-size: 18px; color: var(--gray-4); cursor: pointer; }
+
+    /* ✨ 小金保入口（余额下方） */
+    .xiaojinbao-hint {
+      display: flex; align-items: center; gap: 6px;
+      background: linear-gradient(90deg, #fff5f6 0%, #fff9f0 100%);
+      border: 1px solid #ffd8dd; border-radius: var(--radius-md);
+      padding: 8px 12px; margin-bottom: 14px;
+      cursor: pointer; text-decoration: none;
     }
-    .grid-icon {
-      width: 50px; height: 50px;
-      border: 1.5px solid var(--gray-2); border-radius: 14px;
+    .xjb-icon { font-size: 18px; flex-shrink: 0; }
+    .xjb-text { flex: 1; font-size: 13px; color: var(--gray-9); }
+    .xjb-text strong { color: var(--red); }
+    .xjb-rate {
+      background: var(--red); color: #fff;
+      border-radius: 10px; padding: 2px 8px;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .xjb-arrow { color: var(--gray-4); font-size: 14px; }
+
+    .fund-sub-row { display: flex; }
+    .fund-sub-item { flex: 1; }
+    .fund-sub-label { font-size: 12px; color: var(--gray-6); margin-bottom: 3px; }
+    .fund-sub-val { font-size: 18px; font-weight: 600; }
+
+    /* ─── 账单 ─── */
+    .bill-card {
+      margin: 0 12px 10px;
+      background: var(--white); border-radius: var(--radius-lg); padding: 14px 16px;
+    }
+    .bill-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+    .bill-row { display: flex; align-items: center; }
+    .bill-date { font-size: 12px; color: var(--gray-4); }
+    .bill-desc { font-size: 13px; color: var(--gray-6); flex: 1; margin-left: 10px; }
+    .bill-amount { font-size: 14px; font-weight: 500; }
+    .bill-arr { font-size: 16px; color: var(--gray-4); margin-left: 4px; }
+
+    /* ─── 功能宫格 ─── */
+    .grid-card {
+      margin: 0 12px 10px;
+      background: var(--white); border-radius: var(--radius-lg); padding: 16px 8px 14px;
+    }
+    .grid-row { display: flex; justify-content: space-around; margin-bottom: 16px; }
+    .grid-row:last-of-type { margin-bottom: 0; }
+    .grid-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; min-width: 56px; position: relative; }
+    .grid-icon-wrap {
+      width: 48px; height: 48px; border-radius: 14px;
+      border: 1.5px solid var(--gray-2);
       display: flex; align-items: center; justify-content: center;
       font-size: 22px; background: var(--white);
+      position: relative;
     }
-    .grid-icon.special { background: var(--red-light); border-color: #ffd0d8; }
-    .grid-label { font-size: 12px; color: var(--gray-9); }
-    /* 分页指示器 */
-    .grid-pager {
-      display: flex; justify-content: center; gap: 4px; margin-top: 10px;
+    /* 小金保/理财保特殊样式 */
+    .grid-icon-wrap.finance { background: linear-gradient(135deg, #fff5f6 0%, #ffeee0 100%); border-color: #ffd0d8; }
+    .grid-badge {
+      position: absolute; top: -6px; right: -8px;
+      background: var(--red); color: #fff;
+      font-size: 9px; font-weight: 700; padding: 1px 5px;
+      border-radius: 8px; white-space: nowrap;
     }
-    .pager-dot {
-      width: 16px; height: 4px; border-radius: 2px;
-      background: var(--gray-2);
-    }
-    .pager-dot.active { background: var(--gray-4); }
+    .grid-label { font-size: 12px; color: var(--gray-9); text-align: center; }
 
-    /* ─── 保险理财入口（"转小金库"对应位置新增） ─── */
-    .insurance-banner {
+    /* ─── 快手理财保入口卡 ─── */
+    .finplan-card {
       margin: 0 12px 10px;
-      background: linear-gradient(135deg, #e8112d 0%, #ff6b4a 55%, #ffb86b 100%);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between;
-      position: relative; overflow: hidden;
-      text-decoration: none;
+      background: linear-gradient(135deg, #e8112d 0%, #ff6b4a 60%, #ffb86b 100%);
+      border-radius: var(--radius-lg); padding: 16px;
+      cursor: pointer; position: relative; overflow: hidden;
+      text-decoration: none; display: block;
     }
-    .insurance-banner::before {
-      content: '';
-      position: absolute; top: -30px; right: -20px;
-      width: 110px; height: 110px; border-radius: 50%;
-      background: rgba(255,255,255,0.1);
+    .finplan-card::before {
+      content: ''; position: absolute; top: -40px; right: -30px;
+      width: 150px; height: 150px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
     }
-    .ib-left {}
-    .ib-tag {
-      display: inline-flex; align-items: center; gap: 3px;
-      background: rgba(255,255,255,0.22); border-radius: 20px;
-      padding: 2px 10px; font-size: 11px; color: #fff;
-      margin-bottom: 6px;
+    .finplan-card::after {
+      content: ''; position: absolute; bottom: -20px; left: -20px;
+      width: 100px; height: 100px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
     }
-    .ib-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-    .ib-desc { font-size: 12px; color: rgba(255,255,255,0.85); }
-    .ib-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; z-index: 1; }
-    .ib-rate {
-      font-size: 32px; font-weight: 800; color: #fff; line-height: 1;
+    .fc-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px; padding: 3px 10px; font-size: 11px; color: #fff;
+      margin-bottom: 8px;
     }
-    .ib-rate-label { font-size: 11px; color: rgba(255,255,255,0.8); text-align: right; }
-    .ib-btn {
-      background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 16px; padding: 4px 12px;
-      font-size: 12px; color: #fff; font-weight: 600; cursor: pointer;
-    }
-    /* 余额存入提示小条 */
-    .earn-hint {
-      font-size: 11px; color: rgba(255,255,255,0.85);
-      background: rgba(255,255,255,0.15); border-radius: 10px;
-      padding: 3px 8px; margin-top: 4px; display: inline-block;
-    }
+    .fc-body { display: flex; align-items: flex-end; justify-content: space-between; position: relative; z-index: 1; }
+    .fc-left {}
+    .fc-rate { font-size: 44px; font-weight: 800; color: #fff; line-height: 1; display: flex; align-items: flex-start; }
+    .fc-rate sup { font-size: 16px; margin-top: 8px; font-weight: 600; }
+    .fc-rate sub { font-size: 15px; align-self: flex-end; margin-bottom: 3px; font-weight: 400; }
+    .fc-sub { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 4px; }
+    .fc-pills { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .fc-pill { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 14px; padding: 3px 9px; font-size: 11px; color: #fff; }
+    .fc-right { text-align: right; z-index: 1; }
+    .fc-earn-box { background: rgba(255,255,255,0.18); border-radius: 10px; padding: 8px 12px; }
+    .fc-earn-num { font-size: 20px; font-weight: 700; color: #fff; }
+    .fc-earn-desc { font-size: 11px; color: rgba(255,255,255,0.8); }
+    .fc-btn { margin-top: 8px; display: inline-block; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.4); border-radius: 16px; padding: 4px 14px; font-size: 12px; color: #fff; font-weight: 600; }
 
-    /* ─── 天天赚余额 ─── */
-    .earn-card {
-      background: var(--white);
-      margin: 0 12px 10px;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-    }
-    .earn-card-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-    .earn-tabs {
-      display: flex; gap: 8px; margin-bottom: 14px;
-    }
-    .earn-tab {
-      height: 28px; border-radius: 14px; padding: 0 14px;
-      font-size: 13px; font-weight: 500; cursor: pointer; border: none;
-    }
-    .earn-tab.active { background: var(--red-pill); color: var(--red); }
-    .earn-tab.inactive { background: var(--gray-1); color: var(--gray-6); }
-    .earn-task-list { display: flex; flex-direction: column; gap: 0; }
-    .earn-task-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 13px 0; border-bottom: 1px solid var(--gray-2);
-    }
-    .earn-task-item:last-child { border-bottom: none; }
-    .earn-task-desc { font-size: 14px; color: var(--gray-9); }
-    .earn-task-amount { font-size: 14px; color: var(--red); font-weight: 500; margin-left: 6px; }
-    .earn-task-btn {
-      height: 32px; border-radius: 16px; padding: 0 16px;
-      border: 1px solid var(--gray-2); background: var(--white);
-      font-size: 13px; color: var(--gray-9); cursor: pointer; white-space: nowrap;
-    }
-    .earn-more {
-      text-align: center; font-size: 13px; color: var(--gray-4);
-      padding: 12px 0 0; cursor: pointer;
-    }
+    /* ─── 借钱 + 右侧双列 ─── */
+    .dual-row { margin: 0 12px 10px; display: flex; gap: 10px; }
+    .loan-card { flex: 0 0 48%; background: var(--white); border-radius: var(--radius-lg); padding: 14px; position: relative; }
+    .loan-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .loan-badge { position: absolute; top: 10px; right: 10px; background: var(--red); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+    .loan-earn { font-size: 14px; margin: 4px 0 6px; }
+    .loan-earn strong { color: var(--red); font-size: 18px; }
+    .loan-desc { font-size: 12px; color: var(--gray-6); margin-bottom: 12px; }
+    .loan-btn { background: var(--blue); color: #fff; border: none; border-radius: var(--radius-pill); padding: 7px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .right-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .right-item { flex: 1; background: var(--white); border-radius: var(--radius-lg); padding: 11px 12px; }
+    .right-item-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .right-item-sub { font-size: 12px; color: var(--gray-6); margin-bottom: 4px; }
+    .right-item-link { font-size: 12px; color: var(--gray-6); cursor: pointer; }
+    .right-two { display: flex; gap: 8px; }
+    .right-two-item { flex: 1; background: var(--white); border-radius: var(--radius-md); padding: 10px; }
+    .right-two-item-title { font-size: 12px; font-weight: 600; }
+    .right-two-item-link { font-size: 11px; color: var(--gray-6); cursor: pointer; margin-top: 4px; }
 
-    /* ─── 余额享福利 ─── */
-    .benefit-card {
-      background: var(--white);
-      margin: 0 12px 20px;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-    }
-    .benefit-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    /* ─── 银行卡积分 ─── */
+    .points-card { margin: 0 12px 10px; background: var(--white); border-radius: var(--radius-lg); padding: 14px 16px; }
+    .points-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .points-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    .points-toggle { font-size: 12px; color: var(--gray-4); }
+    .points-body { display: flex; align-items: center; justify-content: space-between; }
+    .points-left { display: flex; align-items: center; gap: 8px; }
+    .points-num { font-size: 32px; font-weight: 700; }
+    .points-btn { background: var(--red); color: #fff; border: none; border-radius: var(--radius-pill); padding: 10px 22px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .points-note { font-size: 11px; color: var(--gray-4); text-align: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
+    .points-note a { color: var(--gray-4); text-decoration: underline; }
 
     /* Toast */
-    #toast {
-      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.72); color: #fff; padding: 10px 20px;
-      border-radius: 20px; font-size: 14px;
-      opacity: 0; transition: opacity 0.25s; z-index: 9999;
-      white-space: nowrap; pointer-events: none;
-    }
+    #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.72); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.25s; z-index: 9999; white-space: nowrap; pointer-events: none; }
     #toast.show { opacity: 1; }
-
     .safe-bottom { height: calc(20px + env(safe-area-inset-bottom)); }
   </style>
 </head>
@@ -234,141 +210,218 @@
 <!-- 顶部导航 -->
 <div class="nav">
   <button class="nav-back" onclick="history.back()">‹</button>
-  <div class="nav-title">余额</div>
-  <button class="nav-more">···</button>
+  <div class="nav-title">我的钱包</div>
+  <div class="nav-icons">
+    <button class="nav-icon">🎧</button>
+    <button class="nav-icon">⚙️</button>
+  </div>
 </div>
 
-<!-- 余额主卡 -->
-<div class="balance-card">
-  <div class="balance-label-row">
-    <span class="balance-label">我的余额(元)</span>
-    <span class="balance-eye" id="eye-btn" onclick="toggleBalance()">👁</span>
-    <span class="balance-protect">🛡 资金保障中</span>
+<!-- 快手月付 Banner -->
+<div class="top-banner">
+  <div class="banner-logo">🔖 快手月付</div>
+  <div class="banner-text">开通领大额免息额度</div>
+  <button class="banner-cta">立即领取</button>
+  <div class="banner-fold"></div>
+</div>
+
+<!-- 我的资金 -->
+<div class="fund-card">
+  <div class="fund-label-row">
+    <span class="fund-label">我的资金</span>
+    <span class="fund-eye" id="eye-btn" onclick="toggleBalance()">👁</span>
   </div>
 
-  <div class="balance-amount" id="balance-display">452.7</div>
-
-  <div class="balance-hint" onclick="goToInsurance()">
-    转入小金保享 <strong id="hint-rate">1.80%</strong> 收益 <span>›</span>
+  <div class="fund-amount-row">
+    <div class="fund-amount" id="fund-display">452.7</div>
+    <span class="fund-arrow">›</span>
   </div>
 
-  <div class="balance-actions">
-    <button class="btn-recharge" onclick="toast('充值功能即将上线')">充值</button>
-    <button class="btn-withdraw" onclick="toast('提现功能即将上线')">提现</button>
-  </div>
+  <!-- ✨ 小金保入口（余额下方新增） -->
+  <a class="xiaojinbao-hint" href="../kuaishou-active-bao/index.html">
+    <span class="xjb-icon">💰</span>
+    <span class="xjb-text">转入小金保享 <strong id="xjb-rate">1.80%</strong> 收益，年化多赚 <strong id="xjb-earn">¥7</strong></span>
+    <span class="xjb-rate" id="xjb-rate-badge">1.80%</span>
+    <span class="xjb-arrow">›</span>
+  </a>
 
+  <div class="fund-sub-row">
+    <div class="fund-sub-item">
+      <div class="fund-sub-label">快币（充值）</div>
+      <div class="fund-sub-val">0</div>
+    </div>
+    <div class="fund-sub-item">
+      <div class="fund-sub-label">粉条</div>
+      <div class="fund-sub-val">0</div>
+    </div>
+    <div class="fund-sub-item">
+      <div class="fund-sub-label">优惠券</div>
+      <div class="fund-sub-val">2</div>
+    </div>
+    <div class="fund-sub-item">
+      <div class="fund-sub-label">银行卡</div>
+      <div class="fund-sub-val">2</div>
+    </div>
+  </div>
+</div>
+
+<!-- 账单 -->
+<div class="bill-card">
+  <div class="bill-title">账单</div>
   <div class="bill-row">
-    <div class="bill-left">
-      <span class="bill-title">明细</span>
-      <span class="bill-desc">签到返现-立返 <span class="bill-earn">+0.01</span></span>
-    </div>
-    <div class="bill-date">2024-10-20 <span class="bill-date-arrow">›</span></div>
+    <span class="bill-date">4月28日</span>
+    <span class="bill-desc">随心配1+1套餐</span>
+    <span class="bill-amount">- ¥0</span>
+    <span class="bill-arr">›</span>
   </div>
 </div>
 
-<!-- 快捷功能宫格 -->
+<!-- 功能宫格 -->
 <div class="grid-card">
+  <!-- 第一行：原有5个 -->
   <div class="grid-row">
-    <div class="grid-item" onclick="toast('转账功能即将上线')">
-      <div class="grid-icon">⇄</div>
-      <div class="grid-label">转账</div>
-    </div>
     <div class="grid-item" onclick="toast('银行卡功能即将上线')">
-      <div class="grid-icon">💳</div>
+      <div class="grid-icon-wrap">
+        💳
+        <span class="grid-badge">5折秒</span>
+      </div>
       <div class="grid-label">银行卡</div>
     </div>
-    <div class="grid-item" onclick="toast('天天领余额活动进行中')">
-      <div class="grid-icon special">🎁</div>
-      <div class="grid-label">天天领余额</div>
+    <div class="grid-item" onclick="toast('快手月付功能即将上线')">
+      <div class="grid-icon-wrap">🔖</div>
+      <div class="grid-label">快手月付</div>
     </div>
-    <div class="grid-item" onclick="toast('充话费功能即将上线')">
-      <div class="grid-icon">📱</div>
-      <div class="grid-label">充话费</div>
+    <div class="grid-item" onclick="toast('先用后付功能即将上线')">
+      <div class="grid-icon-wrap">✅</div>
+      <div class="grid-label">先用后付</div>
     </div>
-    <div class="grid-item" onclick="goToInsurance()">
-      <div class="grid-icon special">🏦</div>
-      <div class="grid-label">转小金保</div>
+    <div class="grid-item" onclick="toast('借钱功能即将上线')">
+      <div class="grid-icon-wrap">💰</div>
+      <div class="grid-label">借钱</div>
+    </div>
+    <div class="grid-item" onclick="toast('黄金功能即将上线')">
+      <div class="grid-icon-wrap">🥇</div>
+      <div class="grid-label">黄金</div>
     </div>
   </div>
-  <div class="grid-pager">
-    <div class="pager-dot active"></div>
-    <div class="pager-dot"></div>
+
+  <!-- 第二行：原有4个 + 快手理财保（新增） -->
+  <div class="grid-row">
+    <div class="grid-item" onclick="toast('充值中心即将上线')">
+      <div class="grid-icon-wrap">🔋</div>
+      <div class="grid-label">充值中心</div>
+    </div>
+    <div class="grid-item" onclick="toast('国家补贴活动即将开始')">
+      <div class="grid-icon-wrap">🎁</div>
+      <div class="grid-label">国家补贴</div>
+    </div>
+    <div class="grid-item" onclick="toast('开店赚钱功能即将上线')">
+      <div class="grid-icon-wrap">🛒</div>
+      <div class="grid-label">开店赚钱</div>
+    </div>
+    <div class="grid-item" onclick="toast('主播任务功能即将上线')">
+      <div class="grid-icon-wrap">📋</div>
+      <div class="grid-label">主播任务</div>
+    </div>
+    <!-- ✨ 快手理财保（新增入口） -->
+    <div class="grid-item" onclick="window.location.href='../kuaishou-finplan/index.html'">
+      <div class="grid-icon-wrap finance">
+        🏦
+        <span class="grid-badge">3.5%</span>
+      </div>
+      <div class="grid-label">快手理财保</div>
+    </div>
   </div>
 </div>
 
-<!-- 保险理财入口 Banner -->
-<a class="insurance-banner" href="../kuaishou-active-bao/index.html" id="ins-banner">
-  <div class="ib-left">
-    <div class="ib-tag">🏆 快手小金保·严选</div>
-    <div class="ib-title">存余额·享高收益</div>
-    <div class="ib-desc">灵活存取 · 日日正收益</div>
-    <div class="earn-hint" id="earn-hint-text">你的余额存入后年化多赚 ¥-- 元</div>
-  </div>
-  <div class="ib-right">
-    <div class="ib-rate" id="ib-rate-display">1.80<small style="font-size:16px;">%</small></div>
-    <div class="ib-rate-label">近7日年化收益</div>
-    <div class="ib-btn">立即存入</div>
+<!-- ✨ 快手理财保大入口卡（宫格下方） -->
+<a class="finplan-card" href="../kuaishou-finplan/index.html">
+  <div class="fc-tag">🏆 快手理财保 · 保险严选</div>
+  <div class="fc-body">
+    <div class="fc-left">
+      <div class="fc-rate"><sup>最高</sup>3.5<sub>%</sub></div>
+      <div class="fc-sub">年化保证利率 · 写入保险合同</div>
+      <div class="fc-pills">
+        <div class="fc-pill">小金保 1.8%</div>
+        <div class="fc-pill">年金险 3.2%</div>
+        <div class="fc-pill">储蓄险 3.5%</div>
+      </div>
+    </div>
+    <div class="fc-right">
+      <div class="fc-earn-box">
+        <div class="fc-earn-num">+¥<span id="fc-earn-num">--</span></div>
+        <div class="fc-earn-desc">余额存储蓄险年化多赚</div>
+      </div>
+      <div class="fc-btn">查看专属方案 →</div>
+    </div>
   </div>
 </a>
 
-<!-- 天天赚余额 -->
-<div class="earn-card">
-  <div class="earn-card-title">天天赚余额</div>
-  <div class="earn-tabs">
-    <button class="earn-tab active">做任务</button>
-    <button class="earn-tab inactive">笔笔返现</button>
+<!-- 借钱 + 右侧双列 -->
+<div class="dual-row">
+  <div class="loan-card">
+    <div class="loan-badge">现金红包</div>
+    <div class="loan-title">借钱</div>
+    <div class="loan-earn">可领 <strong>10 元</strong></div>
+    <div class="loan-desc">查额成功·即可领取</div>
+    <button class="loan-btn" onclick="toast('借钱功能即将上线')">立即领取</button>
   </div>
-  <div class="earn-task-list">
-    <div class="earn-task-item">
-      <div>
-        <span class="earn-task-desc">体验一笔小金保存款</span>
-        <span class="earn-task-amount">+30.19元</span>
-      </div>
-      <button class="earn-task-btn" onclick="goToInsurance()">去完成</button>
+  <div class="right-col">
+    <div class="right-item">
+      <div class="right-item-title">银行卡支付</div>
+      <div class="right-item-sub">笔笔享优惠</div>
+      <div class="right-item-link">去看看 ›</div>
     </div>
-    <div class="earn-task-item">
-      <div>
-        <span class="earn-task-desc">开通储蓄险并学习</span>
-        <span class="earn-task-amount">+30.27元</span>
+    <div class="right-two">
+      <div class="right-two-item">
+        <div class="right-two-item-title">快手月付</div>
+        <div class="right-two-item-link">查看详情 ›</div>
       </div>
-      <button class="earn-task-btn" onclick="goToInsurance()">去完成</button>
-    </div>
-    <div class="earn-task-item">
-      <div>
-        <span class="earn-task-desc">快手送你15元现金</span>
-        <span class="earn-task-amount">+15元</span>
+      <div class="right-two-item">
+        <div class="right-two-item-title">先用后付</div>
+        <div class="right-two-item-link">查看详情 ›</div>
       </div>
-      <button class="earn-task-btn" onclick="toast('活动即将开始，敬请期待')">去完成</button>
     </div>
   </div>
-  <div class="earn-more">查看更多 ›</div>
 </div>
 
-<!-- 余额享福利 -->
-<div class="benefit-card">
-  <div class="benefit-title">余额享福利</div>
-  <div style="font-size:13px;color:#888;padding:20px 0;text-align:center;">更多福利即将上线，敬请期待</div>
+<!-- 银行卡积分 -->
+<div class="points-card">
+  <div class="points-title-row">
+    <div class="points-title">银行卡积分 ›</div>
+    <div class="points-toggle">签到提醒 ○</div>
+  </div>
+  <div class="points-body">
+    <div class="points-left">
+      <div class="points-num">0</div>
+      <div>
+        <div style="font-size:20px;">🟡</div>
+        <div style="font-size:12px;color:var(--gray-6);margin-top:2px;">今日签到+1积分</div>
+      </div>
+    </div>
+    <button class="points-btn" onclick="toast('签到成功！获得1积分')">立即签到</button>
+  </div>
 </div>
+<div class="points-note">点击签到即同意<a href="#">《快手支付升级协议》</a></div>
 
 <div class="safe-bottom"></div>
 
 <script>
   const BALANCE = 452.7;
-  const FLEXIBLE_RATE = 1.80; // 近7日年化 %
-  let balanceVisible = true;
+  const XJB_RATE = 1.80;
+  let visible = true;
 
-  // 计算存入小金保后年化多赚（相比银行活期0.2%）
-  const extraEarn = Math.round(BALANCE * (FLEXIBLE_RATE - 0.2) / 100);
-  document.getElementById('earn-hint-text').textContent = `你的余额存入后年化多赚 ¥${extraEarn} 元`;
+  // 计算多赚金额（vs 银行活期 0.2%）
+  const earnXjb  = Math.round(BALANCE * (XJB_RATE - 0.2) / 100);  // 小金保多赚
+  const earnSave = Math.round(BALANCE * (3.5 - 0.2) / 100);        // 储蓄险多赚
+
+  document.getElementById('xjb-earn').textContent = '¥' + earnXjb;
+  document.getElementById('fc-earn-num').textContent = earnSave;
 
   function toggleBalance() {
-    balanceVisible = !balanceVisible;
-    document.getElementById('balance-display').textContent = balanceVisible ? BALANCE : '****';
-    document.getElementById('eye-btn').textContent = balanceVisible ? '👁' : '🙈';
-  }
-
-  function goToInsurance() {
-    window.location.href = '../kuaishou-active-bao/index.html';
+    visible = !visible;
+    document.getElementById('fund-display').textContent = visible ? BALANCE : '****';
+    document.getElementById('eye-btn').textContent = visible ? '👁' : '🙈';
   }
 
   function toast(msg) {
