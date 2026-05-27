@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>小金保·灵活版</title>
+  <style>
+    :root {
+      --red: #e8112d;
+      --red-light: #fff0f2;
+      --red-mid: #fde8eb;
+      --pink-bg: #fdf3f4;
+      --pink-banner: linear-gradient(160deg, #fde8eb 0%, #fdf5f5 40%, #faf0f0 100%);
+      --gray-1: #f7f7f7;
+      --gray-2: #eeeeee;
+      --gray-4: #bbbbbb;
+      --gray-6: #888888;
+      --gray-9: #1a1a1a;
+      --white: #ffffff;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-pill: 50px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'PingFang SC', sans-serif;
+      background: var(--pink-bg);
+      color: var(--gray-9);
+      min-height: 100vh;
+    }
+
+    /* ─── 顶部 ─── */
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      padding-top: calc(14px + env(safe-area-inset-top));
+      background: transparent;
+    }
+    .nav-back { font-size: 22px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-title { font-size: 17px; font-weight: 600; }
+    .nav-more { font-size: 22px; background: none; border: none; cursor: pointer; letter-spacing: -2px; }
+
+    /* ─── Hero Banner（粉色渐变） ─── */
+    .hero-banner {
+      background: var(--pink-banner);
+      padding: 0 20px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-sub {
+      font-size: 13px; color: var(--red);
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+    .hero-sub::after {
+      content: '';
+      display: block;
+      width: 60px; height: 1px;
+      background: var(--red); opacity: 0.3;
+      margin: 6px auto 0;
+    }
+    .hero-title {
+      font-size: 34px; font-weight: 800; color: var(--gray-9);
+      letter-spacing: -1px; line-height: 1.15;
+    }
+    .hero-title em { color: var(--red); font-style: normal; }
+
+    /* 三大卖点横条 */
+    .features-bar {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      margin: 16px 12px 0;
+      display: flex;
+    }
+    .feat-item {
+      flex: 1; padding: 12px 8px; text-align: center;
+      border-right: 1px solid var(--gray-2);
+    }
+    .feat-item:last-child { border-right: none; }
+    .feat-icon { font-size: 14px; color: var(--red); margin-bottom: 3px; font-weight: 600; }
+    .feat-main { font-size: 12px; font-weight: 600; color: var(--gray-9); }
+    .feat-sub { font-size: 11px; color: var(--gray-6); margin-top: 2px; }
+
+    /* ─── 收益率主卡 ─── */
+    .rate-card {
+      background: var(--white);
+      margin: 12px;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .rate-vip-tag {
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      background: #fff5ec; border-radius: var(--radius-pill);
+      padding: 5px 16px; font-size: 12px; color: #b76000;
+      width: fit-content; margin: 0 auto 14px;
+    }
+    .rate-big {
+      text-align: center;
+      font-size: 64px; font-weight: 800; color: var(--red);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .rate-label { text-align: center; font-size: 13px; color: var(--gray-6); margin-bottom: 20px; }
+
+    /* 转入表单 */
+    .form-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-top: 1px solid var(--gray-2);
+    }
+    .form-label { font-size: 15px; color: var(--gray-9); }
+    .form-value {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 15px; color: var(--gray-9); font-weight: 500;
+    }
+    .form-edit { color: var(--gray-4); font-size: 16px; cursor: pointer; }
+    .form-arrow { color: var(--gray-4); font-size: 16px; }
+    .form-hint { font-size: 11px; color: var(--gray-4); margin-top: 2px; text-align: right; }
+
+    /* 售罄提示 */
+    .sold-out-tip {
+      text-align: center; font-size: 13px; color: var(--gray-6);
+      padding: 14px 0 6px;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+
+    /* 主按钮 */
+    .btn-invest {
+      width: 100%; height: 52px;
+      background: var(--red-mid); color: var(--gray-4);
+      border: none; border-radius: var(--radius-pill);
+      font-size: 18px; font-weight: 700; cursor: pointer;
+      margin-top: 4px;
+    }
+    .btn-invest.active {
+      background: var(--red); color: #fff;
+      box-shadow: 0 6px 18px rgba(232,17,45,0.3);
+    }
+
+    /* 协议勾选 */
+    .agreement {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 12px 0 4px; font-size: 12px; color: var(--gray-6); line-height: 1.6;
+    }
+    .agreement-check { color: var(--red); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .agreement a { color: var(--red); text-decoration: none; }
+
+    /* ─── 分隔线 ─── */
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; color: var(--gray-4);
+      padding: 16px 24px;
+      text-align: center;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray-2);
+    }
+
+    /* ─── 收益对比表 ─── */
+    .compare-section {
+      background: var(--white);
+      margin: 0 12px 12px;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .compare-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; text-align: center; }
+    .compare-table {
+      display: flex; gap: 0;
+      border: 1px solid var(--gray-2); border-radius: var(--radius-md); overflow: hidden;
+    }
+    .compare-col { flex: 1; }
+    .compare-col-header {
+      padding: 10px 12px; font-size: 13px; font-weight: 600;
+      text-align: center; border-bottom: 1px solid var(--gray-2);
+    }
+    .compare-col-header.other { background: var(--gray-1); color: var(--gray-6); }
+    .compare-col-header.mine { background: var(--red); color: #fff; }
+    .compare-col-body { background: var(--white); }
+    .compare-col.mine .compare-col-body { background: #fff8f8; }
+    .compare-row-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px; font-size: 12px; color: var(--gray-6);
+      border-bottom: 1px solid var(--gray-2);
+    }
+    .compare-row-item:last-child { border-bottom: none; }
+    .compare-row-item.bad::before { content: '✗'; color: var(--gray-4); flex-shrink: 0; }
+    .compare-row-item.good::before { content: '✓'; color: var(--red); flex-shrink: 0; }
+
+    /* ─── 产品跳转入口 ─── */
+    .product-nav {
+      margin: 0 12px 20px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .product-nav-title { font-size: 14px; font-weight: 600; color: var(--gray-9); margin-bottom: 12px; }
+    .product-nav-list { display: flex; flex-direction: column; gap: 10px; }
+    .product-nav-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border: 1px solid var(--gray-2);
+      border-radius: var(--radius-md); cursor: pointer;
+      text-decoration: none;
+    }
+    .pni-left {}
+    .pni-name { font-size: 14px; font-weight: 600; color: var(--gray-9); }
+    .pni-desc { font-size: 12px; color: var(--gray-6); margin-top: 2px; }
+    .pni-right { text-align: right; }
+    .pni-rate { font-size: 20px; font-weight: 700; color: var(--red); }
+    .pni-tag { font-size: 10px; color: var(--gray-4); margin-top: 2px; }
+    .pni-arrow { font-size: 16px; color: var(--gray-4); margin-left: 8px; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.72); color: #fff; padding: 10px 20px;
+      border-radius: 20px; font-size: 14px;
+      opacity: 0; transition: opacity 0.25s; z-index: 9999;
+      white-space: nowrap; pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+
+    .safe-bottom { height: calc(24px + env(safe-area-inset-bottom)); }
+  </style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- 顶部导航 -->
+<div class="nav">
+  <button class="nav-back" onclick="history.back()">‹</button>
+  <div class="nav-title">小金保·灵活版</div>
+  <button class="nav-more">···</button>
+</div>
+
+<!-- Hero Banner -->
+<div class="hero-banner">
+  <div class="hero-sub">小金保灵活版 求稳又求盈</div>
+  <div class="hero-title">灵活储蓄<em>收益高</em></div>
+</div>
+
+<!-- 三大卖点 -->
+<div class="features-bar">
+  <div class="feat-item">
+    <div class="feat-icon">↗ 日日正收益</div>
+    <div class="feat-sub">低风险历史0亏损</div>
+  </div>
+  <div class="feat-item">
+    <div class="feat-icon">⚡ 随用随取</div>
+    <div class="feat-sub">提现秒到账</div>
+  </div>
+  <div class="feat-item">
+    <div class="feat-icon">🛡 0费用</div>
+    <div class="feat-sub">转出无限额</div>
+  </div>
+</div>
+
+<!-- 收益率卡片 -->
+<div class="rate-card">
+  <div class="rate-vip-tag">🎖 快手财富会员用户专享</div>
+  <div class="rate-big" id="rate-display">1.60%</div>
+  <div class="rate-label">近7日年化收益率</div>
+
+  <div class="form-row">
+    <div class="form-label">转入金额</div>
+    <div>
+      <div class="form-value">
+        ¥<span id="invest-amount">1</span>
+        <span class="form-edit" onclick="editAmount()">✏</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row" style="border-top:1px solid var(--gray-2);">
+    <div class="form-label">支付方式</div>
+    <div>
+      <div class="form-value">招商银行(5446) <span class="form-arrow">›</span></div>
+      <div class="form-hint">单笔限额5万，单日限额5万</div>
+    </div>
+  </div>
+
+  <div class="sold-out-tip">今日额度已售罄，明日再来 ℹ</div>
+
+  <button class="btn-invest" id="main-btn" onclick="toast('今日额度已售罄，明日再来')">已售罄</button>
+
+  <div class="agreement">
+    <span class="agreement-check">✅</span>
+    <span>我已阅读并同意 <a href="#">《相关协议》</a>并知悉风险，申请加入际扬会员专属团体保险产品即小金保·灵活版，并知晓银行卡资金先转入小金库，并快速赎回（垫支）用于加入小金保·灵活版产品，资金安全有保障。</span>
+  </div>
+</div>
+
+<!-- 分隔线 -->
+<div class="divider">24小时随时转入 365天收益不缺席</div>
+
+<!-- 收益对比 -->
+<div class="compare-section">
+  <div class="compare-title">为什么选择小金保</div>
+  <div class="compare-table">
+    <div class="compare-col other">
+      <div class="compare-col-header other">其他产品</div>
+      <div class="compare-col-body">
+        <div class="compare-row-item bad">节假日买入次日无收益</div>
+        <div class="compare-row-item bad">3点后买入当日无收益</div>
+        <div class="compare-row-item bad">限额较低</div>
+        <div class="compare-row-item bad">费率较高</div>
+      </div>
+    </div>
+    <div class="compare-col mine">
+      <div class="compare-col-header mine">小金保灵活版</div>
+      <div class="compare-col-body">
+        <div class="compare-row-item good">节假日买入假期享收益</div>
+        <div class="compare-row-item good">3点后买入当日享收益</div>
+        <div class="compare-row-item good">转出无限额</div>
+        <div class="compare-row-item good">0费用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 更多产品跳转 -->
+<div class="product-nav">
+  <div class="product-nav-title">📦 更多保险理财产品</div>
+  <div class="product-nav-list">
+    <a class="product-nav-item" href="../kuaishou-finplan/index.html">
+      <div class="pni-left">
+        <div class="pni-name">🌅 快手国民年金险</div>
+        <div class="pni-desc">养老规划 · 按月领取 · 活多久领多久</div>
+      </div>
+      <div class="pni-right">
+        <div class="pni-rate">3.2%</div>
+        <div class="pni-tag">保证利率</div>
+      </div>
+      <span class="pni-arrow">›</span>
+    </a>
+    <a class="product-nav-item" href="../kuaishou-finplan/index.html">
+      <div class="pni-left">
+        <div class="pni-name">🏦 快手稳盈增额终身寿</div>
+        <div class="pni-desc">保额逐年递增 · 保障+储蓄一体</div>
+      </div>
+      <div class="pni-right">
+        <div class="pni-rate">3.5%</div>
+        <div class="pni-tag">保证利率</div>
+      </div>
+      <span class="pni-arrow">›</span>
+    </a>
+    <a class="product-nav-item" href="../kuaishou-finplan/index.html">
+      <div class="pni-left">
+        <div class="pni-name">🎒 少儿成长金（教育年金）</div>
+        <div class="pni-desc">子女教育储备 · 按学段定时领取</div>
+      </div>
+      <div class="pni-right">
+        <div class="pni-rate">3.3%</div>
+        <div class="pni-tag">保证利率</div>
+      </div>
+      <span class="pni-arrow">›</span>
+    </a>
+  </div>
+</div>
+
+<div class="safe-bottom"></div>
+
+<script>
+  function editAmount() {
+    const val = prompt('请输入转入金额（元）', '452.70');
+    if (val && !isNaN(val)) {
+      document.getElementById('invest-amount').textContent = parseFloat(val).toFixed(2);
+    }
+  }
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>

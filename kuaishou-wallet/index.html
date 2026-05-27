@@ -3,530 +3,380 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>我的钱包</title>
+  <title>余额</title>
   <style>
     :root {
-      --bg-top: #c8e6f7;
-      --bg-bottom: #e8f4fb;
-      --white: #ffffff;
-      --gray-1: #f5f5f5;
-      --gray-2: #ebebeb;
+      --red: #e8112d;
+      --red-light: #fff0f2;
+      --red-pill: #fde8eb;
+      --gray-1: #f7f7f7;
+      --gray-2: #eeeeee;
       --gray-4: #bbbbbb;
-      --gray-6: #666666;
+      --gray-6: #888888;
       --gray-9: #1a1a1a;
-      --ks-red: #e8112d;
-      --ks-orange: #ff5f2e;
-      --ks-blue: #1677ff;
-      --ks-green: #00c27a;
+      --white: #ffffff;
       --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-pill: 50px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
-      background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 220px, #f5f6f8 220px);
-      min-height: 100vh;
+      font-family: -apple-system, 'PingFang SC', sans-serif;
+      background: var(--gray-1);
       color: var(--gray-9);
+      min-height: 100vh;
     }
 
     /* ─── 顶部导航 ─── */
-    .top-nav {
-      display: flex; align-items: center;
-      padding: 16px 16px 10px;
-      padding-top: calc(16px + env(safe-area-inset-top));
-    }
-    .nav-back {
-      font-size: 22px; color: var(--gray-9); background: none; border: none;
-      cursor: pointer; padding: 4px 8px 4px 0;
-    }
-    .nav-title { font-size: 20px; font-weight: 700; flex: 1; }
-    .nav-icons { display: flex; gap: 16px; }
-    .nav-icon-btn {
-      width: 32px; height: 32px; background: rgba(255,255,255,0.5);
-      border-radius: 50%; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-
-    /* ─── 快手月付 Banner ─── */
-    .banner-strip {
-      margin: 0 12px 10px;
+    .nav {
       background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      padding-top: calc(14px + env(safe-area-inset-top));
     }
-    .banner-logo {
-      background: #00c27a; border-radius: 6px; padding: 2px 6px;
-      font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0;
-    }
-    .banner-text { font-size: 13px; color: var(--gray-9); flex: 1; }
-    .banner-btn {
-      font-size: 12px; color: var(--gray-9); font-weight: 600;
-      border: none; background: none; cursor: pointer; white-space: nowrap;
-      padding: 4px 0;
-    }
-    .banner-arrow {
-      position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 6px solid var(--white);
-    }
+    .nav-back { font-size: 22px; color: var(--gray-9); background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-title { font-size: 17px; font-weight: 600; }
+    .nav-more { font-size: 22px; color: var(--gray-9); background: none; border: none; cursor: pointer; letter-spacing: -2px; }
 
-    /* ─── 我的资金区 ─── */
-    .fund-card {
-      margin: 0 12px 12px;
+    /* ─── 余额主卡 ─── */
+    .balance-card {
       background: var(--white);
+      margin: 10px 12px;
       border-radius: var(--radius-lg);
-      padding: 16px 18px 18px;
+      padding: 20px 20px 16px;
     }
-    .fund-label {
-      font-size: 13px; color: var(--gray-6);
-      display: flex; align-items: center; gap: 4px; margin-bottom: 6px;
+    .balance-label-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
     }
-    .fund-eye { font-size: 14px; color: var(--gray-4); cursor: pointer; }
-    .fund-amount {
-      font-size: 40px; font-weight: 700; color: var(--gray-9);
-      display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+    .balance-label { font-size: 14px; color: var(--gray-6); }
+    .balance-eye { font-size: 16px; color: var(--gray-4); cursor: pointer; }
+    .balance-protect {
+      display: flex; align-items: center; gap: 3px;
+      background: #fff5ec; border-radius: 12px; padding: 2px 8px;
+      font-size: 11px; color: #ff6b00;
+    }
+    .balance-amount {
+      font-size: 46px; font-weight: 700; color: var(--gray-9);
+      line-height: 1.1; margin-bottom: 10px;
+    }
+    .balance-hint {
+      font-size: 13px; color: var(--gray-6); margin-bottom: 18px;
       cursor: pointer;
     }
-    .fund-amount-arrow { font-size: 18px; color: var(--gray-4); }
-    .fund-sub-row {
-      display: flex; gap: 0;
-    }
-    .fund-sub-item { flex: 1; }
-    .fund-sub-label { font-size: 12px; color: var(--gray-6); margin-bottom: 4px; }
-    .fund-sub-val { font-size: 18px; font-weight: 600; color: var(--gray-9); }
+    .balance-hint strong { color: var(--red); }
+    .balance-hint span { color: var(--gray-4); }
 
-    /* ─── 账单区 ─── */
-    .bill-card {
-      margin: 0 12px 12px;
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
+    /* 充值/提现按钮 */
+    .balance-actions {
+      display: flex; gap: 12px; margin-bottom: 16px;
     }
-    .bill-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+    .btn-recharge {
+      flex: 1; height: 48px;
+      background: var(--red); color: #fff;
+      border: none; border-radius: var(--radius-pill);
+      font-size: 17px; font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(232,17,45,0.3);
+    }
+    .btn-withdraw {
+      flex: 1; height: 48px;
+      background: var(--red-pill); color: var(--red);
+      border: none; border-radius: var(--radius-pill);
+      font-size: 17px; font-weight: 600; cursor: pointer;
+    }
+
+    /* 明细行 */
     .bill-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 2px 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-2);
     }
-    .bill-date { font-size: 12px; color: var(--gray-4); }
-    .bill-desc { font-size: 13px; color: var(--gray-6); margin-left: 8px; flex: 1; }
-    .bill-amount { font-size: 14px; color: var(--gray-9); font-weight: 500; }
-    .bill-arrow { font-size: 14px; color: var(--gray-4); margin-left: 4px; }
+    .bill-left { display: flex; align-items: center; gap: 6px; }
+    .bill-title { font-size: 14px; font-weight: 600; }
+    .bill-desc { font-size: 13px; color: var(--gray-6); }
+    .bill-earn { color: var(--red); font-weight: 500; }
+    .bill-date { font-size: 12px; color: var(--gray-4); cursor: pointer; }
+    .bill-date-arrow { color: var(--gray-4); }
 
-    /* ─── 功能宫格 ─── */
+    /* ─── 快捷功能宫格 ─── */
     .grid-card {
-      margin: 0 12px 12px;
       background: var(--white);
+      margin: 0 12px 10px;
       border-radius: var(--radius-lg);
-      padding: 16px 10px;
+      padding: 16px 8px 12px;
     }
-    .grid-row {
-      display: flex; justify-content: space-around;
-      margin-bottom: 18px;
-    }
-    .grid-row:last-child { margin-bottom: 0; }
+    .grid-row { display: flex; justify-content: space-around; }
     .grid-item {
       display: flex; flex-direction: column; align-items: center; gap: 6px;
-      cursor: pointer; position: relative;
-      min-width: 56px;
+      cursor: pointer; min-width: 58px;
     }
     .grid-icon {
-      width: 46px; height: 46px; border-radius: 12px;
+      width: 50px; height: 50px;
+      border: 1.5px solid var(--gray-2); border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      border: 1.5px solid var(--gray-2);
-      position: relative;
-      background: #fff;
+      font-size: 22px; background: var(--white);
     }
-    .grid-label { font-size: 12px; color: var(--gray-9); text-align: center; }
-    .grid-badge {
-      position: absolute; top: -4px; right: -6px;
-      background: var(--ks-red); color: #fff;
-      font-size: 10px; font-weight: 600;
-      padding: 1px 5px; border-radius: 10px;
-      white-space: nowrap;
+    .grid-icon.special { background: var(--red-light); border-color: #ffd0d8; }
+    .grid-label { font-size: 12px; color: var(--gray-9); }
+    /* 分页指示器 */
+    .grid-pager {
+      display: flex; justify-content: center; gap: 4px; margin-top: 10px;
     }
+    .pager-dot {
+      width: 16px; height: 4px; border-radius: 2px;
+      background: var(--gray-2);
+    }
+    .pager-dot.active { background: var(--gray-4); }
 
-    /* ─── 保险理财入口卡片（核心入口） ─── */
-    .insurance-entry {
-      margin: 0 12px 12px;
+    /* ─── 保险理财入口（"转小金库"对应位置新增） ─── */
+    .insurance-banner {
+      margin: 0 12px 10px;
       background: linear-gradient(135deg, #e8112d 0%, #ff6b4a 55%, #ffb86b 100%);
       border-radius: var(--radius-lg);
-      padding: 16px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      text-decoration: none;
-      display: block;
-    }
-    .insurance-entry::before {
-      content: '';
-      position: absolute; top: -40px; right: -30px;
-      width: 140px; height: 140px; border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-    }
-    .insurance-entry::after {
-      content: '';
-      position: absolute; bottom: -20px; left: -20px;
-      width: 90px; height: 90px; border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-    }
-    .ie-top {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      margin-bottom: 12px; position: relative; z-index: 1;
-    }
-    .ie-tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255,255,255,0.22);
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 20px; padding: 3px 10px;
-      font-size: 11px; color: #fff; font-weight: 500;
-    }
-    .ie-arrow-btn {
-      background: rgba(255,255,255,0.2); border: none; cursor: pointer;
-      border-radius: 20px; padding: 4px 12px;
-      font-size: 12px; color: #fff; font-weight: 600;
-    }
-    .ie-body {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      position: relative; z-index: 1;
-    }
-    .ie-left {}
-    .ie-rate {
-      font-size: 44px; font-weight: 800; color: #fff; line-height: 1;
-      display: flex; align-items: flex-start; gap: 2px;
-    }
-    .ie-rate sup { font-size: 18px; font-weight: 600; margin-top: 6px; }
-    .ie-rate sub { font-size: 16px; font-weight: 400; align-self: flex-end; margin-bottom: 2px; }
-    .ie-rate-desc { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 4px; }
-    .ie-extra {
-      display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
-    }
-    .ie-extra-earn {
-      background: rgba(255,255,255,0.18);
-      border-radius: var(--radius-sm); padding: 8px 12px;
-      text-align: right;
-    }
-    .ie-extra-earn .earn-num {
-      font-size: 20px; font-weight: 700; color: #fff;
-    }
-    .ie-extra-earn .earn-desc {
-      font-size: 11px; color: rgba(255,255,255,0.8);
-    }
-    .ie-products {
-      display: flex; gap: 6px;
-    }
-    .ie-product-pill {
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 16px; padding: 3px 9px;
-      font-size: 11px; color: #fff;
-    }
-
-    /* ─── 双列功能卡 ─── */
-    .dual-card-row {
-      margin: 0 12px 12px;
-      display: flex; gap: 10px;
-    }
-    .promo-card {
-      flex: 1; background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 14px;
-      position: relative; overflow: hidden;
-    }
-    .promo-card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .promo-card-badge {
-      position: absolute; top: 10px; right: 10px;
-      background: var(--ks-red); color: #fff;
-      font-size: 10px; font-weight: 600; padding: 2px 7px;
-      border-radius: 10px;
-    }
-    .promo-card-earn {
-      font-size: 13px; color: var(--ks-red); font-weight: 600; margin-bottom: 8px;
-    }
-    .promo-card-desc { font-size: 12px; color: var(--gray-6); margin-bottom: 12px; line-height: 1.5; }
-    .promo-card-btn {
-      background: var(--ks-blue); color: #fff;
-      border: none; border-radius: 20px;
-      padding: 6px 16px; font-size: 13px; font-weight: 600;
-      cursor: pointer;
-    }
-    .promo-card-sub-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-    .promo-card-sub-desc { font-size: 12px; color: var(--gray-6); margin-bottom: 6px; }
-    .promo-card-link {
-      font-size: 12px; color: var(--gray-6);
-      display: flex; align-items: center; gap: 2px; cursor: pointer;
-    }
-    .promo-right {
-      flex: 1; display: flex; flex-direction: column; gap: 10px;
-    }
-    .promo-right-item {
-      flex: 1; background: var(--white);
-      border-radius: var(--radius-lg); padding: 12px 14px;
-    }
-
-    /* ─── 银行卡积分区 ─── */
-    .points-card {
-      margin: 0 12px 12px;
-      background: var(--white);
-      border-radius: var(--radius-lg);
       padding: 14px 16px;
-    }
-    .points-title-row {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .points-title {
-      font-size: 15px; font-weight: 600;
-      display: flex; align-items: center; gap: 4px; cursor: pointer;
-    }
-    .points-toggle { font-size: 12px; color: var(--gray-4); }
-    .points-body {
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .points-left {
-      display: flex; align-items: center; gap: 8px;
-    }
-    .points-num { font-size: 32px; font-weight: 700; color: var(--gray-9); }
-    .points-coin { font-size: 20px; }
-    .points-desc { font-size: 12px; color: var(--gray-6); margin-top: 2px; }
-    .points-btn {
-      background: var(--ks-red); color: #fff;
-      border: none; border-radius: 24px;
-      padding: 10px 22px; font-size: 15px; font-weight: 600;
       cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; overflow: hidden;
+      text-decoration: none;
     }
-    .points-note {
-      font-size: 11px; color: var(--gray-4); text-align: center;
-      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    .insurance-banner::before {
+      content: '';
+      position: absolute; top: -30px; right: -20px;
+      width: 110px; height: 110px; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
     }
-    .points-note a { color: var(--gray-4); text-decoration: underline; }
+    .ib-left {}
+    .ib-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: rgba(255,255,255,0.22); border-radius: 20px;
+      padding: 2px 10px; font-size: 11px; color: #fff;
+      margin-bottom: 6px;
+    }
+    .ib-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .ib-desc { font-size: 12px; color: rgba(255,255,255,0.85); }
+    .ib-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; z-index: 1; }
+    .ib-rate {
+      font-size: 32px; font-weight: 800; color: #fff; line-height: 1;
+    }
+    .ib-rate-label { font-size: 11px; color: rgba(255,255,255,0.8); text-align: right; }
+    .ib-btn {
+      background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 16px; padding: 4px 12px;
+      font-size: 12px; color: #fff; font-weight: 600; cursor: pointer;
+    }
+    /* 余额存入提示小条 */
+    .earn-hint {
+      font-size: 11px; color: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.15); border-radius: 10px;
+      padding: 3px 8px; margin-top: 4px; display: inline-block;
+    }
 
-    /* ─── 底部安全区 ─── */
+    /* ─── 天天赚余额 ─── */
+    .earn-card {
+      background: var(--white);
+      margin: 0 12px 10px;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .earn-card-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+    .earn-tabs {
+      display: flex; gap: 8px; margin-bottom: 14px;
+    }
+    .earn-tab {
+      height: 28px; border-radius: 14px; padding: 0 14px;
+      font-size: 13px; font-weight: 500; cursor: pointer; border: none;
+    }
+    .earn-tab.active { background: var(--red-pill); color: var(--red); }
+    .earn-tab.inactive { background: var(--gray-1); color: var(--gray-6); }
+    .earn-task-list { display: flex; flex-direction: column; gap: 0; }
+    .earn-task-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 0; border-bottom: 1px solid var(--gray-2);
+    }
+    .earn-task-item:last-child { border-bottom: none; }
+    .earn-task-desc { font-size: 14px; color: var(--gray-9); }
+    .earn-task-amount { font-size: 14px; color: var(--red); font-weight: 500; margin-left: 6px; }
+    .earn-task-btn {
+      height: 32px; border-radius: 16px; padding: 0 16px;
+      border: 1px solid var(--gray-2); background: var(--white);
+      font-size: 13px; color: var(--gray-9); cursor: pointer; white-space: nowrap;
+    }
+    .earn-more {
+      text-align: center; font-size: 13px; color: var(--gray-4);
+      padding: 12px 0 0; cursor: pointer;
+    }
+
+    /* ─── 余额享福利 ─── */
+    .benefit-card {
+      background: var(--white);
+      margin: 0 12px 20px;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .benefit-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.72); color: #fff; padding: 10px 20px;
+      border-radius: 20px; font-size: 14px;
+      opacity: 0; transition: opacity 0.25s; z-index: 9999;
+      white-space: nowrap; pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+
     .safe-bottom { height: calc(20px + env(safe-area-inset-bottom)); }
   </style>
 </head>
 <body>
+<div id="toast"></div>
 
 <!-- 顶部导航 -->
-<div class="top-nav">
-  <button class="nav-back">‹</button>
-  <div class="nav-title">我的钱包</div>
-  <div class="nav-icons">
-    <button class="nav-icon-btn">🎧</button>
-    <button class="nav-icon-btn">⚙️</button>
-  </div>
+<div class="nav">
+  <button class="nav-back" onclick="history.back()">‹</button>
+  <div class="nav-title">余额</div>
+  <button class="nav-more">···</button>
 </div>
 
-<!-- 快手月付 Banner -->
-<div class="banner-strip" style="position:relative;">
-  <div class="banner-logo">🔖 快手月付</div>
-  <div class="banner-text">开通领大额免息额度</div>
-  <button class="banner-btn">立即领取</button>
-  <div class="banner-arrow"></div>
-</div>
+<!-- 余额主卡 -->
+<div class="balance-card">
+  <div class="balance-label-row">
+    <span class="balance-label">我的余额(元)</span>
+    <span class="balance-eye" id="eye-btn" onclick="toggleBalance()">👁</span>
+    <span class="balance-protect">🛡 资金保障中</span>
+  </div>
 
-<!-- 我的资金 -->
-<div class="fund-card">
-  <div class="fund-label">
-    我的资金 <span class="fund-eye" id="eye-btn" onclick="toggleBalance()">👁</span>
-  </div>
-  <div class="fund-amount" id="fund-amount-display">
-    <span id="balance-display">452.7</span>
-    <span class="fund-amount-arrow">›</span>
-  </div>
-  <div class="fund-sub-row">
-    <div class="fund-sub-item">
-      <div class="fund-sub-label">快币（充值）</div>
-      <div class="fund-sub-val">0</div>
-    </div>
-    <div class="fund-sub-item">
-      <div class="fund-sub-label">粉条</div>
-      <div class="fund-sub-val">0</div>
-    </div>
-    <div class="fund-sub-item">
-      <div class="fund-sub-label">优惠券</div>
-      <div class="fund-sub-val">2</div>
-    </div>
-    <div class="fund-sub-item">
-      <div class="fund-sub-label">银行卡</div>
-      <div class="fund-sub-val">2</div>
-    </div>
-  </div>
-</div>
+  <div class="balance-amount" id="balance-display">452.7</div>
 
-<!-- 账单 -->
-<div class="bill-card">
-  <div class="bill-title">账单</div>
+  <div class="balance-hint" onclick="goToInsurance()">
+    转入小金保享 <strong id="hint-rate">1.80%</strong> 收益 <span>›</span>
+  </div>
+
+  <div class="balance-actions">
+    <button class="btn-recharge" onclick="toast('充值功能即将上线')">充值</button>
+    <button class="btn-withdraw" onclick="toast('提现功能即将上线')">提现</button>
+  </div>
+
   <div class="bill-row">
-    <span class="bill-date">4月28日</span>
-    <span class="bill-desc">随心配1+1套餐</span>
-    <span class="bill-amount">-¥0</span>
-    <span class="bill-arrow">›</span>
+    <div class="bill-left">
+      <span class="bill-title">明细</span>
+      <span class="bill-desc">签到返现-立返 <span class="bill-earn">+0.01</span></span>
+    </div>
+    <div class="bill-date">2024-10-20 <span class="bill-date-arrow">›</span></div>
   </div>
 </div>
 
-<!-- 功能宫格 -->
+<!-- 快捷功能宫格 -->
 <div class="grid-card">
   <div class="grid-row">
-    <div class="grid-item">
-      <div class="grid-icon">
-        💳
-        <span class="grid-badge">5折秒</span>
-      </div>
+    <div class="grid-item" onclick="toast('转账功能即将上线')">
+      <div class="grid-icon">⇄</div>
+      <div class="grid-label">转账</div>
+    </div>
+    <div class="grid-item" onclick="toast('银行卡功能即将上线')">
+      <div class="grid-icon">💳</div>
       <div class="grid-label">银行卡</div>
     </div>
-    <div class="grid-item">
-      <div class="grid-icon">🔖</div>
-      <div class="grid-label">快手月付</div>
+    <div class="grid-item" onclick="toast('天天领余额活动进行中')">
+      <div class="grid-icon special">🎁</div>
+      <div class="grid-label">天天领余额</div>
     </div>
-    <div class="grid-item">
-      <div class="grid-icon">✅</div>
-      <div class="grid-label">先用后付</div>
+    <div class="grid-item" onclick="toast('充话费功能即将上线')">
+      <div class="grid-icon">📱</div>
+      <div class="grid-label">充话费</div>
     </div>
-    <div class="grid-item">
-      <div class="grid-icon">💰</div>
-      <div class="grid-label">借钱</div>
-    </div>
-    <div class="grid-item">
-      <div class="grid-icon">🥇</div>
-      <div class="grid-label">黄金</div>
+    <div class="grid-item" onclick="goToInsurance()">
+      <div class="grid-icon special">🏦</div>
+      <div class="grid-label">转小金保</div>
     </div>
   </div>
-  <div class="grid-row">
-    <div class="grid-item">
-      <div class="grid-icon">🔋</div>
-      <div class="grid-label">充值中心</div>
-    </div>
-    <div class="grid-item">
-      <div class="grid-icon">🎁</div>
-      <div class="grid-label">国家补贴</div>
-    </div>
-    <div class="grid-item">
-      <div class="grid-icon">🛒</div>
-      <div class="grid-label">开店赚钱</div>
-    </div>
-    <div class="grid-item">
-      <div class="grid-icon">📋</div>
-      <div class="grid-label">主播任务</div>
-    </div>
-    <div class="grid-item">
-      <div class="grid-icon">⋯</div>
-      <div class="grid-label">全部</div>
-    </div>
+  <div class="grid-pager">
+    <div class="pager-dot active"></div>
+    <div class="pager-dot"></div>
   </div>
 </div>
 
-<!-- ✨ 保险理财入口卡片（核心新增） -->
-<a class="insurance-entry" href="../kuaishou-finplan/index.html" id="insurance-entry-card">
-  <div class="ie-top">
-    <div class="ie-tag">🏆 保险严选 · 专属推荐</div>
-    <button class="ie-arrow-btn" onclick="event.preventDefault(); window.location.href='../kuaishou-finplan/index.html'">查看方案 →</button>
+<!-- 保险理财入口 Banner -->
+<a class="insurance-banner" href="../kuaishou-active-bao/index.html" id="ins-banner">
+  <div class="ib-left">
+    <div class="ib-tag">🏆 快手小金保·严选</div>
+    <div class="ib-title">存余额·享高收益</div>
+    <div class="ib-desc">灵活存取 · 日日正收益</div>
+    <div class="earn-hint" id="earn-hint-text">你的余额存入后年化多赚 ¥-- 元</div>
   </div>
-  <div class="ie-body">
-    <div class="ie-left">
-      <div class="ie-rate">
-        <sup>最高</sup>3.5<sub>%</sub>
-      </div>
-      <div class="ie-rate-desc">年化保证利率 · 写入保险合同</div>
-      <div class="ie-products" style="margin-top:8px;">
-        <div class="ie-product-pill">活钱保 1.8%</div>
-        <div class="ie-product-pill">年金险 3.2%</div>
-        <div class="ie-product-pill">储蓄险 3.5%</div>
-      </div>
-    </div>
-    <div class="ie-extra">
-      <div class="ie-extra-earn">
-        <div class="earn-num" id="earn-extra">+¥<span id="earn-num">--</span></div>
-        <div class="earn-desc">余额存储蓄险年化多赚</div>
-      </div>
-    </div>
+  <div class="ib-right">
+    <div class="ib-rate" id="ib-rate-display">1.80<small style="font-size:16px;">%</small></div>
+    <div class="ib-rate-label">近7日年化收益</div>
+    <div class="ib-btn">立即存入</div>
   </div>
 </a>
 
-<!-- 借钱 + 右侧双格 -->
-<div class="dual-card-row">
-  <div class="promo-card" style="max-width:52%;">
-    <div class="promo-card-badge">现金红包</div>
-    <div class="promo-card-title">借钱</div>
-    <div class="promo-card-earn">可领 <span style="font-size:18px;">10</span> 元</div>
-    <div class="promo-card-desc">查额成功·即可领取</div>
-    <button class="promo-card-btn">立即领取</button>
+<!-- 天天赚余额 -->
+<div class="earn-card">
+  <div class="earn-card-title">天天赚余额</div>
+  <div class="earn-tabs">
+    <button class="earn-tab active">做任务</button>
+    <button class="earn-tab inactive">笔笔返现</button>
   </div>
-  <div class="promo-right">
-    <div class="promo-right-item">
-      <div class="promo-card-sub-title">银行卡支付</div>
-      <div class="promo-card-sub-desc">笔笔享优惠</div>
-      <div class="promo-card-link">去看看 ›</div>
-    </div>
-    <div class="promo-right-item" style="display:flex; gap:0;">
-      <div style="flex:1;">
-        <div class="promo-card-sub-title">快手月付</div>
-        <div class="promo-card-link" style="font-size:11px;">查看详情 ›</div>
-      </div>
-      <div style="flex:1; padding-left:10px; border-left:1px solid var(--gray-2);">
-        <div class="promo-card-sub-title">先用后付</div>
-        <div class="promo-card-link" style="font-size:11px;">查看详情 ›</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 银行卡积分 -->
-<div class="points-card">
-  <div class="points-title-row">
-    <div class="points-title">银行卡积分 ›</div>
-    <div class="points-toggle">签到提醒 ○</div>
-  </div>
-  <div class="points-body">
-    <div class="points-left">
-      <div class="points-num">0</div>
+  <div class="earn-task-list">
+    <div class="earn-task-item">
       <div>
-        <div class="points-coin">🟡</div>
-        <div class="points-desc">今日签到+1积分</div>
+        <span class="earn-task-desc">体验一笔小金保存款</span>
+        <span class="earn-task-amount">+30.19元</span>
       </div>
+      <button class="earn-task-btn" onclick="goToInsurance()">去完成</button>
     </div>
-    <button class="points-btn">立即签到</button>
+    <div class="earn-task-item">
+      <div>
+        <span class="earn-task-desc">开通储蓄险并学习</span>
+        <span class="earn-task-amount">+30.27元</span>
+      </div>
+      <button class="earn-task-btn" onclick="goToInsurance()">去完成</button>
+    </div>
+    <div class="earn-task-item">
+      <div>
+        <span class="earn-task-desc">快手送你15元现金</span>
+        <span class="earn-task-amount">+15元</span>
+      </div>
+      <button class="earn-task-btn" onclick="toast('活动即将开始，敬请期待')">去完成</button>
+    </div>
   </div>
+  <div class="earn-more">查看更多 ›</div>
 </div>
 
-<div class="points-note">
-  点击签到即同意<a href="#">《快手支付升级协议》</a>
+<!-- 余额享福利 -->
+<div class="benefit-card">
+  <div class="benefit-title">余额享福利</div>
+  <div style="font-size:13px;color:#888;padding:20px 0;text-align:center;">更多福利即将上线，敬请期待</div>
 </div>
 
 <div class="safe-bottom"></div>
 
 <script>
-  // ─── 模拟钱包余额数据（实际从API获取）───
-  const WALLET = {
-    balance: 452.7,
-    monthlySpend: 2800,
-  };
-
+  const BALANCE = 452.7;
+  const FLEXIBLE_RATE = 1.80; // 近7日年化 %
   let balanceVisible = true;
 
-  // 计算存入储蓄险后多赚金额（3.5% - 0.2%银行活期 = 3.3%）
-  function calcExtraEarn() {
-    const extra = Math.round(WALLET.balance * 0.033);
-    document.getElementById('earn-num').textContent = extra.toLocaleString();
-  }
+  // 计算存入小金保后年化多赚（相比银行活期0.2%）
+  const extraEarn = Math.round(BALANCE * (FLEXIBLE_RATE - 0.2) / 100);
+  document.getElementById('earn-hint-text').textContent = `你的余额存入后年化多赚 ¥${extraEarn} 元`;
 
-  // 切换余额显示
   function toggleBalance() {
     balanceVisible = !balanceVisible;
-    const el = document.getElementById('balance-display');
-    el.textContent = balanceVisible ? WALLET.balance : '****';
+    document.getElementById('balance-display').textContent = balanceVisible ? BALANCE : '****';
     document.getElementById('eye-btn').textContent = balanceVisible ? '👁' : '🙈';
   }
 
-  // 初始化
-  calcExtraEarn();
+  function goToInsurance() {
+    window.location.href = '../kuaishou-active-bao/index.html';
+  }
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
 </script>
 </body>
 </html>
