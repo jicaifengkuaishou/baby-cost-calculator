@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>支付成功 · 快手</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; background: #f4f5f7; }
+  body { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #fff; position: relative; padding-bottom: 76px; }
+
+  /* ===== iOS 状态栏 ===== */
+  .statusbar {
+    height: 44px; padding: 0 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; font-weight: 600; color: #000;
+    position: relative;
+  }
+  .statusbar .left { display: flex; align-items: center; gap: 6px; }
+  .statusbar .center {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    background: #FFE4D9; color: #FF6633;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .statusbar .center::before {
+    content: ""; width: 12px; height: 12px;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    border-radius: 3px;
+  }
+  .statusbar .right { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+  .signal { display: inline-block; width: 16px; height: 11px;
+    background:
+      linear-gradient(to top, #000 100%, transparent 0) 0 100% / 3px 30% no-repeat,
+      linear-gradient(to top, #000 100%, transparent 0) 4px 100% / 3px 50% no-repeat,
+      linear-gradient(to top, #000 100%, transparent 0) 8px 100% / 3px 75% no-repeat,
+      linear-gradient(to top, #000 100%, transparent 0) 12px 100% / 3px 100% no-repeat;
+  }
+  .wifi { font-size: 14px; }
+  .battery {
+    width: 26px; height: 12px; border: 1px solid #000; border-radius: 3px;
+    position: relative; padding: 1px;
+  }
+  .battery::after {
+    content: ""; position: absolute; right: -3px; top: 3px;
+    width: 2px; height: 4px; background: #000; border-radius: 0 1px 1px 0;
+  }
+  .battery .lvl { width: 50%; height: 100%; background: #000; border-radius: 1px; }
+
+  /* ===== 顶部导航 ===== */
+  .topbar {
+    height: 44px; display: flex; align-items: center;
+    padding: 0 16px; position: relative;
+  }
+  .topbar .back { font-size: 24px; font-weight: 300; color: #1a1a1a; }
+  .topbar .title {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    font-size: 17px; font-weight: 600;
+  }
+
+  /* ===== 金额区 ===== */
+  .amount-block { padding: 4px 20px 22px; text-align: center; }
+  .amount-block .amount { font-size: 38px; font-weight: 700; letter-spacing: -1px; }
+  .amount-block .amount .yuan { font-size: 22px; font-weight: 600; vertical-align: top; margin-right: 2px; }
+  .amount-block .amount .decimal { font-size: 26px; font-weight: 600; }
+  .amount-block .desc {
+    font-size: 13px; color: #666; margin-top: 12px;
+  }
+  .amount-block .desc b { color: #1a1a1a; font-weight: 500; }
+
+  /* ===== CTA 按钮 ===== */
+  .cta-row {
+    display: flex; gap: 12px; padding: 18px 20px 0;
+  }
+  .cta {
+    flex: 1; height: 44px; border-radius: 8px;
+    border: 1px solid #ddd; background: #fff;
+    font-size: 15px; font-weight: 500; color: #1a1a1a;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .cta.primary {
+    border: 1px solid #FF4444; color: #FF4444;
+  }
+  .cta .corner-tag {
+    position: absolute; top: -10px; right: -6px;
+    background: #FF4444; color: #fff;
+    font-size: 10px; padding: 2px 6px; border-radius: 8px 8px 8px 0;
+    font-weight: 500;
+  }
+
+  /* ===== 钱袋子找零卡片（核心植入） ===== */
+  .qdz-card {
+    margin: 16px 20px 0;
+    border-radius: 14px; overflow: hidden;
+    background: linear-gradient(135deg, #FFF1E6 0%, #FFFAEC 100%);
+    border: 1px solid #FFD9B8;
+    position: relative;
+    box-shadow: 0 4px 14px rgba(255,102,51,.08);
+    animation: qdzIn .35s ease-out;
+  }
+  @keyframes qdzIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .qdz-card::before {
+    content: "推荐"; position: absolute; top: 0; left: 0;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff; font-size: 10px; font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 14px 0 10px 0;
+  }
+  .qdz-close {
+    position: absolute; top: 8px; right: 8px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,.06); color: #888;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; line-height: 1;
+  }
+
+  .qdz-body { padding: 26px 14px 12px; display: flex; gap: 12px; align-items: center; }
+  .qdz-icon {
+    width: 52px; height: 52px; flex-shrink: 0; border-radius: 14px;
+    background: linear-gradient(135deg, #FF6633, #FFB800);
+    color: #fff; font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(255,102,51,.3);
+  }
+  .qdz-text { flex: 1; min-width: 0; }
+  .qdz-title { font-size: 15px; font-weight: 700; line-height: 1.35; color: #1a1a1a; }
+  .qdz-title .change { color: #FF4444; }
+  .qdz-sub {
+    font-size: 11px; color: #8A6A4A; margin-top: 4px; line-height: 1.5;
+  }
+  .qdz-sub .em { color: #FF4444; font-weight: 600; }
+
+  .qdz-footer {
+    display: flex; gap: 10px;
+    padding: 0 14px 12px;
+  }
+  .qdz-btn {
+    flex: 1; height: 36px; border-radius: 8px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .qdz-btn.ghost {
+    background: rgba(255,255,255,.7);
+    color: #888; border: 1px solid #EBD8C4;
+  }
+  .qdz-btn.solid {
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(255,68,68,.25);
+  }
+  .qdz-compliance {
+    border-top: 1px dashed rgba(255,153,102,.3);
+    padding: 8px 14px;
+    font-size: 10px; color: #B0875F;
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  }
+  .qdz-compliance span::before { content: "·"; margin-right: 4px; opacity: .5; }
+  .qdz-compliance span:first-child::before { content: ""; margin: 0; }
+
+  /* 已开通态 */
+  .qdz-done {
+    margin: 16px 20px 0;
+    background: #fff;
+    border: 1px solid #FFE4D2;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .qdz-done .ic {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, #FF6633, #FFB800);
+    color: #fff; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .qdz-done .info { flex: 1; min-width: 0; }
+  .qdz-done .row1 { font-size: 13px; color: #1a1a1a; }
+  .qdz-done .row1 b { color: #FF4444; }
+  .qdz-done .row2 {
+    font-size: 11px; color: #888; margin-top: 4px;
+    display: flex; gap: 4px; align-items: center;
+  }
+  .qdz-done .row2 .balance { color: #FF6633; font-weight: 600; }
+  .qdz-done .row2 .income { color: #00A878; }
+  .qdz-done .arrow { color: #999; font-size: 16px; }
+
+  /* ===== 通用条目（积分/抽奖） ===== */
+  .row-card {
+    margin: 12px 20px 0;
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    border: 1px solid #f0f0f0;
+  }
+  .row-card .lic {
+    width: 32px; height: 32px; border-radius: 50%;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .row-card.points .lic { background: #FFE466; color: #B85A00; }
+  .row-card .body { flex: 1; min-width: 0; font-size: 14px; color: #1a1a1a; }
+  .row-card .body small { font-size: 11px; color: #888; }
+  .row-card .action {
+    color: #FF4444; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* 抽奖卡片（红色徽章风格） */
+  .lucky-card {
+    margin: 12px 20px 0;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid #f0f0f0;
+  }
+  .lucky-badge {
+    width: 56px; height: 56px; flex-shrink: 0;
+    background:
+      radial-gradient(circle at 50% 50%, #FF4444 0, #C0392B 100%);
+    color: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(192,57,43,.3);
+  }
+  .lucky-badge::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 50%;
+    height: 1px; background: rgba(255,255,255,.4);
+  }
+  .lucky-info { flex: 1; }
+  .lucky-info .t1 { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+  .lucky-info .t1 b { color: #FF4444; }
+  .lucky-info .t2 { font-size: 11px; color: #888; margin-top: 4px; }
+  .lucky-btn {
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff;
+    height: 32px; padding: 0 14px;
+    border-radius: 16px;
+    font-size: 13px; font-weight: 600;
+    border: none;
+  }
+
+  /* ===== 商品瀑布流 ===== */
+  .grid {
+    margin: 16px 12px 0;
+    columns: 2; column-gap: 8px;
+  }
+  .item {
+    break-inside: avoid;
+    margin-bottom: 8px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .item .cover {
+    width: 100%;
+    aspect-ratio: 1/1;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 70px;
+  }
+  .item .cover .play {
+    position: absolute; top: 8px; left: 8px;
+    width: 22px; height: 22px; border-radius: 4px;
+    background: rgba(255,255,255,.85); color: #1a1a1a;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .item .cover.green { background: linear-gradient(135deg, #FFE466, #FFC233); }
+  .item .cover.dark { background: linear-gradient(135deg, #2a2a2a, #555); }
+  .item .cover.olive { background: linear-gradient(135deg, #d4d8b8, #9ea876); }
+  .item .cover.pink { background: linear-gradient(135deg, #FFD0D0, #FFB0B8); }
+  .item .info { padding: 8px 10px 10px; }
+  .item .badge {
+    display: inline-block; font-size: 10px; padding: 1px 6px;
+    background: #1a1a1a; color: #FFE066;
+    border-radius: 3px; margin-right: 4px; font-weight: 600;
+  }
+  .item .name { font-size: 13px; line-height: 1.4; color: #1a1a1a; }
+  .item .meta { font-size: 10px; color: #888; margin-top: 4px; line-height: 1.5; }
+  .item .meta .red { color: #FF4444; }
+  .item .price { margin-top: 6px; font-size: 11px; color: #888; }
+  .item .price .num { font-size: 17px; font-weight: 700; color: #FF4444; }
+  .item .price .num small { font-size: 11px; }
+
+  /* AI 助手浮按 */
+  .ai-fab {
+    position: fixed; right: 12px; bottom: 92px;
+    z-index: 50;
+    background: linear-gradient(135deg, #B5C8FF, #FFD3D9);
+    color: #fff;
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
+  }
+  .ai-fab .face { font-size: 22px; }
+
+  /* ===== 状态切换 toggle 浮条 ===== */
+  .toggle-bar {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    background: #1a1a1a; border-radius: 999px;
+    padding: 4px;
+    display: flex; gap: 0;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    max-width: 460px; width: calc(100% - 40px);
+  }
+  .toggle-bar button {
+    flex: 1; border: none; background: transparent;
+    color: rgba(255,255,255,.6); font-size: 12px; font-weight: 600;
+    height: 32px; border-radius: 999px;
+    cursor: pointer;
+  }
+  .toggle-bar button.on {
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff;
+  }
+  .toggle-bar .label {
+    position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: #999;
+    background: rgba(255,255,255,.9);
+    padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  /* 入口提示链回主方案 */
+  .back-to-plan {
+    position: fixed; top: 8px; right: 8px;
+    z-index: 200;
+    font-size: 11px; color: #fff;
+    background: rgba(0,0,0,.5);
+    padding: 4px 10px; border-radius: 999px;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+  }
+
+  .hidden { display: none !important; }
+
+  /* tap feedback */
+  .qdz-btn:active, .lucky-btn:active, .cta:active, .row-card .action:active { opacity: .8; }
+</style>
+</head>
+<body>
+
+  <a class="back-to-plan" href="./index.html">← 回方案</a>
+
+  <!-- ===== 状态栏 ===== -->
+  <div class="statusbar">
+    <div class="left">
+      02:44 <span style="font-size:14px">🚗</span>
+    </div>
+    <div class="center">快手</div>
+    <div class="right">
+      <span class="signal"></span>
+      <span class="wifi">📶</span>
+      <span class="battery"><span class="lvl"></span></span>
+    </div>
+  </div>
+
+  <!-- ===== 顶部导航 ===== -->
+  <div class="topbar">
+    <span class="back">‹</span>
+    <span class="title">支付成功</span>
+  </div>
+
+  <!-- ===== 金额 ===== -->
+  <div class="amount-block">
+    <div class="amount">
+      <span class="yuan">¥</span>56<span class="decimal">.60</span>
+    </div>
+    <div class="desc">建设银行储蓄卡 (7195) 免密付款，<b>已享优惠 ¥3</b></div>
+  </div>
+
+  <!-- ===== CTA ===== -->
+  <div class="cta-row">
+    <button class="cta">查看订单</button>
+    <button class="cta primary">
+      <span class="corner-tag">件件1元购</span>
+      去快手商城
+    </button>
+  </div>
+
+  <!-- ===== 钱袋子找零卡片（未开通态） ===== -->
+  <div class="qdz-card" id="qdzCard">
+    <span class="qdz-close" onclick="closeQdz()">×</span>
+    <div class="qdz-body">
+      <div class="qdz-icon">💰</div>
+      <div class="qdz-text">
+        <div class="qdz-title">把这单的零头 <span class="change">¥0.40</span> 存起来？</div>
+        <div class="qdz-sub">¥1000 在钱袋子放 1 个月，约赚 <span class="em">¥3</span> · 随时秒到原路</div>
+      </div>
+    </div>
+    <div class="qdz-footer">
+      <button class="qdz-btn ghost" onclick="closeQdz()">下次再说</button>
+      <button class="qdz-btn solid" onclick="openQdz()">好啊存起来</button>
+    </div>
+    <div class="qdz-compliance">
+      <span>单笔上限 ¥10</span>
+      <span>月度上限 ¥500</span>
+      <span>一键关闭</span>
+      <span>非保本浮动收益</span>
+    </div>
+  </div>
+
+  <!-- ===== 钱袋子已开通态（隐藏） ===== -->
+  <div class="qdz-done hidden" id="qdzDone">
+    <div class="ic">💰</div>
+    <div class="info">
+      <div class="row1">已为你存入 <b>¥0.40</b> 进钱袋子</div>
+      <div class="row2">
+        余额 <span class="balance">¥12.78</span>
+        <span style="color:#ddd">·</span>
+        <span class="income">今日 +¥0.001</span>
+      </div>
+    </div>
+    <span class="arrow">›</span>
+  </div>
+
+  <!-- ===== 积分领取 ===== -->
+  <div class="row-card points">
+    <div class="lic">●</div>
+    <div class="body">积分待领取，<small>50 积分可抵 1 元</small></div>
+    <div class="action">立即领取</div>
+  </div>
+
+  <!-- ===== 抽奖必中 ===== -->
+  <div class="lucky-card">
+    <div class="lucky-badge">必中</div>
+    <div class="lucky-info">
+      <div class="t1">下单成功 <b>本次抽奖必中！</b></div>
+      <div class="t2">抽满 3 次，必得现金打款 + 额外返现</div>
+    </div>
+    <button class="lucky-btn">去抽奖</button>
+  </div>
+
+  <!-- ===== 商品瀑布流 ===== -->
+  <div class="grid">
+    <div class="item">
+      <div class="cover green">
+        <span class="play">▶</span>
+        🥛
+      </div>
+      <div class="info">
+        <span class="badge">官方正品</span>
+        <span style="font-size:10px;color:#FF4444;font-weight:600">现货速发</span>
+        <div class="name" style="margin-top:4px"><span class="badge" style="background:#FF4444;color:#fff">快手旗舰</span> 认养一头牛【全新上</div>
+        <div class="meta"><span class="red">好评率98%</span> · 后天达 · 假一赔十</div>
+        <div class="price"><span class="num">¥89</span> 已售8260盒</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="cover dark">
+        <span class="play">▶</span>
+        🩳
+      </div>
+      <div class="info">
+        <div class="name">新款小熊字母印花男士冰丝</div>
+        <div class="meta">轻薄无痕，舒适亲肤 · <span class="red">爆品</span></div>
+        <div class="price"><span class="num">¥49<small>.9</small></span> 已售3926件</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="cover olive">
+        <span class="play">▶</span>
+        🧴
+      </div>
+      <div class="info">
+        <div class="name">INFIYES 377 美白祛斑精华液</div>
+        <div class="meta">抗皱嫩致 · <span class="red">敏感肌可用</span></div>
+        <div class="price"><span class="num">¥139</span> 已售1238件</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="cover pink">
+        <span class="play">▶</span>
+        👤
+      </div>
+      <div class="info">
+        <span style="font-size:10px;background:#fff;border:1px solid #FF4444;color:#FF4444;padding:1px 5px;border-radius:3px">618 · 20万+人关注</span>
+        <div class="name" style="margin-top:6px">黄子韬同款品牌创始人</div>
+        <div class="meta">直播专享价 · 限时</div>
+        <div class="price"><span class="num">¥99</span> 已售9621件</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 助手浮按 -->
+  <div class="ai-fab">
+    <span class="face">🤖</span>
+    <span>AI助手</span>
+  </div>
+
+  <!-- 状态切换 -->
+  <div class="toggle-bar">
+    <span class="label">demo · 切换钱袋子状态</span>
+    <button class="on" id="btnOff" onclick="setState('off')">未开通</button>
+    <button id="btnOn" onclick="setState('on')">已开通</button>
+  </div>
+
+  <script>
+    const card = document.getElementById('qdzCard');
+    const done = document.getElementById('qdzDone');
+    const btnOff = document.getElementById('btnOff');
+    const btnOn = document.getElementById('btnOn');
+
+    function setState(s) {
+      if (s === 'on') {
+        card.classList.add('hidden');
+        done.classList.remove('hidden');
+        btnOn.classList.add('on'); btnOff.classList.remove('on');
+      } else {
+        card.classList.remove('hidden');
+        done.classList.add('hidden');
+        btnOff.classList.add('on'); btnOn.classList.remove('on');
+      }
+    }
+
+    function closeQdz() {
+      card.style.transition = 'opacity .25s, transform .25s';
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(-6px)';
+      setTimeout(() => card.classList.add('hidden'), 250);
+    }
+    function openQdz() {
+      // 切换到已开通态
+      card.style.transition = 'opacity .25s';
+      card.style.opacity = '0';
+      setTimeout(() => setState('on'), 250);
+    }
+  </script>
+</body>
+</html>
