@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>仅退款申请 · 快手</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; background: #f4f5f7; }
+  body { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; padding-bottom: 90px; position: relative; }
+
+  .statusbar { height: 44px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 600; background: #fff; }
+  .statusbar .center { position: absolute; left: 50%; transform: translateX(-50%); background: #FFE4D9; color: #FF6633; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+  .topbar { height: 44px; display: flex; align-items: center; padding: 0 16px; background: #fff; border-bottom: 1px solid #f0f0f0; position: relative; }
+  .topbar .back { font-size: 24px; }
+  .topbar .title { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 17px; font-weight: 600; }
+
+  /* 大金额 */
+  .amount-block {
+    background: #fff; padding: 30px 20px 26px; text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .amount-block .big { font-size: 30px; font-weight: 800; color: #1a1a1a; letter-spacing: -.5px; }
+  .amount-block .big .num { font-size: 36px; }
+
+  /* 表单卡片 */
+  .form-card { background: #fff; }
+  .form-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid #f4f5f7;
+    font-size: 15px;
+  }
+  .form-row .label { color: #1a1a1a; }
+  .form-row .value {
+    display: flex; align-items: center; gap: 6px;
+    color: #1a1a1a; font-weight: 500;
+  }
+  .form-row .value.muted { color: #999; }
+  .form-row .value .arrow { color: #c0c0c0; font-size: 16px; }
+  .form-row .right-stack { text-align: right; }
+  .form-row .right-stack .top { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+  .form-row .right-stack .bot { font-size: 12px; color: #999; margin-top: 4px; }
+
+  /* ===== 退款方式选择卡 ===== */
+  .refund-method {
+    margin: 12px 0 0; background: #fff;
+    padding: 16px 20px;
+  }
+  .refund-method .head {
+    font-size: 15px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .refund-method .head .help {
+    font-size: 11px; color: #999;
+  }
+
+  /* 选项 */
+  .opt {
+    display: flex; gap: 12px;
+    padding: 14px 12px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .opt .radio {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid #ccc;
+    flex-shrink: 0; margin-top: 2px;
+    position: relative;
+  }
+  .opt.checked .radio { border-color: #FF4444; }
+  .opt.checked .radio::after {
+    content: ""; position: absolute;
+    width: 10px; height: 10px; border-radius: 50%;
+    top: 3px; left: 3px;
+    background: #FF4444;
+  }
+  .opt .body { flex: 1; min-width: 0; }
+  .opt .row1 {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 15px; font-weight: 700;
+  }
+  .opt .row2 {
+    font-size: 12px; color: #888; margin-top: 4px; line-height: 1.5;
+  }
+
+  /* 默认选项 */
+  .opt.default {
+    background: #fafafa;
+  }
+
+  /* 推荐选项 */
+  .opt.recommend {
+    border: 2px solid #FF6633;
+    background: linear-gradient(135deg, #FFF8F2 0%, #FFFAEC 100%);
+    box-shadow: 0 4px 14px rgba(255,102,51,.1);
+  }
+  .opt.recommend .row1 .name { color: #FF4444; }
+  .opt.recommend .recommend-tag {
+    position: absolute; top: -1px; right: -1px;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 0 10px 0 10px;
+  }
+  .opt.recommend .multi-tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: linear-gradient(135deg, #FFB800, #FF6633);
+    color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* 加息券 */
+  .coupon-block {
+    margin-top: 10px; padding: 12px;
+    background: rgba(255,255,255,.7);
+    border-radius: 10px;
+    border: 1px dashed rgba(255,153,102,.4);
+  }
+  .coupon-line {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; padding: 4px 0;
+  }
+  .coupon-line .lf { display: flex; align-items: center; gap: 6px; color: #444; }
+  .coupon-line .lf .ic { font-size: 13px; }
+  .coupon-line .lf .term {
+    background: rgba(255,102,51,.1);
+    color: #FF6633; font-size: 10px;
+    padding: 1px 6px; border-radius: 3px;
+    font-weight: 600;
+  }
+  .coupon-line .rg { color: #FF4444; font-weight: 700; font-family: SFMono, Menlo, monospace; }
+  .coupon-line .rg.green { color: #00A878; }
+
+  .coupon-divider {
+    height: 1px; background: rgba(255,153,102,.2);
+    margin: 6px 0;
+  }
+  .coupon-total {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px; padding-top: 4px;
+  }
+  .coupon-total .lf { color: #B85A00; font-weight: 600; }
+  .coupon-total .rg {
+    color: #FF4444; font-weight: 800; font-size: 16px;
+    font-family: SFMono, Menlo, monospace;
+  }
+  .coupon-total .rg .em {
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+
+  /* 合规小字 */
+  .compliance {
+    font-size: 11px; color: #999; padding: 12px 20px;
+    line-height: 1.6;
+  }
+  .compliance b { color: #FF6633; font-weight: 600; }
+
+  /* demo 工具条 */
+  .demo-toolbar {
+    background: #1a1a1a; color: rgba(255,255,255,.85);
+    padding: 10px 14px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: 11px;
+  }
+  .demo-toolbar .lab { opacity: .6; margin-right: 4px; }
+  .demo-toolbar button {
+    background: rgba(255,255,255,.1);
+    color: #fff; border: 1px solid rgba(255,255,255,.15);
+    font-size: 11px; height: 24px; padding: 0 10px;
+    border-radius: 999px; cursor: pointer; font-weight: 600;
+  }
+  .demo-toolbar button.on {
+    background: linear-gradient(135deg, #FF6633, #FF4444); border: none;
+    box-shadow: 0 2px 6px rgba(255,68,68,.4);
+  }
+  .demo-toolbar .tier {
+    margin-left: auto; opacity: .7; font-size: 10px;
+  }
+
+  /* 底部按钮 */
+  .footer-bar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: #fff; border-top: 1px solid #eee;
+    padding: 10px 16px env(safe-area-inset-bottom);
+  }
+  .footer-bar button {
+    width: 100%; height: 48px; border: none;
+    background: #FF4444; color: #fff;
+    border-radius: 8px;
+    font-size: 16px; font-weight: 600;
+  }
+
+  .back-to-plan { position: fixed; top: 8px; right: 8px; z-index: 200; font-size: 11px; color: #fff; background: rgba(0,0,0,.5); padding: 4px 10px; border-radius: 999px; text-decoration: none; }
+
+  /* 简单震动反馈 */
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+  .opt.recommend.checked { animation: bounce .2s ease-out; }
+</style>
+</head>
+<body>
+  <a class="back-to-plan" href="./index.html">← 回方案</a>
+
+  <div class="statusbar">
+    <div>02:45</div>
+    <div class="center">快手</div>
+    <div>📶 📡 🔋</div>
+  </div>
+
+  <div class="topbar">
+    <span class="back">‹</span>
+    <span class="title">仅退款申请</span>
+  </div>
+
+  <!-- 大金额 -->
+  <div class="amount-block">
+    <span class="big">仅退款 ¥<span class="num" id="amtBig">56</span></span>
+  </div>
+
+  <!-- demo 工具条 -->
+  <div class="demo-toolbar">
+    <span class="lab">demo · 切换退款金额：</span>
+    <button data-amt="36" onclick="setAmt(36)">¥36</button>
+    <button data-amt="56" class="on" onclick="setAmt(56)">¥56</button>
+    <button data-amt="298" onclick="setAmt(298)">¥298</button>
+    <span class="tier" id="tierLabel">命中：¥50-200 档</span>
+  </div>
+
+  <!-- 表单 -->
+  <div class="form-card">
+    <div class="form-row">
+      <span class="label">退款原因</span>
+      <span class="value">我不想要了 <span class="arrow">›</span></span>
+    </div>
+    <div class="form-row">
+      <span class="label">退款金额</span>
+      <div class="right-stack">
+        <div class="top">¥<span id="amtSm">56</span></div>
+        <div class="bot">退回现金 ¥<span id="amtSm2">56</span></div>
+      </div>
+    </div>
+    <div class="form-row" style="border-bottom:none">
+      <span class="label">凭证说明</span>
+      <span class="value muted">上传有助于问题处理 <span class="arrow">›</span></span>
+    </div>
+  </div>
+
+  <!-- ★ 退款方式选择 ★ -->
+  <div class="refund-method">
+    <div class="head">
+      <span>选择退款方式</span>
+      <span class="help">？什么是钱袋子</span>
+    </div>
+
+    <div class="opt default checked" id="optDefault" onclick="selectOpt('default')">
+      <div class="radio"></div>
+      <div class="body">
+        <div class="row1">
+          <span class="name">退回原支付方式</span>
+          <span style="font-size:10px;background:#f0f0f0;color:#888;padding:1px 6px;border-radius:3px">默认</span>
+        </div>
+        <div class="row2">建设银行储蓄卡 (7195) · 1-3 个工作日到账</div>
+      </div>
+    </div>
+
+    <div class="opt recommend" id="optQdz" onclick="selectOpt('qdz')">
+      <span class="recommend-tag">推荐 · 多得 ¥<span id="extraTotal">0.55</span></span>
+      <div class="radio"></div>
+      <div class="body">
+        <div class="row1">
+          <span class="name">退到钱袋子</span>
+          <span class="multi-tag">💰 +¥<span id="couponAmt">10</span> 加息券</span>
+        </div>
+        <div class="row2">
+          立得 <b style="color:#FF4444">¥<span id="couponAmt2">10</span> 加息券</b> · 下次抵扣<b style="color:#FF4444">无门槛</b><br/>
+          钱袋子余额可在结账时直接抵扣，余额随时秒到原路
+        </div>
+
+        <!-- 收益分开展示 -->
+        <div class="coupon-block">
+          <div class="coupon-line">
+            <span class="lf">
+              <span class="ic">🎟</span>
+              加息券收益
+              <span class="term" id="couponTerm">7 天 · +5%</span>
+            </span>
+            <span class="rg">+¥<span id="couponIncome">0.42</span></span>
+          </div>
+          <div class="coupon-line">
+            <span class="lf">
+              <span class="ic">💰</span>
+              钱袋子基础收益
+              <span class="term" style="background:rgba(0,168,120,.1);color:#00A878">年化约 2%</span>
+            </span>
+            <span class="rg green">+¥<span id="baseIncome">0.13</span></span>
+          </div>
+          <div class="coupon-divider"></div>
+          <div class="coupon-total">
+            <span class="lf">预计可多得</span>
+            <span class="rg"><span class="em">¥<span id="extraTotal2">0.55</span></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compliance">
+    ※ 退到钱袋子非保本浮动收益，过往业绩不代表未来。<br/>
+    ※ 余额可<b>随时秒到原支付方式</b>，无锁定期。<br/>
+    ※ 加息券有效期内自动叠加；过期失效。
+  </div>
+
+  <div class="footer-bar">
+    <button onclick="submitRefund()">提交申请</button>
+  </div>
+
+  <script>
+    let currentOpt = 'default';
+    let currentAmt = 56;
+
+    function tierForAmt(a) {
+      if (a < 50) return { coupon: 5, term: '7 天 · +5%', termRate: 0.05, days: 7, label: '< ¥50 档' };
+      if (a <= 200) return { coupon: 10, term: '7 天 · +5%', termRate: 0.05, days: 7, label: '¥50-200 档' };
+      return { coupon: 30, term: '15 天 · +4%', termRate: 0.04, days: 15, label: '> ¥200 档' };
+    }
+
+    function setAmt(a) {
+      currentAmt = a;
+      document.getElementById('amtBig').textContent = a;
+      document.getElementById('amtSm').textContent = a;
+      document.getElementById('amtSm2').textContent = a;
+      document.querySelectorAll('.demo-toolbar button').forEach(b => {
+        b.classList.toggle('on', Number(b.dataset.amt) === a);
+      });
+      const t = tierForAmt(a);
+      document.getElementById('tierLabel').textContent = '命中：' + t.label;
+      // 加息券面额
+      document.getElementById('couponAmt').textContent = t.coupon;
+      document.getElementById('couponAmt2').textContent = t.coupon;
+      document.getElementById('couponTerm').textContent = t.term;
+
+      // 加息券收益：退款金额 × 加息利率 × 天数/365
+      const couponInc = (a * t.termRate * t.days / 365);
+      // 钱袋子基础收益：退款金额 × 年化2% × 天数/365
+      const baseInc = (a * 0.02 * t.days / 365);
+      const extra = couponInc + baseInc;
+
+      document.getElementById('couponIncome').textContent = couponInc.toFixed(2);
+      document.getElementById('baseIncome').textContent = baseInc.toFixed(2);
+      document.getElementById('extraTotal').textContent = extra.toFixed(2);
+      document.getElementById('extraTotal2').textContent = extra.toFixed(2);
+    }
+
+    function selectOpt(t) {
+      currentOpt = t;
+      document.getElementById('optDefault').classList.toggle('checked', t === 'default');
+      document.getElementById('optQdz').classList.toggle('checked', t === 'qdz');
+    }
+
+    function submitRefund() {
+      const url = './refund-detail.html?mode=' + (currentOpt === 'qdz' ? 'qdz' : 'origin') + '&amt=' + currentAmt;
+      location.href = url;
+    }
+
+    setAmt(56);
+  </script>
+</body>
+</html>

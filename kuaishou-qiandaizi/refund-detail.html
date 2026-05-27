@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>售后详情 · 快手</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; background: #f4f5f7; }
+  body { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #fff; padding-bottom: 90px; }
+
+  .statusbar { height: 44px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 600; position: relative; }
+  .statusbar .center { position: absolute; left: 50%; transform: translateX(-50%); background: #FFE4D9; color: #FF6633; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+  .topbar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: #fff; position: relative; border-bottom: 1px solid #f0f0f0; }
+  .topbar .back { font-size: 24px; }
+  .topbar .title { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 17px; font-weight: 600; }
+  .topbar .help { font-size: 22px; }
+
+  /* 状态大字 */
+  .status-block {
+    text-align: center; padding: 30px 20px 20px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .status-block .big { font-size: 28px; font-weight: 800; }
+  .status-block .big .num { font-size: 32px; }
+  .status-block .speed-tag {
+    margin-top: 14px; font-size: 13px;
+  }
+  .status-block .speed-tag .em {
+    color: #FF6633; font-weight: 800; font-style: italic;
+    letter-spacing: 1px;
+    margin-right: 6px;
+  }
+  .status-block .speed-tag .desc { color: #555; }
+
+  /* 钱款去向 */
+  .money-card {
+    margin: 12px 16px 0;
+    background: #fff;
+  }
+  .money-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 4px;
+    border-bottom: 1px solid #f4f5f7;
+    font-size: 15px;
+  }
+  .money-row .lf { display: flex; align-items: center; gap: 8px; }
+  .money-row .lf .ic { font-size: 18px; }
+  .money-row .rg { font-weight: 700; }
+  .check-flow {
+    margin: 14px 0 0;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+
+  /* 优惠双卡 */
+  .promo-row {
+    margin: 14px 16px 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: #fff7ed;
+    border-radius: 12px; overflow: hidden;
+    padding: 12px 0;
+  }
+  .promo-row .cell {
+    background: #fff7ed; padding: 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .promo-row .cell + .cell {
+    border-left: 1px solid rgba(255,153,102,.2);
+  }
+  .promo-row .ic {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; flex-shrink: 0;
+  }
+  .promo-row .ic.red { background: #FFE4E0; color: #FF4444; }
+  .promo-row .ic.orange { background: #FFE6CC; color: #FF6633; }
+  .promo-row .body { flex: 1; min-width: 0; }
+  .promo-row .t1 { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .promo-row .t1 .arr { color: #c0c0c0; font-size: 14px; }
+  .promo-row .t2 { font-size: 11px; color: #888; margin-top: 2px; }
+
+  /* 商城瀑布 */
+  .mall {
+    margin: 16px 16px 0;
+    background: #fff; border-radius: 12px;
+  }
+  .mall .head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 0;
+  }
+  .mall .head .lf { font-size: 16px; font-weight: 700; }
+  .mall .head .lf small { font-size: 11px; color: #888; font-weight: 400; margin-left: 6px; }
+  .mall .head .rg { color: #888; font-size: 12px; }
+  .mall .grid {
+    margin-top: 10px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .mall .item { }
+  .mall .item .cover {
+    width: 100%; aspect-ratio: 1/1;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 50px;
+  }
+  .mall .item .cover.pink { background: linear-gradient(135deg, #FFE4E1, #FFD3CC); }
+  .mall .item .cover.warm { background: linear-gradient(135deg, #FFF1D8, #FFD8B5); }
+  .mall .item .cover.gold { background: linear-gradient(135deg, #FFD78A, #E89D5A); }
+  .mall .item .nm { font-size: 12px; line-height: 1.4; margin-top: 6px; color: #1a1a1a; height: 32px; overflow: hidden; }
+  .mall .item .meta { font-size: 10px; color: #888; margin-top: 4px; }
+  .mall .item .price { font-size: 15px; font-weight: 800; color: #FF4444; margin-top: 2px; }
+
+  /* 复购卡 */
+  .repurchase {
+    margin: 12px 16px 0;
+    background: #fff; border-radius: 12px;
+    padding: 14px;
+    display: flex; gap: 12px;
+    border: 1px solid #f0f0f0;
+  }
+  .repurchase .cover {
+    width: 76px; height: 76px; flex-shrink: 0; border-radius: 8px;
+    background: linear-gradient(135deg, #FFE4E1, #FFD0C7);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+  .repurchase .cover .badge {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, #FF4444, #FF6633);
+    color: #fff; font-size: 10px; padding: 3px 4px;
+    text-align: center; font-weight: 600;
+  }
+  .repurchase .info { flex: 1; min-width: 0; }
+  .repurchase .top { font-size: 13px; font-weight: 700; line-height: 1.4; }
+  .repurchase .top .badge {
+    display: inline-block; background: linear-gradient(135deg, #FF4444, #FF6633);
+    color: #fff; font-size: 9px; padding: 2px 5px; border-radius: 3px; margin-right: 4px; font-weight: 600;
+  }
+  .repurchase .desc { font-size: 12px; color: #888; margin-top: 6px; line-height: 1.5; }
+
+  /* 售后类型脚 */
+  .info-foot {
+    display: flex; justify-content: space-between;
+    margin: 14px 16px 0;
+    padding: 14px 0;
+    color: #888; font-size: 13px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .info-foot b { color: #1a1a1a; }
+
+  /* ===== 钱袋子退款变体 (mode=qdz) ===== */
+  body.qdz-mode .status-block .big { color: #1a1a1a; }
+  body.qdz-mode .status-block .big::before {
+    content: "✓"; display: inline-block;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #00A878; color: #fff;
+    line-height: 28px; text-align: center;
+    font-size: 18px; vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  .qdz-banner {
+    display: none;
+    margin: 12px 16px 0;
+    background: linear-gradient(135deg, #FFF1E6, #FFFAEC);
+    border: 1px solid #FFD9B8;
+    border-radius: 14px;
+    padding: 16px;
+    position: relative; overflow: hidden;
+  }
+  body.qdz-mode .qdz-banner { display: block; }
+  body.qdz-mode .money-card { display: none; }
+
+  .qdz-banner::before {
+    content: ""; position: absolute; right: -20px; top: -20px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(255,184,0,.3), transparent 70%);
+    animation: ring 3s ease-in-out infinite;
+  }
+  @keyframes ring { 50% { transform: scale(1.2); opacity: .6; } }
+
+  .qdz-banner .head {
+    display: flex; align-items: center; gap: 12px;
+    position: relative; z-index: 1;
+  }
+  .qdz-banner .head .ic {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, #FF6633, #FFB800);
+    color: #fff; font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(255,102,51,.3);
+  }
+  .qdz-banner .head .info .t1 { font-size: 15px; font-weight: 800; }
+  .qdz-banner .head .info .t2 { font-size: 12px; color: #B0875F; margin-top: 4px; }
+
+  .qdz-banner .balance-row {
+    display: flex; gap: 8px; margin-top: 14px;
+    position: relative; z-index: 1;
+  }
+  .qdz-banner .balance-row .stat {
+    flex: 1; padding: 10px 12px;
+    background: rgba(255,255,255,.7);
+    border-radius: 10px;
+    border: 1px solid rgba(255,184,0,.2);
+  }
+  .qdz-banner .stat .lab { font-size: 11px; color: #888; }
+  .qdz-banner .stat .val {
+    font-size: 18px; font-weight: 800; color: #FF4444; margin-top: 4px;
+    font-family: SFMono, Menlo, monospace;
+  }
+  .qdz-banner .stat .val.green { color: #00A878; }
+  .qdz-banner .stat .val small { font-size: 11px; }
+
+  .qdz-coupon {
+    margin-top: 12px;
+    background: #fff;
+    border-radius: 12px; overflow: hidden;
+    display: flex;
+    border: 1px dashed rgba(255,68,68,.3);
+    position: relative; z-index: 1;
+  }
+  .qdz-coupon .left {
+    width: 110px; padding: 14px;
+    background: linear-gradient(135deg, #FF4444, #FF6633);
+    color: #fff; text-align: center;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+  }
+  .qdz-coupon .left::after {
+    content: ""; position: absolute;
+    right: -7px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  }
+  .qdz-coupon .left .amt { font-size: 26px; font-weight: 800; }
+  .qdz-coupon .left .amt small { font-size: 12px; }
+  .qdz-coupon .left .label { font-size: 10px; opacity: .9; margin-top: 2px; }
+  .qdz-coupon .right {
+    flex: 1; padding: 12px 14px;
+  }
+  .qdz-coupon .right .t1 { font-size: 13px; font-weight: 700; }
+  .qdz-coupon .right .t2 { font-size: 11px; color: #888; margin-top: 4px; }
+  .qdz-coupon .right .countdown {
+    font-size: 11px; color: #FF4444; margin-top: 4px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .qdz-coupon .right .btn {
+    margin-top: 8px;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff; border: none;
+    height: 28px; padding: 0 14px; font-size: 12px; font-weight: 700;
+    border-radius: 999px;
+  }
+
+  /* demo 切换 */
+  .toggle-bar {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    background: #1a1a1a; border-radius: 999px;
+    padding: 4px;
+    display: flex; gap: 0;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    max-width: 380px; width: calc(100% - 40px);
+  }
+  .toggle-bar button {
+    flex: 1; border: none; background: transparent;
+    color: rgba(255,255,255,.6); font-size: 12px; font-weight: 600;
+    height: 32px; border-radius: 999px;
+  }
+  .toggle-bar button.on {
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff;
+  }
+  .toggle-bar .label {
+    position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: #999;
+    background: rgba(255,255,255,.9);
+    padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .back-to-plan { position: fixed; top: 8px; right: 8px; z-index: 200; font-size: 11px; color: #fff; background: rgba(0,0,0,.5); padding: 4px 10px; border-radius: 999px; text-decoration: none; }
+</style>
+</head>
+<body>
+  <a class="back-to-plan" href="./index.html">← 回方案</a>
+
+  <div class="statusbar">
+    <div>02:46</div>
+    <div class="center">快手</div>
+    <div>📶 📡 🔋</div>
+  </div>
+
+  <div class="topbar">
+    <span class="back">‹</span>
+    <span class="title">售后详情</span>
+    <span class="help">🎧</span>
+  </div>
+
+  <!-- 状态大字 -->
+  <div class="status-block">
+    <span class="big" id="statusBig">退款中 ¥<span class="num" id="amtBig">56</span></span>
+    <div class="speed-tag" id="speedTag">
+      <span class="em">极速退款</span>
+      <span class="desc">因您信誉良好，享受极速退款特权</span>
+    </div>
+  </div>
+
+  <!-- 原路退款卡 -->
+  <div class="money-card" id="originCard">
+    <div class="money-row">
+      <span class="lf"><span class="ic">💳</span>银行卡退款处理中</span>
+      <span class="rg">¥<span class="amtSm">56</span></span>
+    </div>
+    <div class="check-flow">查看钱款去向</div>
+  </div>
+
+  <!-- ★ 钱袋子退款 banner ★ -->
+  <div class="qdz-banner">
+    <div class="head">
+      <div class="ic">💰</div>
+      <div class="info">
+        <div class="t1">¥<span class="amtSm">56</span> 已存入钱袋子</div>
+        <div class="t2">⚡ 即刻到账 · 余额随时秒到原路</div>
+      </div>
+    </div>
+    <div class="balance-row">
+      <div class="stat">
+        <div class="lab">钱袋子余额</div>
+        <div class="val">¥<span id="newBalance">1,293.80</span></div>
+      </div>
+      <div class="stat">
+        <div class="lab">预计可多得</div>
+        <div class="val green">+¥<span id="extraTotal">0.55</span></div>
+      </div>
+    </div>
+
+    <div class="qdz-coupon">
+      <div class="left">
+        <div class="amt"><small>¥</small><span id="couponAmt">10</span></div>
+        <div class="label">加息券</div>
+      </div>
+      <div class="right">
+        <div class="t1">下次抵扣无门槛</div>
+        <div class="t2"><span id="couponTermText">7 天 +5%</span> · 钱袋子专享</div>
+        <div class="countdown">⏰ 倒计时 <b id="countdown">6天 23:59:42</b></div>
+        <button class="btn">立即领取</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 优惠双卡 -->
+  <div class="promo-row">
+    <div class="cell">
+      <div class="ic red">40<small style="font-size:10px;display:block">最高</small></div>
+      <div class="body">
+        <div class="t1">支付立减 <span class="arr">›</span></div>
+        <div class="t2">最高抵 40 元</div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="ic orange">🛒</div>
+      <div class="body">
+        <div class="t1">限时优惠 <span class="arr">›</span></div>
+        <div class="t2">最高立减 11 元</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 商城瀑布 -->
+  <div class="mall">
+    <div class="head">
+      <div class="lf">快手商城<small>超多性价比好物</small></div>
+      <div class="rg">去逛逛 ›</div>
+    </div>
+    <div class="grid">
+      <div class="item">
+        <div class="cover pink">🥛</div>
+        <div class="nm">认养一头牛白桃燕<br/>酸奶加果粒双重咀…</div>
+        <div class="meta">退货包运费</div>
+        <div class="price">¥59</div>
+      </div>
+      <div class="item">
+        <div class="cover warm">🪆</div>
+        <div class="nm">五路财神手办盲盒</div>
+        <div class="meta">退货包运费</div>
+        <div class="price">¥88</div>
+      </div>
+      <div class="item">
+        <div class="cover gold">📱</div>
+        <div class="nm">【官方正品】i17pro</div>
+        <div class="meta">退货包运费</div>
+        <div class="price">¥398</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 复购卡：原商品再来一份（核心闭环） -->
+  <div class="repurchase">
+    <div class="cover">
+      🥛
+      <div class="badge">¥56 营养早餐</div>
+    </div>
+    <div class="info">
+      <div class="top"><span class="badge">品牌正品</span>认养一头牛白桃燕麦酸奶 230g*10瓶营养早餐奶儿童送礼</div>
+      <div class="desc">认养一头牛白桃燕麦酸奶,1箱*230g*10瓶, x1<br/>白桃味</div>
+    </div>
+  </div>
+
+  <!-- 售后类型 -->
+  <div class="info-foot">
+    <span>售后类型</span>
+    <span><b>仅退款</b></span>
+  </div>
+
+  <!-- demo 切换 -->
+  <div class="toggle-bar">
+    <span class="label">demo · 切换退款方式</span>
+    <button id="btnOrigin" class="on" onclick="setMode('origin')">原路退款</button>
+    <button id="btnQdz" onclick="setMode('qdz')">退到钱袋子</button>
+  </div>
+
+  <script>
+    function tierForAmt(a) {
+      if (a < 50) return { coupon: 5, term: '7 天 +5%', termRate: 0.05, days: 7 };
+      if (a <= 200) return { coupon: 10, term: '7 天 +5%', termRate: 0.05, days: 7 };
+      return { coupon: 30, term: '15 天 +4%', termRate: 0.04, days: 15 };
+    }
+
+    // 解析 query
+    const q = new URLSearchParams(location.search);
+    const initMode = q.get('mode') || 'origin';
+    const initAmt = parseInt(q.get('amt') || '56', 10);
+
+    function setMode(m) {
+      const body = document.body;
+      if (m === 'qdz') {
+        body.classList.add('qdz-mode');
+        document.getElementById('statusBig').innerHTML = '已存入钱袋子 ¥<span class="num">' + initAmt + '</span>';
+        document.getElementById('speedTag').innerHTML = '<span class="em">⚡ 极速到账</span><span class="desc">已退入钱袋子并开始生息</span>';
+      } else {
+        body.classList.remove('qdz-mode');
+        document.getElementById('statusBig').innerHTML = '退款中 ¥<span class="num">' + initAmt + '</span>';
+        document.getElementById('speedTag').innerHTML = '<span class="em">极速退款</span><span class="desc">因您信誉良好，享受极速退款特权</span>';
+      }
+      document.getElementById('btnOrigin').classList.toggle('on', m === 'origin');
+      document.getElementById('btnQdz').classList.toggle('on', m === 'qdz');
+    }
+
+    function applyAmt(a) {
+      document.querySelectorAll('.amtSm').forEach(e => e.textContent = a);
+      const t = tierForAmt(a);
+      document.getElementById('couponAmt').textContent = t.coupon;
+      document.getElementById('couponTermText').textContent = t.term;
+      const couponInc = a * t.termRate * t.days / 365;
+      const baseInc = a * 0.02 * t.days / 365;
+      document.getElementById('extraTotal').textContent = (couponInc + baseInc).toFixed(2);
+      // 余额：原 1237.80 + 退款金额
+      document.getElementById('newBalance').textContent = (1237.80 + a).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    applyAmt(initAmt);
+    setMode(initMode);
+
+    // 倒计时
+    let total = 6 * 86400 + 23 * 3600 + 59 * 60 + 42;
+    setInterval(() => {
+      total--;
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      document.getElementById('countdown').textContent = `${d}天 ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }, 1000);
+  </script>
+</body>
+</html>
