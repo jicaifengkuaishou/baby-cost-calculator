@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>消息 · 快手</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; background: #f4f5f7; }
+  body { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; padding-bottom: 30px; }
+
+  .statusbar { height: 44px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 600; position: relative; }
+  .statusbar .center { position: absolute; left: 50%; transform: translateX(-50%); background: #FFE4D9; color: #FF6633; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+  .topbar {
+    height: 44px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; background: #fff;
+    position: sticky; top: 0; z-index: 5;
+  }
+  .topbar .title { font-size: 18px; font-weight: 700; }
+  .topbar .actions { display: flex; gap: 18px; font-size: 20px; }
+
+  /* tab 切换 */
+  .tabs {
+    display: flex; gap: 18px; padding: 8px 16px 12px;
+    background: #fff; border-bottom: 1px solid #f0f0f0;
+    position: sticky; top: 44px; z-index: 4;
+  }
+  .tabs a {
+    text-decoration: none; color: #666; font-size: 14px;
+    padding: 6px 0; position: relative;
+  }
+  .tabs a.on { color: #1a1a1a; font-weight: 700; font-size: 15px; }
+  .tabs a.on::after {
+    content: ""; position: absolute; left: 50%; bottom: -2px;
+    width: 18px; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, #FF6633, #FF4444);
+    transform: translateX(-50%);
+  }
+
+  /* 顶部置顶服务卡 */
+  .pin-hint { padding: 8px 16px; font-size: 12px; color: #888; background: #f4f5f7; }
+
+  /* 列表项 */
+  .item {
+    background: #fff;
+    padding: 14px 16px;
+    display: flex; gap: 12px; align-items: center;
+    border-bottom: 1px solid #f4f5f7;
+    cursor: pointer;
+  }
+  .item .ava {
+    width: 48px; height: 48px; border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #fff;
+    position: relative;
+  }
+  .item .ava .badge {
+    position: absolute; top: -2px; right: -2px;
+    background: #FF4444; color: #fff;
+    font-size: 10px; font-weight: 700;
+    min-width: 18px; height: 18px; padding: 0 5px;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+  }
+  .item .body { flex: 1; min-width: 0; }
+  .item .row1 { display: flex; align-items: center; justify-content: space-between; }
+  .item .name { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .item .time { font-size: 11px; color: #999; }
+  .item .row2 {
+    margin-top: 4px;
+    font-size: 13px; color: #666;
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ★ 钱袋子置顶项 ★ */
+  .qdz-item {
+    background: linear-gradient(135deg, #FFF8F2 0%, #FFFAEC 100%);
+    border-bottom: 1px solid #FFE4D2;
+    position: relative; overflow: hidden;
+  }
+  .qdz-item::before {
+    content: "置顶"; position: absolute; left: 0; top: 0;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff; font-size: 9px; font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 0 0 6px 0;
+  }
+  .qdz-item .ava {
+    background: linear-gradient(135deg, #FF6633, #FFB800);
+    box-shadow: 0 4px 10px rgba(255,102,51,.3);
+  }
+
+  /* 周报内容卡 */
+  .qdz-detail {
+    margin: 6px 16px 14px 76px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid #FFE4D2;
+    box-shadow: 0 2px 10px rgba(255,102,51,.06);
+  }
+  .qdz-detail .head {
+    font-size: 16px; font-weight: 700; color: #1a1a1a;
+    line-height: 1.4;
+  }
+  .qdz-detail .head .em { color: #FF4444; }
+  .qdz-detail .head .emoji { display: inline-block; transform: translateY(-1px); }
+
+  .qdz-stats {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 8px; margin-top: 12px;
+  }
+  .qdz-stats .stat {
+    background: linear-gradient(135deg, #FFF1E6, #FFFAEC);
+    border-radius: 10px; padding: 10px 12px;
+    border: 1px solid #FFE4D2;
+  }
+  .qdz-stats .stat .lab { font-size: 11px; color: #B0875F; }
+  .qdz-stats .stat .num {
+    font-size: 18px; font-weight: 800; color: #FF4444; margin-top: 4px; line-height: 1.1;
+  }
+  .qdz-stats .stat .num small { font-size: 12px; }
+  .qdz-stats .stat.green .num { color: #00A878; }
+
+  .qdz-trend {
+    margin-top: 12px;
+    background: rgba(255,255,255,.6);
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px dashed rgba(255,153,102,.3);
+  }
+  .qdz-trend .lab { font-size: 11px; color: #888; margin-bottom: 8px; }
+  .qdz-bars {
+    display: flex; align-items: flex-end; gap: 6px;
+    height: 50px;
+  }
+  .qdz-bars .bar {
+    flex: 1; background: linear-gradient(180deg, #FF6633, #FFB800);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+  }
+  .qdz-bars .bar.today {
+    background: linear-gradient(180deg, #00A878, #00D78A);
+  }
+  .qdz-bars .label {
+    text-align: center; font-size: 10px; color: #888; margin-top: 4px;
+  }
+  .qdz-trend-row {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 4px;
+  }
+  .qdz-trend-row span { text-align: center; font-size: 10px; color: #888; }
+  .qdz-trend-row span.today-lab { color: #00A878; font-weight: 700; }
+
+  .qdz-cta {
+    margin-top: 12px;
+    display: flex; gap: 8px;
+  }
+  .qdz-cta button {
+    flex: 1; height: 36px; border: none;
+    border-radius: 999px; font-size: 13px; font-weight: 600;
+  }
+  .qdz-cta .ghost {
+    background: rgba(255,255,255,.7); color: #FF6633; border: 1px solid #FFB880;
+  }
+  .qdz-cta .solid {
+    background: linear-gradient(135deg, #FF6633, #FF4444); color: #fff;
+    box-shadow: 0 4px 10px rgba(255,68,68,.25);
+  }
+
+  .qdz-foot {
+    margin-top: 10px;
+    font-size: 10px; color: #999; text-align: center;
+  }
+
+  /* 头像主题 */
+  .ava.system { background: linear-gradient(135deg, #FF6633, #FF4444); }
+  .ava.kefu { background: linear-gradient(135deg, #2E5BFF, #4A7AFF); }
+  .ava.live { background: linear-gradient(135deg, #00D78A, #00A878); }
+  .ava.shop { background: linear-gradient(135deg, #FFB800, #FF6633); }
+
+  .back-to-plan { position: fixed; top: 8px; right: 8px; z-index: 200; font-size: 11px; color: #fff; background: rgba(0,0,0,.5); padding: 4px 10px; border-radius: 999px; text-decoration: none; }
+</style>
+</head>
+<body>
+  <a class="back-to-plan" href="./index.html">← 回方案</a>
+
+  <div class="statusbar">
+    <div>09:00 <span style="font-size:14px">☀️</span></div>
+    <div class="center">快手</div>
+    <div>📶 📡 🔋</div>
+  </div>
+
+  <div class="topbar">
+    <span class="title">消息</span>
+    <div class="actions"><span>🔍</span><span>＋</span></div>
+  </div>
+
+  <div class="tabs">
+    <a href="#" class="on">全部</a>
+    <a href="#">关注</a>
+    <a href="#">陌生人</a>
+    <a href="#">通知</a>
+  </div>
+
+  <div class="pin-hint">📌 通知 · 周日 09:00</div>
+
+  <!-- ★ 钱袋子周报 ★ -->
+  <div class="item qdz-item" onclick="location.href='./wallet.html'">
+    <div class="ava" style="margin-top:14px">
+      💰
+      <span class="badge">1</span>
+    </div>
+    <div class="body" style="margin-top:14px">
+      <div class="row1">
+        <span class="name">钱袋子小助手</span>
+        <span class="time">周日 09:00</span>
+      </div>
+      <div class="row2" style="color:#FF4444;font-weight:600">这周钱袋子帮你赚了 ¥0.42 🎉</div>
+    </div>
+  </div>
+
+  <!-- 周报详情卡 -->
+  <div class="qdz-detail">
+    <div class="head">这周钱袋子帮你 <span class="em">赚了 ¥0.42</span> <span class="emoji">🎉</span></div>
+
+    <div class="qdz-stats">
+      <div class="stat">
+        <div class="lab">本周累计入袋</div>
+        <div class="num"><small>¥</small>3.20</div>
+      </div>
+      <div class="stat green">
+        <div class="lab">本周收益</div>
+        <div class="num"><small>+¥</small>0.42</div>
+      </div>
+      <div class="stat">
+        <div class="lab">自动找零次数</div>
+        <div class="num">8 <small>笔</small></div>
+      </div>
+      <div class="stat green">
+        <div class="lab">钱袋子余额</div>
+        <div class="num"><small>¥</small>1,237.80</div>
+      </div>
+    </div>
+
+    <div class="qdz-trend">
+      <div class="lab">📈 近 7 天每日入袋（自动找零）</div>
+      <div class="qdz-bars">
+        <div class="bar" style="height:30%"></div>
+        <div class="bar" style="height:45%"></div>
+        <div class="bar" style="height:25%"></div>
+        <div class="bar" style="height:60%"></div>
+        <div class="bar" style="height:50%"></div>
+        <div class="bar" style="height:40%"></div>
+        <div class="bar today" style="height:90%"></div>
+      </div>
+      <div class="qdz-trend-row">
+        <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span class="today-lab">今天</span>
+      </div>
+    </div>
+
+    <div class="qdz-cta">
+      <button class="ghost">查看明细</button>
+      <button class="solid">立即领取收益</button>
+    </div>
+
+    <div class="qdz-foot">⚡ 它一直在为你工作中 · 随时秒到原路</div>
+  </div>
+
+  <!-- 其他通知 -->
+  <div class="item">
+    <div class="ava system">🔔</div>
+    <div class="body">
+      <div class="row1"><span class="name">系统通知</span><span class="time">昨天</span></div>
+      <div class="row2">您的订单 2026052800123456 已发货，预计 5 月 29 日送达</div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="ava live">📺</div>
+    <div class="body">
+      <div class="row1"><span class="name">直播提醒</span><span class="time">昨天</span></div>
+      <div class="row2">您关注的「认养一头牛官方旗舰店」即将开播</div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="ava kefu">💬</div>
+    <div class="body">
+      <div class="row1"><span class="name">快手客服</span><span class="time">5月25日</span></div>
+      <div class="row2">您好，请问还有什么可以为您服务的吗？</div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="ava shop">🛍</div>
+    <div class="body">
+      <div class="row1"><span class="name">商城活动</span><span class="time">5月24日</span></div>
+      <div class="row2">618 大促开启，您关注的商品低至 5 折</div>
+    </div>
+  </div>
+
+</body>
+</html>

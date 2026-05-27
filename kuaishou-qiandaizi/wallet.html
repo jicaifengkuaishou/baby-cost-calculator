@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>我的钱包 · 快手</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; background: #f4f5f7; }
+  body { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #f4f5f7; position: relative; padding-bottom: 30px; }
+
+  /* iOS 状态栏 */
+  .statusbar {
+    height: 44px; padding: 0 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; font-weight: 600; color: #000;
+    position: relative; z-index: 5;
+  }
+  .statusbar .left { display: flex; align-items: center; gap: 6px; }
+  .statusbar .center {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    background: #FFE4D9; color: #FF6633;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .statusbar .center::before {
+    content: ""; width: 12px; height: 12px;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    border-radius: 3px;
+  }
+  .statusbar .right { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+  .battery { width: 26px; height: 12px; border: 1px solid #000; border-radius: 3px; position: relative; padding: 1px; }
+  .battery::after { content: ""; position: absolute; right: -3px; top: 3px; width: 2px; height: 4px; background: #000; border-radius: 0 1px 1px 0; }
+  .battery .lvl { width: 90%; height: 100%; background: #000; border-radius: 1px; }
+  .signal { width: 16px; height: 11px;
+    background:
+      linear-gradient(to top,#000 100%,transparent 0) 0 100%/3px 30% no-repeat,
+      linear-gradient(to top,#000 100%,transparent 0) 4px 100%/3px 50% no-repeat,
+      linear-gradient(to top,#000 100%,transparent 0) 8px 100%/3px 75% no-repeat,
+      linear-gradient(to top,#000 100%,transparent 0) 12px 100%/3px 100% no-repeat;
+  }
+
+  /* 顶部蓝色渐变区 */
+  .header-bg {
+    position: absolute; top: 0; left: 0; right: 0; height: 320px;
+    background: linear-gradient(180deg, #DEF0FF 0%, #EDF6FE 60%, #f4f5f7 100%);
+    z-index: 0;
+  }
+  .header-bg::before {
+    content: ""; position: absolute; top: 50px; right: -40px;
+    width: 280px; height: 220px;
+    background: radial-gradient(ellipse, rgba(180,210,255,.6) 0%, transparent 60%);
+    transform: rotate(-15deg);
+  }
+  .header-bg .check {
+    position: absolute; top: 70px; right: 30px;
+    width: 130px; height: 80px; opacity: .35;
+    background:
+      linear-gradient(45deg, transparent 47%, #B5D8FA 47%, #B5D8FA 53%, transparent 53%) no-repeat,
+      linear-gradient(135deg, transparent 47%, #B5D8FA 47%, #B5D8FA 53%, transparent 53%) no-repeat;
+    background-size: 100% 100%;
+  }
+
+  .topbar { position: relative; z-index: 2; padding: 4px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar .left-side { display: flex; align-items: center; gap: 8px; }
+  .topbar .back { font-size: 26px; font-weight: 300; }
+  .topbar h1 { font-size: 22px; font-weight: 800; }
+  .topbar .right-icons { display: flex; gap: 16px; }
+  .topbar .right-icons span { font-size: 22px; }
+
+  /* 月付横条 */
+  .yuefu-bar {
+    position: relative; z-index: 2;
+    margin: 14px 12px 0;
+    background: #fff;
+    border-radius: 14px 14px 0 0;
+    padding: 12px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #f4f5f7;
+  }
+  .yuefu-bar .lf { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1a1a1a; }
+  .yuefu-bar .logo {
+    background: #00D78A; color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 8px; border-radius: 6px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .yuefu-bar .logo::before { content: "8"; transform: rotate(90deg); display: inline-block; font-weight: 900; }
+  .yuefu-bar .lf b { font-weight: 500; }
+  .yuefu-bar .rg { font-size: 13px; color: #1a1a1a; font-weight: 500; }
+
+  /* 资金卡 */
+  .fund-card {
+    position: relative; z-index: 2;
+    margin: 0 12px;
+    background: #fff;
+    border-radius: 0 0 14px 14px;
+    padding: 6px 18px 22px;
+  }
+  .fund-card .arr-down { text-align: center; color: #c8c8c8; font-size: 12px; margin-top: -2px; }
+  .fund-card .label-line {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 4px; color: #888; font-size: 14px;
+  }
+  .fund-card .label-line .eye { font-size: 14px; opacity: .6; }
+  .fund-card .amt-row {
+    display: flex; align-items: baseline; gap: 6px; margin-top: 4px;
+  }
+  .fund-card .amt {
+    font-size: 44px; font-weight: 800; letter-spacing: -1px; color: #1a1a1a;
+  }
+  .fund-card .amt-row .arrow { font-size: 18px; color: #888; }
+  .fund-card .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+    margin-top: 18px;
+  }
+  .fund-card .grid .col { text-align: left; }
+  .fund-card .grid .name { font-size: 12px; color: #888; }
+  .fund-card .grid .num { font-size: 18px; font-weight: 800; margin-top: 4px; color: #1a1a1a; }
+
+  /* ===== 钱袋子卡（核心植入） ===== */
+  .qdz-section {
+    margin: 12px 12px 0; padding: 16px;
+    background: linear-gradient(135deg, #FFF1E6 0%, #FFFAEC 50%, #fff 100%);
+    border: 1px solid #FFE4D2;
+    border-radius: 14px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(255,102,51,.08);
+  }
+  .qdz-section::before {
+    content: ""; position: absolute; right: -30px; top: -30px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(255,184,0,.25) 0%, transparent 70%);
+    animation: breathe 3s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1); opacity: .6; }
+    50% { transform: scale(1.15); opacity: .9; }
+  }
+  .qdz-head {
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 1;
+  }
+  .qdz-head .title-row { display: flex; align-items: center; gap: 8px; }
+  .qdz-head .icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, #FF6633, #FFB800);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 16px;
+    box-shadow: 0 3px 8px rgba(255,102,51,.3);
+  }
+  .qdz-head .name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+  .qdz-head .new-tag {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    background: linear-gradient(135deg, #FF6633, #FF4444);
+    color: #fff; padding: 2px 5px; border-radius: 4px;
+    vertical-align: middle;
+  }
+  .qdz-head .yield {
+    font-size: 11px; color: #B85A00;
+    background: rgba(255,184,0,.15);
+    padding: 4px 10px; border-radius: 999px;
+  }
+
+  .qdz-balance-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-top: 14px; position: relative; z-index: 1;
+  }
+  .qdz-balance .lab { font-size: 11px; color: #B0875F; }
+  .qdz-balance .num {
+    font-size: 30px; font-weight: 800;
+    color: #1a1a1a; letter-spacing: -0.5px; line-height: 1.1;
+    margin-top: 4px;
+  }
+  .qdz-balance .num small { font-size: 16px; font-weight: 700; color: #444; }
+  .qdz-arrow { font-size: 18px; color: #FF6633; padding-bottom: 6px; }
+
+  .qdz-stats {
+    display: flex; gap: 10px; margin-top: 14px; position: relative; z-index: 1;
+  }
+  .qdz-stat {
+    flex: 1; padding: 10px 12px;
+    background: rgba(255,255,255,.7);
+    border-radius: 10px;
+    border: 1px solid rgba(255,184,0,.2);
+  }
+  .qdz-stat .lab { font-size: 11px; color: #888; display: flex; align-items: center; gap: 4px; }
+  .qdz-stat .lab .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #00A878;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(0,168,120,.6); }
+    50% { box-shadow: 0 0 0 4px rgba(0,168,120,0); }
+  }
+  .qdz-stat .val {
+    font-size: 16px; font-weight: 800; color: #00A878; margin-top: 4px;
+  }
+  .qdz-stat .val.muted { color: #FF6633; }
+  .qdz-stat .val small { font-size: 11px; font-weight: 600; }
+
+  .qdz-actions {
+    display: flex; gap: 10px; margin-top: 14px; position: relative; z-index: 1;
+  }
+  .qdz-actions button {
+    flex: 1; height: 38px; border-radius: 999px; border: none;
+    font-size: 14px; font-weight: 700;
+  }
+  .qdz-actions .in {
+    background: linear-gradient(135deg, #FF6633, #FF4444); color: #fff;
+    box-shadow: 0 4px 10px rgba(255,68,68,.25);
+  }
+  .qdz-actions .out {
+    background: rgba(255,255,255,.7); color: #FF6633;
+    border: 1px solid #FFB880;
+  }
+
+  .qdz-extra {
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px dashed rgba(255,153,102,.3);
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 1;
+    font-size: 11px; color: #B0875F;
+  }
+  .qdz-extra .work {
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  /* ===== 账单 ===== */
+  .bill {
+    margin: 12px 12px 0;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .bill .head { font-size: 16px; font-weight: 700; }
+  .bill .row {
+    margin-top: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    color: #b8b8b8; font-size: 14px;
+  }
+  .bill .row .lf { display: flex; gap: 14px; }
+  .bill .row .rg { display: flex; align-items: center; gap: 6px; }
+
+  /* ===== 9 宫格 ===== */
+  .nine {
+    margin: 12px 12px 0;
+    background: #fff; border-radius: 14px; padding: 16px 4px;
+  }
+  .nine-row {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+  }
+  .nine-row + .nine-row { margin-top: 18px; }
+  .nine-cell {
+    text-align: center; position: relative;
+  }
+  .nine-cell .ic {
+    width: 44px; height: 44px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .nine-cell .nm { font-size: 12px; margin-top: 4px; color: #1a1a1a; }
+  .nine-cell .tag {
+    position: absolute; top: -6px; right: 50%; transform: translateX(70%);
+    background: #FF4444; color: #fff;
+    font-size: 9px; padding: 2px 5px; border-radius: 7px 7px 7px 0;
+    font-weight: 600;
+  }
+
+  /* ===== 借钱 + 银行卡支付 双卡 ===== */
+  .double-row {
+    margin: 12px 12px 0;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;
+  }
+  .borrow-card {
+    background: linear-gradient(135deg, #DCEBFF, #E8F1FF);
+    border-radius: 14px; padding: 16px; position: relative; overflow: hidden;
+  }
+  .borrow-card::before {
+    content: "💰"; position: absolute; right: -10px; bottom: -10px;
+    font-size: 80px; opacity: .35;
+  }
+  .borrow-card .badge {
+    position: absolute; top: 12px; right: 12px;
+    background: #FF4444; color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 8px 8px 8px 0;
+  }
+  .borrow-card .title { font-size: 14px; font-weight: 600; }
+  .borrow-card .big {
+    font-size: 22px; font-weight: 800; margin-top: 6px;
+  }
+  .borrow-card .big b { color: #FF4444; }
+  .borrow-card .sub { font-size: 11px; color: #666; margin-top: 4px; }
+  .borrow-card .btn {
+    margin-top: 12px;
+    background: #2E5BFF; color: #fff;
+    height: 30px; padding: 0 14px; font-size: 12px; border: none;
+    border-radius: 999px; font-weight: 600;
+    position: relative; z-index: 1;
+  }
+
+  .right-stack { display: flex; flex-direction: column; gap: 8px; }
+  .small-card {
+    flex: 1; background: linear-gradient(135deg, #FFF6E8, #FFFAEC);
+    border-radius: 14px; padding: 12px;
+    position: relative; overflow: hidden;
+  }
+  .small-card::before {
+    content: ""; position: absolute; right: -6px; top: -6px;
+    width: 50px; height: 50px;
+    background: rgba(255,184,0,.25);
+    border-radius: 50%;
+  }
+  .small-card .t1 { font-size: 13px; font-weight: 700; }
+  .small-card .t2 { font-size: 11px; color: #888; margin-top: 4px; }
+  .small-card .more { font-size: 11px; color: #888; margin-top: 6px; }
+  .row-pair {
+    margin: 8px 12px 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .pair-card {
+    background: #fff; border-radius: 12px; padding: 12px;
+  }
+  .pair-card .t1 { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+  .pair-card .t2 { font-size: 11px; color: #aaa; margin-top: 6px; }
+
+  /* 签到 */
+  .sign-card {
+    margin: 12px 12px 0;
+    background: #fff; border-radius: 14px; padding: 16px;
+  }
+  .sign-card .head { display: flex; align-items: center; justify-content: space-between; }
+  .sign-card .head .lf { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+  .sign-card .head .rg { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+  .toggle {
+    width: 30px; height: 16px; border-radius: 999px; background: #ddd; position: relative;
+  }
+  .toggle::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 12px; height: 12px; border-radius: 50%; background: #fff;
+  }
+  .sign-card .body {
+    margin-top: 14px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .sign-card .body .lf { display: flex; align-items: center; gap: 8px; }
+  .sign-card .body .num0 { font-size: 24px; font-weight: 800; }
+  .sign-card .body .dot { width: 16px; height: 16px; border-radius: 50%; background: #FFE466; }
+  .sign-card .body .tip { font-size: 12px; color: #666; }
+  .sign-btn {
+    background: #FF4444; color: #fff; border: none;
+    height: 32px; padding: 0 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 700;
+  }
+  .sign-card .agreement { margin-top: 14px; font-size: 12px; color: #1a1a1a; text-align: center; }
+  .sign-card .agreement a { color: #1a1a1a; text-decoration: none; }
+
+  /* 回链 */
+  .back-to-plan {
+    position: fixed; top: 8px; right: 8px;
+    z-index: 200;
+    font-size: 11px; color: #fff;
+    background: rgba(0,0,0,.5);
+    padding: 4px 10px; border-radius: 999px;
+    text-decoration: none; backdrop-filter: blur(6px);
+  }
+</style>
+</head>
+<body>
+  <div class="header-bg"><div class="check"></div></div>
+
+  <a class="back-to-plan" href="./index.html">← 回方案</a>
+
+  <!-- 状态栏 -->
+  <div class="statusbar">
+    <div class="left">04:39 <span style="font-size:14px">🚗</span></div>
+    <div class="center">快手</div>
+    <div class="right">
+      <span class="signal"></span>
+      📶
+      <span class="battery"><span class="lvl"></span></span>
+    </div>
+  </div>
+
+  <!-- 顶部 -->
+  <div class="topbar">
+    <div class="left-side">
+      <span class="back">‹</span>
+      <h1>我的钱包</h1>
+    </div>
+    <div class="right-icons"><span>🎧</span><span>⚙️</span></div>
+  </div>
+
+  <!-- 月付 -->
+  <div class="yuefu-bar">
+    <div class="lf">
+      <span class="logo">快手月付</span>
+      <span>开通领大额免息额度</span>
+    </div>
+    <div class="rg">立即领取</div>
+  </div>
+
+  <!-- 资金卡 -->
+  <div class="fund-card">
+    <div class="arr-down">⌄</div>
+    <div class="label-line">我的资金 <span class="eye">👁</span></div>
+    <div class="amt-row">
+      <span class="amt">452.7</span>
+      <span class="arrow">›</span>
+    </div>
+    <div class="grid">
+      <div class="col"><div class="name">快币 (充值)</div><div class="num">0</div></div>
+      <div class="col"><div class="name">粉条</div><div class="num">0</div></div>
+      <div class="col"><div class="name">优惠券</div><div class="num">2</div></div>
+      <div class="col"><div class="name">银行卡</div><div class="num">2</div></div>
+    </div>
+  </div>
+
+  <!-- ★ 钱袋子卡片 ★ -->
+  <div class="qdz-section">
+    <div class="qdz-head">
+      <div class="title-row">
+        <div class="icon">💰</div>
+        <span class="name">钱袋子</span>
+        <span class="new-tag">NEW</span>
+      </div>
+      <span class="yield">年化约 2.X% · 非保本</span>
+    </div>
+
+    <div class="qdz-balance-row">
+      <div class="qdz-balance">
+        <div class="lab">余额</div>
+        <div class="num">¥1,237<small>.80</small></div>
+      </div>
+      <span class="qdz-arrow">›</span>
+    </div>
+
+    <div class="qdz-stats">
+      <div class="qdz-stat">
+        <div class="lab"><span class="dot"></span>今日收益</div>
+        <div class="val">+¥0.001</div>
+      </div>
+      <div class="qdz-stat">
+        <div class="lab">本月累计</div>
+        <div class="val muted">+¥3.42</div>
+      </div>
+    </div>
+
+    <div class="qdz-actions">
+      <button class="out">取出</button>
+      <button class="in">转入生息</button>
+    </div>
+
+    <div class="qdz-extra">
+      <span class="work">⚡ 它正在为你工作中</span>
+      <span>找零 8 笔 / 本周</span>
+    </div>
+  </div>
+
+  <!-- 账单 -->
+  <div class="bill">
+    <div class="head">账单</div>
+    <div class="row">
+      <div class="lf"><span>4月28日</span><span>随心配 1+1 套餐</span></div>
+      <div class="rg">- ¥0 ›</div>
+    </div>
+  </div>
+
+  <!-- 9 宫格 -->
+  <div class="nine">
+    <div class="nine-row">
+      <div class="nine-cell">
+        <span class="tag">5折秒</span>
+        <div class="ic">💳</div>
+        <div class="nm">银行卡</div>
+      </div>
+      <div class="nine-cell">
+        <div class="ic" style="color:#00D78A;font-weight:900">8</div>
+        <div class="nm">快手月付</div>
+      </div>
+      <div class="nine-cell"><div class="ic">✓</div><div class="nm">先用后付</div></div>
+      <div class="nine-cell"><div class="ic">◇</div><div class="nm">借钱</div></div>
+      <div class="nine-cell"><div class="ic">🪙</div><div class="nm">黄金</div></div>
+    </div>
+    <div class="nine-row">
+      <div class="nine-cell"><div class="ic">📱</div><div class="nm">充值中心</div></div>
+      <div class="nine-cell"><div class="ic">🎁</div><div class="nm">国家补贴</div></div>
+      <div class="nine-cell"><div class="ic">🛒</div><div class="nm">开店赚钱</div></div>
+      <div class="nine-cell"><div class="ic">📋</div><div class="nm">主播任务</div></div>
+      <div class="nine-cell"><div class="ic">⋯</div><div class="nm">全部</div></div>
+    </div>
+  </div>
+
+  <!-- 借钱 + 银行卡支付 -->
+  <div class="double-row">
+    <div class="borrow-card">
+      <span class="badge">现金红包</span>
+      <div class="title">借钱</div>
+      <div class="big">可领 <b>10 元</b></div>
+      <div class="sub">查额成功 · 即可领取</div>
+      <button class="btn">立即领取</button>
+    </div>
+    <div class="right-stack">
+      <div class="small-card">
+        <div class="t1">银行卡支付</div>
+        <div class="t2">笔笔享优惠</div>
+        <div class="more">去看看 ›</div>
+      </div>
+    </div>
+  </div>
+  <div class="row-pair">
+    <div class="pair-card">
+      <div class="t1">快手月付</div>
+      <div class="t2">查看详情 ›</div>
+    </div>
+    <div class="pair-card">
+      <div class="t1">先用后付</div>
+      <div class="t2">查看详情 ›</div>
+    </div>
+  </div>
+
+  <!-- 签到 -->
+  <div class="sign-card">
+    <div class="head">
+      <div class="lf">银行卡积分 ›</div>
+      <div class="rg">签到提醒 <span class="toggle"></span></div>
+    </div>
+    <div class="body">
+      <div class="lf">
+        <span class="num0">0</span>
+        <span class="dot"></span>
+        <span class="tip">今日签到 +1 积分</span>
+      </div>
+      <button class="sign-btn">立即签到</button>
+    </div>
+    <div class="agreement">点击签到即同意《<a>快手支付升级协议</a>》</div>
+  </div>
+
+</body>
+</html>
