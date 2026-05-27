@@ -1,0 +1,103 @@
+<!--pages/quiz/quiz.wxml-->
+<view class="container quiz-page">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-fill" style="width: 83.33%;"></view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">趣味问答</view>
+    <view class="page-subtitle">最后，聊点有趣的~</view>
+    <view class="step-indicator">5/6</view>
+  </view>
+
+  <!-- 问题列表 -->
+  <view class="form-container">
+    <!-- 问题1 -->
+    <view class="quiz-card card">
+      <view class="quiz-question">
+        <view class="quiz-icon">🎨</view>
+        <view class="quiz-text">你觉得孩子会遗传你的哪个特质？</view>
+      </view>
+      <view class="quiz-options">
+        <view class="quiz-option {{answer1 === '颜值' ? 'active' : ''}}" bindtap="selectAnswer1" data-value="颜值">
+          颜值
+        </view>
+        <view class="quiz-option {{answer1 === '智商' ? 'active' : ''}}" bindtap="selectAnswer1" data-value="智商">
+          智商
+        </view>
+        <view class="quiz-option {{answer1 === '性格' ? 'active' : ''}}" bindtap="selectAnswer1" data-value="性格">
+          性格
+        </view>
+        <view class="quiz-option {{answer1 === '运动' ? 'active' : ''}}" bindtap="selectAnswer1" data-value="运动">
+          运动天赋
+        </view>
+      </view>
+    </view>
+
+    <!-- 问题2 -->
+    <view class="quiz-card card">
+      <view class="quiz-question">
+        <view class="quiz-icon">🚀</view>
+        <view class="quiz-text">预测孩子未来的职业方向？</view>
+      </view>
+      <view class="quiz-options">
+        <view class="quiz-option {{answer2 === '科技' ? 'active' : ''}}" bindtap="selectAnswer2" data-value="科技">
+          科技/工程师
+        </view>
+        <view class="quiz-option {{answer2 === '艺术' ? 'active' : ''}}" bindtap="selectAnswer2" data-value="艺术">
+          艺术/设计师
+        </view>
+        <view class="quiz-option {{answer2 === '商业' ? 'active' : ''}}" bindtap="selectAnswer2" data-value="商业">
+          商业/金融
+        </view>
+        <view class="quiz-option {{answer2 === '医疗' ? 'active' : ''}}" bindtap="selectAnswer2" data-value="医疗">
+          医疗/教育
+        </view>
+        <view class="quiz-option {{answer2 === '自由' ? 'active' : ''}}" bindtap="selectAnswer2" data-value="自由">
+          自由职业
+        </view>
+      </view>
+    </view>
+
+    <!-- 问题3 -->
+    <view class="quiz-card card">
+      <view class="quiz-question">
+        <view class="quiz-icon">💝</view>
+        <view class="quiz-text">给未来的孩子写一句话</view>
+      </view>
+      <textarea class="quiz-textarea" placeholder="写下你对孩子的期待..." value="{{answer3}}" bindinput="onAnswer3Input" maxlength="100"></textarea>
+      <view class="char-count">{{answer3.length}}/100</view>
+    </view>
+
+    <!-- 养娃画风测试 -->
+    <view class="quiz-card card">
+      <view class="quiz-question">
+        <view class="quiz-icon">🎭</view>
+        <view class="quiz-text">你的养娃画风是？</view>
+      </view>
+      <view class="quiz-options">
+        <view class="quiz-option {{answer4 === '佛系' ? 'active' : ''}}" bindtap="selectAnswer4" data-value="佛系">
+          😌 佛系放养
+        </view>
+        <view class="quiz-option {{answer4 === '鸡娃' ? 'active' : ''}}" bindtap="selectAnswer4" data-value="鸡娃">
+          📚 精英培养
+        </view>
+        <view class="quiz-option {{answer4 === '平衡' ? 'active' : ''}}" bindtap="selectAnswer4" data-value="平衡">
+          ⚖️ 快乐成长
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 按钮组 -->
+  <view class="btn-group">
+    <view class="btn-secondary" bindtap="prevStep">
+      ← 上一步
+    </view>
+    <view class="btn-primary" bindtap="nextStep">
+      查看结果 →
+    </view>
+  </view>
+</view>

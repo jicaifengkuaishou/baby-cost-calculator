@@ -1,0 +1,45 @@
+<!--index.wxml-->
+<view class="container index-page">
+  <!-- 顶部装饰 -->
+  <view class="hero-section">
+    <view class="emoji-large">👶💰</view>
+    <view class="main-title">养娃成本计算器</view>
+    <view class="main-subtitle">养个孩子到底要花多少钱？</view>
+    <view class="highlight-text">3分钟算出真实答案</view>
+  </view>
+
+  <!-- 特性卡片 -->
+  <view class="features">
+    <view class="feature-item">
+      <view class="feature-icon">📊</view>
+      <view class="feature-title">科学计算</view>
+      <view class="feature-desc">基于真实数据测算</view>
+    </view>
+    <view class="feature-item">
+      <view class="feature-icon">🎯</view>
+      <view class="feature-title">个性定制</view>
+      <view class="feature-desc">根据你的规划计算</view>
+    </view>
+    <view class="feature-item">
+      <view class="feature-icon">📈</view>
+      <view class="feature-title">详细报告</view>
+      <view class="feature-desc">分阶段成本分析</view>
+    </view>
+    <view class="feature-item">
+      <view class="feature-icon">🎉</view>
+      <view class="feature-title">趣味互动</view>
+      <view class="feature-desc">好玩的测试问答</view>
+    </view>
+  </view>
+
+  <!-- 开始按钮 -->
+  <view class="btn-primary" bindtap="startCalculation">
+    开始计算 →
+  </view>
+
+  <!-- 底部说明 -->
+  <view class="footer-tips">
+    <text class="tip-icon">💡</text>
+    <text class="tip-text">所有数据仅供参考，不涉及隐私收集</text>
+  </view>
+</view>

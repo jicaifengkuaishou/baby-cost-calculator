@@ -1,0 +1,91 @@
+<!--pages/kyc/kyc.wxml-->
+<view class="container kyc-page">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-fill" style="width: 16.67%;"></view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">基础信息</view>
+    <view class="page-subtitle">先了解一下你的基本情况</view>
+    <view class="step-indicator">1/6</view>
+  </view>
+
+  <!-- 表单内容 -->
+  <view class="form-container">
+    <!-- 所在城市 -->
+    <view class="input-group card">
+      <view class="input-label">
+        📍 你所在的城市
+        <text class="input-required">*</text>
+      </view>
+      <picker mode="selector" range="{{cityList}}" value="{{cityIndex}}" bindchange="onCityChange">
+        <view class="picker">
+          {{cityList[cityIndex]}}
+        </view>
+      </picker>
+      <view class="input-hint">城市等级会影响生活成本</view>
+    </view>
+
+    <!-- 当前年龄 -->
+    <view class="input-group card">
+      <view class="input-label">
+        🎂 你的当前年龄
+        <text class="input-required">*</text>
+      </view>
+      <picker mode="selector" range="{{ageList}}" value="{{ageIndex}}" bindchange="onAgeChange">
+        <view class="picker">
+          {{ageList[ageIndex]}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 家庭收入 -->
+    <view class="input-group card">
+      <view class="input-label">
+        💰 家庭年收入（税后）
+        <text class="input-required">*</text>
+      </view>
+      <picker mode="selector" range="{{incomeList}}" value="{{incomeIndex}}" bindchange="onIncomeChange">
+        <view class="picker">
+          {{incomeList[incomeIndex]}}
+        </view>
+      </picker>
+      <view class="input-hint">用于评估经济承受能力</view>
+    </view>
+
+    <!-- 是否已有孩子 -->
+    <view class="input-group card">
+      <view class="input-label">
+        👶 是否已有孩子
+        <text class="input-required">*</text>
+      </view>
+      <view class="radio-group">
+        <view class="radio-item {{hasChild === false ? 'active' : ''}}" bindtap="selectHasChild" data-value="{{false}}">
+          还没有
+        </view>
+        <view class="radio-item {{hasChild === true ? 'active' : ''}}" bindtap="selectHasChild" data-value="{{true}}">
+          已有孩子
+        </view>
+      </view>
+    </view>
+
+    <!-- 如果已有孩子，询问孩子年龄 -->
+    <view class="input-group card" wx:if="{{hasChild}}">
+      <view class="input-label">
+        👧 孩子当前年龄
+      </view>
+      <picker mode="selector" range="{{childAgeList}}" value="{{childAgeIndex}}" bindchange="onChildAgeChange">
+        <view class="picker">
+          {{childAgeList[childAgeIndex]}}
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 下一步按钮 -->
+  <view class="btn-primary" bindtap="nextStep">
+    下一步 →
+  </view>
+</view>

@@ -1,0 +1,153 @@
+<!--pages/result/result.wxml-->
+<view class="container result-page">
+  <!-- 顶部震撼数字 -->
+  <view class="hero-result">
+    <view class="result-label">养娃总成本</view>
+    <view class="result-amount">¥{{formattedTotal}}</view>
+    <view class="result-subtitle">{{childCount}}个孩子 × {{totalYears}}年投入</view>
+    <view class="result-tips">
+      <text class="tip-item">💰 相当于{{houseCount}}套房</text>
+      <text class="tip-item">🚗 {{carCount}}辆豪车</text>
+      <text class="tip-item">✈️ 环游世界{{travelCount}}次</text>
+    </view>
+  </view>
+
+  <!-- 父母画像 -->
+  <view class="profile-card card">
+    <view class="profile-header">
+      <view class="profile-icon">{{parentProfile.icon}}</view>
+      <view class="profile-info">
+        <view class="profile-title">{{parentProfile.title}}</view>
+        <view class="profile-desc">{{parentProfile.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成本分解 -->
+  <view class="breakdown-card card">
+    <view class="card-title">💰 成本明细（单个孩子）</view>
+    <view class="breakdown-list">
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🍼</text>
+          <text>生育阶段</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.birth)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">👶</text>
+          <text>0-3岁托育</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.infant)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🎒</text>
+          <text>幼儿园</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.kindergarten)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">📚</text>
+          <text>小学</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.primary)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🏫</text>
+          <text>初中</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.middle)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🎓</text>
+          <text>高中</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.high)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🎓</text>
+          <text>大学及以上</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.college)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🏠</text>
+          <text>基础生活费</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.living)}}</view>
+      </view>
+      <view class="breakdown-item">
+        <view class="item-label">
+          <text class="item-icon">🎨</text>
+          <text>课外班投入</text>
+        </view>
+        <view class="item-value">¥{{formatMoney(breakdown.extra)}}</view>
+      </view>
+      <view class="breakdown-total">
+        <text class="total-label">单个孩子总计</text>
+        <text class="total-value">¥{{formatMoney(singleChildCost)}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 年度花费曲线 -->
+  <view class="chart-card card">
+    <view class="card-title">📈 年度花费曲线</view>
+    <view class="chart-list">
+      <view class="chart-item" wx:for="{{yearlyCost}}" wx:key="name">
+        <view class="chart-stage">{{item.name}}</view>
+        <view class="chart-bar-container">
+          <view class="chart-bar" style="width: {{item.percentage}}%;"></view>
+        </view>
+        <view class="chart-amount">¥{{formatMoney(item.avgCost)}}/年</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 档位对比 -->
+  <view class="compare-card card">
+    <view class="card-title">📊 不同档位对比</view>
+    <view class="compare-list">
+      <view class="compare-item">
+        <text class="compare-level">极简型</text>
+        <text class="compare-amount">¥180万</text>
+        <text class="compare-diff">-47%</text>
+      </view>
+      <view class="compare-item active">
+        <text class="compare-level">你的配置</text>
+        <text class="compare-amount">¥{{formatMoney(singleChildCost)}}</text>
+        <text class="compare-diff current">当前</text>
+      </view>
+      <view class="compare-item">
+        <text class="compare-level">富裕型</text>
+        <text class="compare-amount">¥520万</text>
+        <text class="compare-diff">+94%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="action-buttons">
+    <view class="btn-share" bindtap="shareResult">
+      <text class="btn-icon">📤</text>
+      <text>分享给朋友</text>
+    </view>
+    <view class="btn-restart" bindtap="restart">
+      <text class="btn-icon">🔄</text>
+      <text>重新计算</text>
+    </view>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="disclaimer">
+    <text class="disclaimer-icon">💡</text>
+    <text class="disclaimer-text">以上数据基于平均水平估算，实际花费因地区和个人情况而异，仅供参考。</text>
+  </view>
+</view>

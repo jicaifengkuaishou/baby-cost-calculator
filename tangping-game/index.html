@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>躺平成本计算器 - 你离躺平还有多远？</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 开场动画 -->
+    <div id="intro-screen" class="screen active">
+      <div class="intro-content">
+        <div class="躺平-emoji">🛋️</div>
+        <h1 class="躺平-title">躺平成本计算器</h1>
+        <p class="intro-text">测测你离躺平还有多远？</p>
+        <button class="start-btn" onclick="startGame()">开始躺平 →</button>
+      </div>
+    </div>
+
+    <!-- 关卡1：选择你的城市 -->
+    <div id="level-1" class="screen">
+      <div class="level-header">
+        <div class="level-tag">关卡 1/5</div>
+        <div class="progress-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      
+      <div class="game-content">
+        <h2 class="question">🏙️ 你打算在哪躺？</h2>
+        <p class="hint">不同城市，躺平成本天差地别</p>
+        
+        <div class="city-cards">
+          <div class="city-card" onclick="selectCity('一线', 1.5)">
+            <div class="city-icon">🏢</div>
+            <div class="city-name">一线城市</div>
+            <div class="city-desc">北上广深</div>
+            <div class="city-tag">难度：⭐⭐⭐⭐⭐</div>
+          </div>
+          <div class="city-card" onclick="selectCity('新一线', 1.2)">
+            <div class="city-icon">🌆</div>
+            <div class="city-name">新一线</div>
+            <div class="city-desc">成都杭州</div>
+            <div class="city-tag">难度：⭐⭐⭐⭐</div>
+          </div>
+          <div class="city-card" onclick="selectCity('二线', 1.0)">
+            <div class="city-icon">🏘️</div>
+            <div class="city-name">二线城市</div>
+            <div class="city-desc">省会城市</div>
+            <div class="city-tag">难度：⭐⭐⭐</div>
+          </div>
+          <div class="city-card" onclick="selectCity('小城', 0.7)">
+            <div class="city-icon">🏡</div>
+            <div class="city-name">小城市</div>
+            <div class="city-desc">三四线</div>
+            <div class="city-tag">难度：⭐⭐</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关卡2：你的年龄 -->
+    <div id="level-2" class="screen">
+      <div class="level-header">
+        <div class="level-tag">关卡 2/5</div>
+        <div class="progress-dots">
+          <span class="dot"></span>
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      
+      <div class="game-content">
+        <h2 class="question">🎂 你今年贵庚？</h2>
+        <p class="hint">年龄越大，躺平成本越低（但越难躺）</p>
+        
+        <div class="age-slider-container">
+          <div class="age-display">
+            <span class="age-number" id="age-value">25</span>
+            <span class="age-unit">岁</span>
+          </div>
+          <input type="range" id="age-slider" min="20" max="60" value="25" 
+                 oninput="updateAge(this.value)" class="age-slider">
+          <div class="age-labels">
+            <span>20岁</span>
+            <span>40岁</span>
+            <span>60岁</span>
+          </div>
+        </div>
+
+        <div class="age-status" id="age-status">
+          <div class="status-emoji">🔥</div>
+          <div class="status-text">青春无敌，躺平难度MAX！</div>
+        </div>
+
+        <button class="next-btn" onclick="nextLevel(2)">下一关 →</button>
+      </div>
+    </div>
+
+    <!-- 关卡3：生活方式 -->
+    <div id="level-3" class="screen">
+      <div class="level-header">
+        <div class="level-tag">关卡 3/5</div>
+        <div class="progress-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      
+      <div class="game-content">
+        <h2 class="question">🛋️ 你想怎么躺？</h2>
+        <p class="hint">选择你理想的躺平生活方式</p>
+        
+        <div class="lifestyle-grid">
+          <div class="lifestyle-card" onclick="selectLifestyle('极简', 1500)">
+            <div class="lifestyle-emoji">🌱</div>
+            <div class="lifestyle-name">极简躺平</div>
+            <div class="lifestyle-desc">租房+外卖+网课</div>
+            <div class="lifestyle-cost">~1.5k/月</div>
+          </div>
+          <div class="lifestyle-card" onclick="selectLifestyle('舒适', 3000)">
+            <div class="lifestyle-emoji">☕</div>
+            <div class="lifestyle-name">舒适躺平</div>
+            <div class="lifestyle-desc">租房+自煮+健身</div>
+            <div class="lifestyle-cost">~3k/月</div>
+          </div>
+          <div class="lifestyle-card" onclick="selectLifestyle('小资', 5000)">
+            <div class="lifestyle-emoji">🍷</div>
+            <div class="lifestyle-name">小资躺平</div>
+            <div class="lifestyle-desc">租房+精致+旅行</div>
+            <div class="lifestyle-cost">~5k/月</div>
+          </div>
+          <div class="lifestyle-card" onclick="selectLifestyle('养老', 2000)">
+            <div class="lifestyle-emoji">🏞️</div>
+            <div class="lifestyle-name">佛系躺平</div>
+            <div class="lifestyle-desc">回老家+种菜</div>
+            <div class="lifestyle-cost">~2k/月</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关卡4：躺平时长 -->
+    <div id="level-4" class="screen">
+      <div class="level-header">
+        <div class="level-tag">关卡 4/5</div>
+        <div class="progress-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot active"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      
+      <div class="game-content">
+        <h2 class="question">⏰ 打算躺多久？</h2>
+        <p class="hint">躺平也要有计划（误）</p>
+        
+        <div class="duration-options">
+          <div class="duration-card" onclick="selectDuration(3)">
+            <div class="duration-icon">🌸</div>
+            <div class="duration-title">间歇性躺平</div>
+            <div class="duration-time">3年</div>
+            <div class="duration-desc">休息一下就回来</div>
+          </div>
+          <div class="duration-card" onclick="selectDuration(10)">
+            <div class="duration-icon">🌳</div>
+            <div class="duration-title">长期躺平</div>
+            <div class="duration-time">10年</div>
+            <div class="duration-desc">躺到人生下半场</div>
+          </div>
+          <div class="duration-card" onclick="selectDuration(30)">
+            <div class="duration-icon">🌌</div>
+            <div class="duration-title">终身躺平</div>
+            <div class="duration-time">30年</div>
+            <div class="duration-desc">躺到退休再说</div>
+          </div>
+          <div class="duration-card" onclick="selectDuration(50)">
+            <div class="duration-icon">♾️</div>
+            <div class="duration-title">永久躺平</div>
+            <div class="duration-time">一辈子</div>
+            <div class="duration-desc">能躺就不坐着</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关卡5：财富状况 -->
+    <div id="level-5" class="screen">
+      <div class="level-header">
+        <div class="level-tag">关卡 5/5</div>
+        <div class="progress-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot active"></span>
+        </div>
+      </div>
+      
+      <div class="game-content">
+        <h2 class="question">💰 家底有多厚？</h2>
+        <p class="hint">说实话，没人会笑话你</p>
+        
+        <div class="wealth-container">
+          <div class="wealth-option" onclick="selectWealth('负债', -100000)">
+            <div class="wealth-emoji">😭</div>
+            <div class="wealth-title">负债躺平</div>
+            <div class="wealth-desc">还欠花呗呢...</div>
+          </div>
+          <div class="wealth-option" onclick="selectWealth('月光', 10000)">
+            <div class="wealth-emoji">🤷</div>
+            <div class="wealth-title">月光族</div>
+            <div class="wealth-desc">工资到账即清零</div>
+          </div>
+          <div class="wealth-option" onclick="selectWealth('小康', 100000)">
+            <div class="wealth-emoji">😌</div>
+            <div class="wealth-title">小有积蓄</div>
+            <div class="wealth-desc">存款10万左右</div>
+          </div>
+          <div class="wealth-option" onclick="selectWealth('富裕', 500000)">
+            <div class="wealth-emoji">😎</div>
+            <div class="wealth-title">小富即安</div>
+            <div class="wealth-desc">存款50万+</div>
+          </div>
+          <div class="wealth-option" onclick="selectWealth('财务自由', 2000000)">
+            <div class="wealth-emoji">🤴</div>
+            <div class="wealth-title">财务自由</div>
+            <div class="wealth-desc">有房有车有存款</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 计算中动画 -->
+    <div id="calculating" class="screen">
+      <div class="calculating-content">
+        <div class="loading-躺平">🛋️</div>
+        <h2 class="calculating-text">正在为你计算躺平成本...</h2>
+        <div class="loading-dots">
+          <span>.</span><span>.</span><span>.</span>
+        </div>
+        <div class="fun-facts" id="fun-fact">
+          💡 躺平小知识：全球最能躺的国家是...
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果页面 -->
+    <div id="result" class="screen">
+      <div class="result-container">
+        <!-- 躺平证书 -->
+        <div class="certificate">
+          <div class="certificate-header">🏆 躺平可行性报告</div>
+          <div class="躺平-level" id="tangping-level">
+            <div class="level-emoji">🛋️</div>
+            <div class="level-name">青铜躺平侠</div>
+          </div>
+        </div>
+
+        <!-- 核心数据 -->
+        <div class="result-card highlight">
+          <div class="result-label">躺平总成本</div>
+          <div class="result-big-number" id="total-cost">¥0</div>
+          <div class="result-subtitle" id="cost-subtitle">躺平XX年需要这些钱</div>
+        </div>
+
+        <!-- 数据分解 -->
+        <div class="result-card">
+          <h3 class="card-title">💰 成本明细</h3>
+          <div class="cost-breakdown">
+            <div class="breakdown-item">
+              <span class="item-icon">🏠</span>
+              <span class="item-label">租房成本</span>
+              <span class="item-value" id="rent-cost">¥0</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="item-icon">🍜</span>
+              <span class="item-label">生活开支</span>
+              <span class="item-value" id="life-cost">¥0</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="item-icon">🎮</span>
+              <span class="item-label">娱乐消遣</span>
+              <span class="item-value" id="fun-cost">¥0</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="item-icon">🏥</span>
+              <span class="item-label">医疗储备</span>
+              <span class="item-value" id="medical-cost">¥0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 现实检验 -->
+        <div class="result-card warning">
+          <h3 class="card-title">⚠️ 现实检验</h3>
+          <div class="reality-check">
+            <div class="check-item">
+              <div class="check-icon">💵</div>
+              <div class="check-content">
+                <div class="check-label">当前资产</div>
+                <div class="check-value" id="current-wealth">¥0</div>
+              </div>
+            </div>
+            <div class="check-divider">VS</div>
+            <div class="check-item">
+              <div class="check-icon">🎯</div>
+              <div class="check-content">
+                <div class="check-label">躺平目标</div>
+                <div class="check-value" id="target-cost">¥0</div>
+              </div>
+            </div>
+          </div>
+          <div class="gap-analysis">
+            <div class="gap-text" id="gap-text">距离躺平还差：</div>
+            <div class="gap-amount" id="gap-amount">¥999,999</div>
+          </div>
+        </div>
+
+        <!-- 躺平建议 -->
+        <div class="result-card advice">
+          <h3 class="card-title">💡 躺平建议</h3>
+          <div class="advice-list" id="advice-list">
+            <!-- 动态生成 -->
+          </div>
+        </div>
+
+        <!-- 趣味对比 -->
+        <div class="result-card fun">
+          <h3 class="card-title">🎪 趣味对比</h3>
+          <div class="fun-comparisons">
+            <div class="comparison-item">
+              <div class="comparison-emoji">🍔</div>
+              <div class="comparison-text" id="burger-compare">= 999个汉堡</div>
+            </div>
+            <div class="comparison-item">
+              <div class="comparison-emoji">🎬</div>
+              <div class="comparison-text" id="movie-compare">= 999场电影</div>
+            </div>
+            <div class="comparison-item">
+              <div class="comparison-emoji">☕</div>
+              <div class="comparison-text" id="coffee-compare">= 999杯咖啡</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="result-actions">
+          <button class="action-btn share-btn" onclick="shareResult()">
+            <span class="btn-icon">📤</span>
+            <span>分享结果</span>
+          </button>
+          <button class="action-btn restart-btn" onclick="restart()">
+            <span class="btn-icon">🔄</span>
+            <span>重新计算</span>
+          </button>
+        </div>
+
+        <!-- 免责声明 -->
+        <div class="disclaimer">
+          <span class="disclaimer-icon">💡</span>
+          <span class="disclaimer-text">本测试仅供娱乐，躺平有风险，计划需谨慎</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

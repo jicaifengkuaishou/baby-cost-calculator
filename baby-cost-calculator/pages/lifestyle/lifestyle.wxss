@@ -1,0 +1,84 @@
+/* pages/lifestyle/lifestyle.wxss */
+.lifestyle-page {
+  padding-top: 80rpx;
+}
+
+.lifestyle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.lifestyle-item {
+  background: #F8F9FA;
+  padding: 30rpx 16rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.lifestyle-item.active {
+  background: #E8E5FF;
+  border-color: #6C5CE7;
+  transform: scale(1.05);
+}
+
+.lifestyle-emoji {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.lifestyle-title {
+  font-size: 28rpx;
+  color: #2D3436;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.lifestyle-item.active .lifestyle-title {
+  color: #6C5CE7;
+}
+
+.lifestyle-desc {
+  font-size: 22rpx;
+  color: #95A5A6;
+}
+
+.lifestyle-item.active .lifestyle-desc {
+  color: #6C5CE7;
+}
+
+.lifestyle-price {
+  text-align: center;
+  font-size: 32rpx;
+  color: #6C5CE7;
+  font-weight: 600;
+  margin-top: 30rpx;
+}
+
+.info-card {
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+  padding: 30rpx;
+  border-radius: 16rpx;
+  color: white;
+  margin-top: 30rpx;
+}
+
+.info-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.info-item {
+  font-size: 26rpx;
+  opacity: 0.95;
+}

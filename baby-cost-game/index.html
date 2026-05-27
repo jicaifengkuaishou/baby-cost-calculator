@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>养娃模拟器 - 看看你能养活娃吗？</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- 开场 -->
+    <div id="intro" class="scene active">
+      <div class="baby-jump">👶</div>
+      <h1 class="game-title">养娃模拟器</h1>
+      <p class="game-subtitle">据说养个娃要破产？</p>
+      <p class="game-hint">来算算你的钱包能撑多久</p>
+      <button class="start-btn pulse" onclick="startGame()">接受挑战 →</button>
+      <div class="warning-tag">⚠️ 高能预警：可能引起钱包不适</div>
+    </div>
+
+    <!-- 第1关：城市选择 -->
+    <div id="stage-1" class="scene">
+      <div class="stage-badge">第1关</div>
+      <div class="chat-bubble">
+        <div class="avatar">🤰</div>
+        <div class="bubble-content">
+          <p class="chat-text">咱们打算在哪生活呀？</p>
+          <p class="chat-hint">（房租差10倍那种...）</p>
+        </div>
+      </div>
+
+      <div class="choice-cards">
+        <div class="choice-card" onclick="selectCity('一线', 1.5)" data-choice="hard">
+          <div class="choice-emoji">🏢</div>
+          <div class="choice-title">一线城市</div>
+          <div class="choice-tags">
+            <span class="tag-red">难度：地狱</span>
+            <span class="tag-gold">月薪3万起步</span>
+          </div>
+          <div class="choice-desc">北上广深，有梦想就来</div>
+        </div>
+
+        <div class="choice-card" onclick="selectCity('新一线', 1.2)" data-choice="medium">
+          <div class="choice-emoji">🌆</div>
+          <div class="choice-title">新一线</div>
+          <div class="choice-tags">
+            <span class="tag-orange">难度：困难</span>
+            <span class="tag-gold">月薪2万起步</span>
+          </div>
+          <div class="choice-desc">杭州成都，卷又不太卷</div>
+        </div>
+
+        <div class="choice-card" onclick="selectCity('二线', 1.0)" data-choice="easy">
+          <div class="choice-emoji">🏘️</div>
+          <div class="choice-title">二线城市</div>
+          <div class="choice-tags">
+            <span class="tag-green">难度：普通</span>
+            <span class="tag-gold">月薪1万起步</span>
+          </div>
+          <div class="choice-desc">省会城市，安逸舒适</div>
+        </div>
+
+        <div class="choice-card" onclick="selectCity('小城', 0.7)" data-choice="relax">
+          <div class="choice-emoji">🏡</div>
+          <div class="choice-title">小城/回老家</div>
+          <div class="choice-tags">
+            <span class="tag-blue">难度：简单</span>
+            <span class="tag-gold">月薪5千起步</span>
+          </div>
+          <div class="choice-desc">三四线，佛系养娃</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第2关：教育路线 -->
+    <div id="stage-2" class="scene">
+      <div class="stage-badge">第2关</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 33%;"></div>
+      </div>
+
+      <div class="chat-bubble">
+        <div class="avatar">👨‍🏫</div>
+        <div class="bubble-content">
+          <p class="chat-text">打算让娃读什么学校？</p>
+          <p class="chat-hint">（决定钱包厚度的关键）</p>
+        </div>
+      </div>
+
+      <div class="edu-timeline">
+        <div class="timeline-item" onclick="toggleEduLevel('kindergarten', this)">
+          <div class="timeline-icon">🎨</div>
+          <div class="timeline-title">幼儿园（3-6岁）</div>
+          <div class="timeline-options">
+            <label class="radio-btn active">
+              <input type="radio" name="kindergarten" value="公立" checked>
+              <span>公立 <em>~3k/月</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="kindergarten" value="私立">
+              <span>私立 <em>~8k/月</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="kindergarten" value="国际">
+              <span>国际 <em>~1.5万/月</em></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="timeline-item" onclick="toggleEduLevel('primary', this)">
+          <div class="timeline-icon">📚</div>
+          <div class="timeline-title">小学（6-12岁）</div>
+          <div class="timeline-options">
+            <label class="radio-btn active">
+              <input type="radio" name="primary" value="公立" checked>
+              <span>公立 <em>基本免费</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="primary" value="私立">
+              <span>私立 <em>~3万/年</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="primary" value="国际">
+              <span>国际 <em>~20万/年</em></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="timeline-item" onclick="toggleEduLevel('middle', this)">
+          <div class="timeline-icon">🏫</div>
+          <div class="timeline-title">初中（12-15岁）</div>
+          <div class="timeline-options">
+            <label class="radio-btn active">
+              <input type="radio" name="middle" value="公立" checked>
+              <span>公立 <em>基本免费</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="middle" value="私立">
+              <span>私立 <em>~5万/年</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="middle" value="国际">
+              <span>国际 <em>~25万/年</em></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="timeline-item" onclick="toggleEduLevel('high', this)">
+          <div class="timeline-icon">🎓</div>
+          <div class="timeline-title">高中（15-18岁）</div>
+          <div class="timeline-options">
+            <label class="radio-btn active">
+              <input type="radio" name="high" value="公立" checked>
+              <span>公立 <em>~2k/年</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="high" value="私立">
+              <span>私立 <em>~8万/年</em></span>
+            </label>
+            <label class="radio-btn">
+              <input type="radio" name="high" value="国际">
+              <span>国际 <em>~30万/年</em></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="next-btn" onclick="nextStage(2)">
+        <span>下一关</span>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <!-- 第3关：生活标准 -->
+    <div id="stage-3" class="scene">
+      <div class="stage-badge">第3关</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 66%;"></div>
+      </div>
+
+      <div class="chat-bubble">
+        <div class="avatar">💰</div>
+        <div class="bubble-content">
+          <p class="chat-text">准备过什么样的生活？</p>
+          <p class="chat-hint">（省点？还是给娃最好的？）</p>
+        </div>
+      </div>
+
+      <div class="lifestyle-selector">
+        <div class="lifestyle-card" onclick="selectLifestyle('极简', 2000)">
+          <div class="lifestyle-icon">🌱</div>
+          <div class="lifestyle-name">极简派</div>
+          <div class="lifestyle-features">
+            <span>✓ 自己煮饭</span>
+            <span>✓ 少买玩具</span>
+            <span>✓ 二手衣服</span>
+          </div>
+          <div class="lifestyle-cost">~2k/月</div>
+          <div class="lifestyle-tag">能省则省</div>
+        </div>
+
+        <div class="lifestyle-card highlight" onclick="selectLifestyle('舒适', 5000)">
+          <div class="recommended-badge">👍 多数人选择</div>
+          <div class="lifestyle-icon">☕</div>
+          <div class="lifestyle-name">舒适派</div>
+          <div class="lifestyle-features">
+            <span>✓ 偶尔下馆子</span>
+            <span>✓ 适度玩具</span>
+            <span>✓ 新衣服为主</span>
+          </div>
+          <div class="lifestyle-cost">~5k/月</div>
+          <div class="lifestyle-tag">小康水平</div>
+        </div>
+
+        <div class="lifestyle-card" onclick="selectLifestyle('精致', 10000)">
+          <div class="lifestyle-icon">💎</div>
+          <div class="lifestyle-name">精致派</div>
+          <div class="lifestyle-features">
+            <span>✓ 品牌衣服</span>
+            <span>✓ 益智玩具</span>
+            <span>✓ 定期旅行</span>
+          </div>
+          <div class="lifestyle-cost">~1万/月</div>
+          <div class="lifestyle-tag">给娃最好的</div>
+        </div>
+      </div>
+
+      <div class="extra-options">
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-icon">🎨</span>
+            <span class="option-title">课外班强度</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="extra-slider" min="500" max="20000" value="5000" step="500" 
+                   oninput="updateExtraCost(this.value)">
+            <div class="slider-labels">
+              <span>佛系</span>
+              <span id="extra-value">5千/月</span>
+              <span>鸡娃</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-icon">👩</span>
+            <span class="option-title">需要请育儿嫂吗？</span>
+          </div>
+          <div class="toggle-buttons">
+            <button class="toggle-btn active" onclick="toggleNanny(false)">不请 <em>自己带</em></button>
+            <button class="toggle-btn" onclick="toggleNanny(true)">请育儿嫂 <em>+1万/月</em></button>
+          </div>
+        </div>
+      </div>
+
+      <button class="next-btn" onclick="calculateCost()">
+        <span>开始计算</span>
+        <span class="arrow">🧮</span>
+      </button>
+    </div>
+
+    <!-- 计算动画 -->
+    <div id="calculating" class="scene">
+      <div class="calc-animation">
+        <div class="coin-rain">
+          <div class="coin">💰</div>
+          <div class="coin">💸</div>
+          <div class="coin">💵</div>
+          <div class="coin">💰</div>
+          <div class="coin">💸</div>
+        </div>
+        <div class="calc-text">
+          <h2>正在算钱钱...</h2>
+          <div class="calc-steps" id="calc-steps">
+            <div class="step">✓ 计算奶粉钱</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果页 -->
+    <div id="result" class="scene">
+      <div class="achievement-badge">
+        <div class="badge-emoji" id="badge-emoji">🏆</div>
+        <div class="badge-title" id="badge-title">青铜奶爸</div>
+      </div>
+
+      <div class="cost-display">
+        <div class="cost-label">养娃总成本</div>
+        <div class="cost-number" id="total-cost">¥268万</div>
+        <div class="cost-subtitle">22年养成计划</div>
+      </div>
+
+      <div class="shock-comparison">
+        <div class="shock-title">💥 真相时刻</div>
+        <div class="shock-items">
+          <div class="shock-item">
+            <span class="shock-icon">🏠</span>
+            <span class="shock-text">= <strong id="house-count">0</strong>套一线房子</span>
+          </div>
+          <div class="shock-item">
+            <span class="shock-icon">🚗</span>
+            <span class="shock-text">= <strong id="car-count">5</strong>辆宝马</span>
+          </div>
+          <div class="shock-item">
+            <span class="shock-icon">✈️</span>
+            <span class="shock-text">= 环游世界<strong id="travel-count">13</strong>次</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="breakdown-section">
+        <h3 class="section-title">💸 钱都花哪了？</h3>
+        <div class="breakdown-bars">
+          <div class="bar-item">
+            <div class="bar-label">
+              <span>🏫 教育（学费+课外班）</span>
+              <span class="bar-value" id="edu-cost">¥120万</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="edu-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label">
+              <span>🍼 生活费（吃喝拉撒）</span>
+              <span class="bar-value" id="life-cost">¥90万</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="life-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label">
+              <span>🎪 娱乐（玩具+旅行）</span>
+              <span class="bar-value" id="fun-cost">¥30万</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="fun-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label">
+              <span>👶 0-3岁（育儿嫂）</span>
+              <span class="bar-value" id="baby-cost">¥28万</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="baby-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-section">
+        <h3 class="section-title">💡 过来人建议</h3>
+        <div class="tips-list" id="tips-list">
+          <!-- 动态生成 -->
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="action-btn primary" onclick="shareResult()">
+          <span>📤</span>
+          <span>晒给朋友</span>
+        </button>
+        <button class="action-btn secondary" onclick="restart()">
+          <span>🔄</span>
+          <span>重新算算</span>
+        </button>
+      </div>
+
+      <div class="disclaimer">
+        💡 以上数据参考市场平均水平，实际花费因人而异<br>
+        重要的不是花多少钱，而是陪伴和教育 ❤️
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

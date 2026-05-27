@@ -1,0 +1,147 @@
+<!--pages/education/education.wxml-->
+<view class="container education-page">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-fill" style="width: 50%;"></view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">教育规划</view>
+    <view class="page-subtitle">给孩子什么样的教育？</view>
+    <view class="step-indicator">3/6</view>
+  </view>
+
+  <!-- 表单内容 -->
+  <view class="form-container">
+    <!-- 教育目标 -->
+    <view class="input-group card">
+      <view class="input-label">
+        🎓 打算培养到什么学历
+        <text class="input-required">*</text>
+      </view>
+      <view class="radio-group">
+        <view class="radio-item {{eduTarget === '本科' ? 'active' : ''}}" bindtap="selectEduTarget" data-value="本科">
+          本科
+        </view>
+        <view class="radio-item {{eduTarget === '研究生' ? 'active' : ''}}" bindtap="selectEduTarget" data-value="研究生">
+          研究生
+        </view>
+        <view class="radio-item {{eduTarget === '博士' ? 'active' : ''}}" bindtap="selectEduTarget" data-value="博士">
+          博士
+        </view>
+      </view>
+    </view>
+
+    <!-- 幼儿园 -->
+    <view class="input-group card">
+      <view class="input-label">
+        👶 幼儿园（3-6岁）
+      </view>
+      <view class="stage-selector">
+        <view class="stage-item {{kindergartenType === '公立' ? 'active' : ''}}" bindtap="selectKindergarten" data-type="公立">
+          <view class="stage-title">公立幼儿园</view>
+          <view class="stage-price">~3千/月</view>
+        </view>
+        <view class="stage-item {{kindergartenType === '私立' ? 'active' : ''}}" bindtap="selectKindergarten" data-type="私立">
+          <view class="stage-title">私立幼儿园</view>
+          <view class="stage-price">~8千/月</view>
+        </view>
+        <view class="stage-item {{kindergartenType === '国际' ? 'active' : ''}}" bindtap="selectKindergarten" data-type="国际">
+          <view class="stage-title">国际幼儿园</view>
+          <view class="stage-price">~1.5万/月</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 小学 -->
+    <view class="input-group card">
+      <view class="input-label">
+        📚 小学（6-12岁）
+      </view>
+      <view class="stage-selector">
+        <view class="stage-item {{primaryType === '公立' ? 'active' : ''}}" bindtap="selectPrimary" data-type="公立">
+          <view class="stage-title">公立小学</view>
+          <view class="stage-price">基本免费</view>
+        </view>
+        <view class="stage-item {{primaryType === '私立' ? 'active' : ''}}" bindtap="selectPrimary" data-type="私立">
+          <view class="stage-title">私立小学</view>
+          <view class="stage-price">~3万/年</view>
+        </view>
+        <view class="stage-item {{primaryType === '国际' ? 'active' : ''}}" bindtap="selectPrimary" data-type="国际">
+          <view class="stage-title">国际小学</view>
+          <view class="stage-price">~20万/年</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 初中 -->
+    <view class="input-group card">
+      <view class="input-label">
+        🏫 初中（12-15岁）
+      </view>
+      <view class="stage-selector">
+        <view class="stage-item {{middleType === '公立' ? 'active' : ''}}" bindtap="selectMiddle" data-type="公立">
+          <view class="stage-title">公立初中</view>
+          <view class="stage-price">基本免费</view>
+        </view>
+        <view class="stage-item {{middleType === '私立' ? 'active' : ''}}" bindtap="selectMiddle" data-type="私立">
+          <view class="stage-title">私立初中</view>
+          <view class="stage-price">~5万/年</view>
+        </view>
+        <view class="stage-item {{middleType === '国际' ? 'active' : ''}}" bindtap="selectMiddle" data-type="国际">
+          <view class="stage-title">国际初中</view>
+          <view class="stage-price">~25万/年</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 高中 -->
+    <view class="input-group card">
+      <view class="input-label">
+        🎒 高中（15-18岁）
+      </view>
+      <view class="stage-selector">
+        <view class="stage-item {{highType === '公立' ? 'active' : ''}}" bindtap="selectHigh" data-type="公立">
+          <view class="stage-title">公立高中</view>
+          <view class="stage-price">~2千/年</view>
+        </view>
+        <view class="stage-item {{highType === '私立' ? 'active' : ''}}" bindtap="selectHigh" data-type="私立">
+          <view class="stage-title">私立高中</view>
+          <view class="stage-price">~8万/年</view>
+        </view>
+        <view class="stage-item {{highType === '国际' ? 'active' : ''}}" bindtap="selectHigh" data-type="国际">
+          <view class="stage-title">国际高中</view>
+          <view class="stage-price">~30万/年</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 课外班档位 -->
+    <view class="input-group card">
+      <view class="input-label">
+        🎨 课外班投入
+      </view>
+      <view class="level-slider">
+        <view class="level-labels">
+          <text class="level-label {{extraLevel === '极简' ? 'active' : ''}}" bindtap="selectExtraLevel" data-level="极简">极简</text>
+          <text class="level-label {{extraLevel === '基本' ? 'active' : ''}}" bindtap="selectExtraLevel" data-level="基本">基本</text>
+          <text class="level-label {{extraLevel === '舒适' ? 'active' : ''}}" bindtap="selectExtraLevel" data-level="舒适">舒适</text>
+          <text class="level-label {{extraLevel === '富裕' ? 'active' : ''}}" bindtap="selectExtraLevel" data-level="富裕">富裕</text>
+          <text class="level-label {{extraLevel === '奢侈' ? 'active' : ''}}" bindtap="selectExtraLevel" data-level="奢侈">奢侈</text>
+        </view>
+        <view class="level-price">约 {{extraLevelPrice}}/月</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 按钮组 -->
+  <view class="btn-group">
+    <view class="btn-secondary" bindtap="prevStep">
+      ← 上一步
+    </view>
+    <view class="btn-primary" bindtap="nextStep">
+      下一步 →
+    </view>
+  </view>
+</view>

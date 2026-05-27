@@ -1,0 +1,29 @@
+/* pages/kyc/kyc.wxss */
+.kyc-page {
+  padding-top: 80rpx;
+}
+
+.page-header {
+  margin-bottom: 60rpx;
+}
+
+.step-indicator {
+  display: inline-block;
+  background: #E8E5FF;
+  color: #6C5CE7;
+  padding: 8rpx 24rpx;
+  border-radius: 40rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  margin-top: 16rpx;
+}
+
+.form-container {
+  margin-bottom: 40rpx;
+}
+
+.input-hint {
+  font-size: 24rpx;
+  color: #95A5A6;
+  margin-top: 16rpx;
+}

@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>快手钱包 · 保险严选</title>
+  <style>
+    :root {
+      --ks-orange: #ff5f2e;
+      --ks-orange-light: #fff3ef;
+      --ks-orange-dark: #e04820;
+      --ks-red: #e8112d;
+      --ks-green: #00c27a;
+      --ks-green-light: #e8faf3;
+      --ks-blue: #1677ff;
+      --ks-blue-light: #e8f3ff;
+      --ks-yellow: #ffb800;
+      --ks-yellow-light: #fff8e6;
+      --ks-pink: #ff6b8a;
+      --ks-pink-light: #fff0f4;
+      --gray-1: #f7f8fa;
+      --gray-2: #f0f1f4;
+      --gray-3: #dde0e8;
+      --gray-5: #909499;
+      --gray-7: #4a4e57;
+      --gray-9: #1a1d24;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: #f5f6f8;
+      color: var(--gray-9);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── 页面容器 ─── */
+    .page {
+      display: none;
+      min-height: 100vh;
+      animation: fadeIn 0.3s ease;
+    }
+    .page.active { display: flex; flex-direction: column; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── 顶部导航 ─── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
+      padding-top: calc(14px + env(safe-area-inset-top));
+      border-bottom: 1px solid var(--gray-2);
+    }
+    .nav-back {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gray-1); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .nav-title { font-size: 17px; font-weight: 600; color: var(--gray-9); flex: 1; }
+    .nav-step { font-size: 13px; color: var(--gray-5); }
+
+    /* ─── 滚动内容区 ─── */
+    .scroll-body {
+      flex: 1; overflow-y: auto;
+      padding: 16px;
+      padding-bottom: calc(90px + env(safe-area-inset-bottom));
+    }
+
+    /* ─── 底部固定按钮 ─── */
+    .footer-btn-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #fff;
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--gray-2);
+    }
+    .btn-primary {
+      width: 100%; height: 50px;
+      background: linear-gradient(135deg, var(--ks-red) 0%, #ff4f6e 100%);
+      color: #fff; border: none; border-radius: var(--radius-xl);
+      font-size: 16px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      box-shadow: 0 4px 16px rgba(232,17,45,0.3);
+    }
+    .btn-primary:active { opacity: 0.9; transform: scale(0.98); }
+    .btn-secondary {
+      width: 100%; height: 44px;
+      background: transparent; color: var(--ks-orange);
+      border: 1.5px solid var(--ks-orange); border-radius: var(--radius-xl);
+      font-size: 15px; font-weight: 500; cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* ─── 卡片通用 ─── */
+    .card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 600; color: var(--gray-9);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-title-badge {
+      font-size: 11px; font-weight: 500; padding: 2px 8px;
+      border-radius: 10px; background: var(--ks-orange-light);
+      color: var(--ks-orange);
+    }
+
+    /* ─── Toast ─── */
+    #toast {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.72); color: #fff; padding: 10px 20px;
+      border-radius: 20px; font-size: 14px; pointer-events: none;
+      opacity: 0; transition: opacity 0.25s; z-index: 9999;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ─── 进度步骤指示器 ─── */
+    .step-indicator {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 14px 0;
+    }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gray-3); transition: all 0.3s;
+    }
+    .step-dot.active { background: var(--ks-red); width: 24px; border-radius: 4px; }
+    .step-dot.done { background: var(--ks-green); }
+
+    /* ════════════════════════════════════════
+       PAGE 0: 欢迎页
+    ════════════════════════════════════════ */
+    .welcome-hero {
+      background: linear-gradient(160deg, #e8112d 0%, #ff6b4a 60%, #ffb86b 100%);
+      border-radius: var(--radius-xl);
+      padding: 28px 20px 24px;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-hero::before {
+      content: '';
+      position: absolute; top: -50px; right: -40px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    .welcome-hero::after {
+      content: '';
+      position: absolute; bottom: -30px; left: -30px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .welcome-hero-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.2); border-radius: 20px;
+      padding: 4px 12px; font-size: 12px; margin-bottom: 14px;
+    }
+    .welcome-hero-rate {
+      font-size: 54px; font-weight: 800; line-height: 1;
+      margin-bottom: 4px; position: relative; z-index: 1;
+    }
+    .welcome-hero-rate sup { font-size: 20px; font-weight: 600; vertical-align: top; margin-top: 10px; }
+    .welcome-hero-rate sub { font-size: 16px; font-weight: 400; }
+    .welcome-hero-title { font-size: 14px; opacity: 0.9; margin-bottom: 14px; }
+    .welcome-hero-promise {
+      display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    }
+    .promise-tag {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px; padding: 5px 12px;
+      font-size: 12px;
+    }
+
+    /* 收益对比卡 */
+    .compare-card {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 16px; margin-bottom: 12px;
+      border: 1px solid var(--gray-2);
+    }
+    .compare-title {
+      font-size: 13px; color: var(--gray-5); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .compare-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .compare-row:last-child { margin-bottom: 0; }
+    .compare-label {
+      font-size: 13px; color: var(--gray-7); width: 80px; flex-shrink: 0;
+    }
+    .compare-bar-wrap {
+      flex: 1; height: 28px; background: var(--gray-1);
+      border-radius: 6px; overflow: hidden; position: relative;
+    }
+    .compare-bar {
+      height: 100%; border-radius: 6px;
+      display: flex; align-items: center; padding-left: 10px;
+      font-size: 12px; font-weight: 600; color: #fff;
+      transition: width 1s ease;
+    }
+    .compare-bar.bank { background: var(--gray-3); color: var(--gray-7); }
+    .compare-bar.yebao { background: #FAAD14; }
+    .compare-bar.active-bao { background: var(--ks-orange); }
+    .compare-bar.savings { background: var(--ks-red); }
+    .compare-bar.annuity { background: linear-gradient(90deg, #e8112d, #ff6b4a); }
+
+    /* 信任背书栏 */
+    .trust-bar {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding: 0 0 4px; margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .trust-bar::-webkit-scrollbar { display: none; }
+    .trust-item {
+      flex-shrink: 0;
+      background: #fff; border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 6px;
+      border: 1px solid var(--gray-2);
+    }
+    .trust-icon { font-size: 18px; }
+    .trust-text { font-size: 11px; color: var(--gray-7); line-height: 1.5; }
+    .trust-text strong { font-size: 12px; color: var(--gray-9); display: block; }
+
+    /* ════════════════════════════════════════
+       PAGE 1: 财务快照页
+    ════════════════════════════════════════ */
+    .snapshot-header {
+      background: linear-gradient(135deg, #e8112d 0%, #ff6b4a 100%);
+      border-radius: var(--radius-xl);
+      padding: 20px; color: #fff; margin-bottom: 16px;
+    }
+    .snapshot-header h3 { font-size: 15px; opacity: 0.85; margin-bottom: 10px; }
+    .snapshot-data-row { display: flex; gap: 16px; margin-bottom: 12px; }
+    .snapshot-data-item { flex: 1; }
+    .snapshot-data-label { font-size: 11px; opacity: 0.75; margin-bottom: 2px; }
+    .snapshot-data-val { font-size: 24px; font-weight: 700; }
+    .snapshot-data-val span { font-size: 13px; font-weight: 400; }
+
+    /* 收益差异提示 */
+    .income-diff-bar {
+      background: rgba(255,255,255,0.15);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 12px; line-height: 1.7;
+      display: none;
+    }
+    .income-diff-bar.show { display: block; }
+    .income-diff-bar strong { font-size: 15px; font-weight: 700; }
+
+    /* 表单 */
+    .form-row { display: flex; flex-direction: column; gap: 14px; }
+    .form-item { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 13px; color: var(--gray-5);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .form-label .auto-tag {
+      font-size: 10px; padding: 1px 6px; border-radius: 6px;
+      background: var(--ks-blue-light); color: var(--ks-blue);
+    }
+    .form-input {
+      height: 46px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--gray-3);
+      padding: 0 14px;
+      font-size: 15px; color: var(--gray-9);
+      background: var(--gray-1); outline: none; transition: border 0.2s;
+    }
+    .form-input:focus { border-color: var(--ks-red); background: #fff; }
+    .form-select {
+      height: 46px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--gray-3);
+      padding: 0 14px;
+      font-size: 15px; color: var(--gray-9);
+      background: var(--gray-1); outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23909499' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+    }
+
+    /* 缺口警示条 */
+    .gap-alert {
+      background: #fff8e6; border-radius: var(--radius-md);
+      border-left: 4px solid var(--ks-yellow);
+      padding: 12px 14px; margin-bottom: 12px; display: none;
+    }
+    .gap-alert.show { display: block; }
+    .gap-alert-title { font-size: 13px; font-weight: 600; color: #8a6000; margin-bottom: 4px; }
+    .gap-alert-desc { font-size: 12px; color: #8a6000; line-height: 1.6; }
+
+    /* ════════════════════════════════════════
+       PAGE 2: 推荐结果页
+    ════════════════════════════════════════ */
+    .result-header {
+      border-radius: var(--radius-xl); padding: 20px; color: #fff;
+      margin-bottom: 16px; position: relative; overflow: hidden;
+    }
+    .result-header::after {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+    }
+    .result-header .level-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.2); border-radius: 20px;
+      padding: 4px 12px; font-size: 12px; margin-bottom: 8px;
+    }
+    .result-header h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .result-header p { font-size: 13px; opacity: 0.85; line-height: 1.6; }
+
+    /* 评分条 */
+    .score-bar-wrap {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 16px; margin-bottom: 12px;
+    }
+    .score-bar-title { font-size: 13px; color: var(--gray-5); margin-bottom: 12px; }
+    .score-dim { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .score-dim-label { font-size: 12px; color: var(--gray-7); width: 60px; flex-shrink: 0; }
+    .score-dim-bar { flex: 1; height: 6px; background: var(--gray-2); border-radius: 3px; overflow: hidden; }
+    .score-dim-fill { height: 100%; border-radius: 3px; background: var(--ks-red); transition: width 0.8s ease; }
+    .score-dim-val { font-size: 12px; color: var(--gray-5); width: 24px; text-align: right; }
+
+    /* 产品推荐卡 */
+    .product-card {
+      background: #fff; border-radius: var(--radius-lg);
+      margin-bottom: 12px; overflow: hidden;
+      border: 1px solid var(--gray-2);
+    }
+    .product-card.featured {
+      border: 1.5px solid var(--ks-red);
+      box-shadow: 0 2px 16px rgba(232,17,45,0.12);
+    }
+    .product-card-header {
+      padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 12px;
+      border-bottom: 1px solid var(--gray-2);
+    }
+    .product-icon-box {
+      width: 48px; height: 48px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .product-meta { flex: 1; }
+    .product-tag {
+      display: inline-block;
+      font-size: 10px; padding: 2px 8px; border-radius: 6px;
+      font-weight: 500; margin-bottom: 4px;
+    }
+    .tag-red { background: #fff0f2; color: var(--ks-red); }
+    .tag-orange { background: var(--ks-orange-light); color: var(--ks-orange); }
+    .tag-green { background: var(--ks-green-light); color: var(--ks-green); }
+    .tag-blue { background: var(--ks-blue-light); color: var(--ks-blue); }
+    .product-name { font-size: 15px; font-weight: 600; color: var(--gray-9); }
+    .product-sub { font-size: 12px; color: var(--gray-5); margin-top: 2px; }
+
+    .product-card-body { padding: 14px 16px; }
+
+    /* 产品核心指标展示 */
+    .product-metrics {
+      display: flex; gap: 0;
+      border: 1px solid var(--gray-2); border-radius: var(--radius-md);
+      overflow: hidden; margin-bottom: 12px;
+    }
+    .product-metric {
+      flex: 1; text-align: center; padding: 10px 8px;
+      border-right: 1px solid var(--gray-2);
+    }
+    .product-metric:last-child { border-right: none; }
+    .metric-val {
+      font-size: 20px; font-weight: 700; color: var(--ks-red);
+      line-height: 1.2;
+    }
+    .metric-val.green { color: var(--ks-green); }
+    .metric-val.blue { color: var(--ks-blue); }
+    .metric-val.orange { color: var(--ks-orange); }
+    .metric-val small { font-size: 12px; font-weight: 400; }
+    .metric-label { font-size: 11px; color: var(--gray-5); margin-top: 3px; }
+
+    /* 产品理由 */
+    .product-reason {
+      font-size: 12px; color: var(--gray-5); line-height: 1.7;
+      padding: 10px 12px; background: var(--gray-1);
+      border-radius: var(--radius-sm); margin-bottom: 12px;
+    }
+    .product-reason strong { color: var(--ks-red); }
+
+    /* 操作按钮 */
+    .btn-invest {
+      width: 100%; height: 42px;
+      border: none; border-radius: var(--radius-xl);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      background: linear-gradient(135deg, var(--ks-red), #ff4f6e);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(232,17,45,0.25);
+    }
+    .btn-invest.green { background: var(--ks-green); box-shadow: none; }
+    .btn-invest.blue { background: var(--ks-blue); box-shadow: none; }
+    .btn-invest.orange { background: var(--ks-orange); box-shadow: none; }
+
+    /* 年金计算器 */
+    .annuity-calc {
+      background: linear-gradient(135deg, #fff0f2 0%, #fff8f0 100%);
+      border: 1px solid #ffd0d8; border-radius: var(--radius-lg);
+      padding: 16px; margin-bottom: 12px;
+    }
+    .annuity-calc-title {
+      font-size: 14px; font-weight: 600; color: var(--gray-9);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+    }
+    .calc-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    }
+    .calc-label { font-size: 13px; color: var(--gray-7); white-space: nowrap; }
+    .calc-input {
+      flex: 1; height: 38px; border: 1.5px solid #ffc0c8; border-radius: 8px;
+      padding: 0 10px; font-size: 15px; font-weight: 600; color: var(--ks-red);
+      background: #fff; outline: none; text-align: center;
+    }
+    .calc-input:focus { border-color: var(--ks-red); }
+    .calc-select {
+      flex: 1; height: 38px; border: 1.5px solid #ffc0c8; border-radius: 8px;
+      padding: 0 10px; font-size: 13px; color: var(--gray-9);
+      background: #fff; outline: none; appearance: none;
+    }
+    .calc-result-box {
+      background: #fff; border-radius: var(--radius-md);
+      border: 1px solid #ffd0d8; padding: 12px 14px;
+      margin-top: 12px;
+    }
+    .calc-result-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .calc-result-row:last-child { margin-bottom: 0; }
+    .calc-result-label { font-size: 12px; color: var(--gray-5); }
+    .calc-result-val { font-size: 15px; font-weight: 700; color: var(--ks-red); }
+    .calc-result-val.gray { color: var(--gray-5); font-size: 13px; font-weight: 400; }
+
+    /* 收益对比曲线（纯CSS实现） */
+    .growth-chart {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 16px; margin-bottom: 12px;
+      border: 1px solid var(--gray-2);
+    }
+    .growth-chart-title {
+      font-size: 14px; font-weight: 600; color: var(--gray-9);
+      margin-bottom: 4px;
+    }
+    .growth-chart-sub { font-size: 12px; color: var(--gray-5); margin-bottom: 14px; }
+    .growth-table { width: 100%; border-collapse: collapse; }
+    .growth-table th {
+      font-size: 11px; color: var(--gray-5); font-weight: 500;
+      padding: 4px 8px; text-align: right; border-bottom: 1px solid var(--gray-2);
+    }
+    .growth-table th:first-child { text-align: left; }
+    .growth-table td {
+      font-size: 13px; padding: 8px 8px; text-align: right;
+      border-bottom: 1px solid var(--gray-2);
+    }
+    .growth-table td:first-child { text-align: left; color: var(--gray-7); font-size: 12px; }
+    .growth-table tr:last-child td { border-bottom: none; }
+    .growth-table .red-val { color: var(--ks-red); font-weight: 700; }
+    .growth-table .gray-val { color: var(--gray-5); }
+    .growth-table .highlight-row td { background: #fff5f7; }
+
+    /* 习惯路径卡 */
+    .habit-card {
+      background: linear-gradient(135deg, #fff8e6 0%, #fff3ef 100%);
+      border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px;
+      border: 1px solid #ffe0cc;
+    }
+    .habit-title {
+      font-size: 14px; font-weight: 600; color: var(--gray-9);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .habit-progress-wrap {
+      background: var(--gray-2); border-radius: 10px; height: 8px;
+      margin-bottom: 8px; overflow: hidden;
+    }
+    .habit-progress-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--ks-orange), var(--ks-yellow));
+    }
+    .habit-progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--gray-5); margin-bottom: 4px;
+    }
+    .habit-steps { display: flex; gap: 0; margin-top: 14px; }
+    .habit-step {
+      flex: 1; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      position: relative;
+    }
+    .habit-step:not(:last-child)::after {
+      content: '→'; position: absolute; right: -8px; top: 10px;
+      font-size: 14px; color: var(--gray-3);
+    }
+    .habit-step-dot {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+    }
+    .step-done { background: var(--ks-green); color: #fff; }
+    .step-active { background: var(--ks-orange); color: #fff; }
+    .step-todo { background: var(--gray-2); color: var(--gray-5); }
+    .habit-step-label { font-size: 10px; color: var(--gray-5); line-height: 1.4; max-width: 60px; }
+
+    /* 分节标题 */
+    .section-title {
+      font-size: 14px; font-weight: 600; color: var(--gray-9);
+      padding: 4px 0 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .section-divider {
+      font-size: 12px; color: var(--gray-5);
+      text-align: center; margin: 6px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-divider::before,
+    .section-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray-2);
+    }
+
+    /* 短期产品列表 */
+    .short-product-list { display: flex; flex-direction: column; gap: 8px; }
+    .short-product-item {
+      display: flex; align-items: center; gap: 12px;
+      background: #fff; border-radius: var(--radius-md);
+      padding: 12px 14px; border: 1px solid var(--gray-2);
+      cursor: pointer; transition: border 0.2s;
+    }
+    .short-product-item:active { border-color: var(--ks-orange); }
+    .spi-rate { font-size: 22px; font-weight: 700; color: var(--ks-orange); width: 70px; flex-shrink: 0; }
+    .spi-rate small { font-size: 11px; color: var(--gray-5); font-weight: 400; display: block; }
+    .spi-info { flex: 1; }
+    .spi-name { font-size: 13px; font-weight: 600; color: var(--gray-9); margin-bottom: 2px; }
+    .spi-sub { font-size: 11px; color: var(--gray-5); }
+    .spi-tag { font-size: 10px; padding: 2px 7px; border-radius: 6px; font-weight: 500; flex-shrink: 0; }
+
+    /* 免责声明 */
+    .disclaimer {
+      font-size: 11px; color: var(--gray-5); line-height: 1.7;
+      padding: 12px 0; text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══════════════ PAGE 0: 欢迎页 ═══════════════ -->
+<div id="page-welcome" class="page active">
+  <div class="scroll-body">
+    <div class="step-indicator">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+
+    <!-- 主Banner：展示最高年化利率 -->
+    <div class="welcome-hero">
+      <div class="welcome-hero-badge">🏆 快手钱包·保险严选</div>
+      <div class="welcome-hero-rate"><sup>最高</sup>3.5<sub>%</sub></div>
+      <div class="welcome-hero-title">年化保证利率 · 写入保险合同</div>
+      <div class="welcome-hero-promise">
+        <div class="promise-tag">📋 合同保证</div>
+        <div class="promise-tag">🛡️ 保险法护航</div>
+        <div class="promise-tag">🏛️ 银保监会监管</div>
+      </div>
+    </div>
+
+    <!-- 收益对比可视化 -->
+    <div class="compare-card">
+      <div class="compare-title">📊 同样存¥10,000，一年后多赚多少？</div>
+      <div class="compare-row">
+        <div class="compare-label">银行活期</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar bank" style="width:20%">0.2%</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">余额宝</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar yebao" style="width:40%">1.4%</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">活钱保</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar active-bao" style="width:50%">1.8%</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">储蓄险</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar savings" style="width:88%">3.0~3.5%</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--gray-5);margin-top:8px;">
+        *储蓄险需持有一定年限，活钱保可随时取。利率仅供参考。
+      </div>
+    </div>
+
+    <!-- 信任背书 -->
+    <div class="trust-bar">
+      <div class="trust-item">
+        <div class="trust-icon">📋</div>
+        <div class="trust-text"><strong>合同锁定利率</strong>不随市场波动</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🛡️</div>
+        <div class="trust-text"><strong>保险法保护</strong>公司不得单方变更</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🏛️</div>
+        <div class="trust-text"><strong>银保监会监管</strong>资金安全有保障</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">💡</div>
+        <div class="trust-text"><strong>30秒规划</strong>基于你的钱包数据</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      🔒 数据仅用于本次规划，不存储个人信息<br>
+      所有推荐仅供参考，具体以产品合同为准
+    </div>
+  </div>
+
+  <div class="footer-btn-wrap">
+    <button class="btn-primary" onclick="goToSnapshot()">查看我的专属方案 →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 1: 财务快照页 ═══════════════ -->
+<div id="page-snapshot" class="page">
+  <div class="nav">
+    <button class="nav-back" onclick="goBack()">←</button>
+    <div class="nav-title">填写财务信息</div>
+    <div class="nav-step">1/2</div>
+  </div>
+
+  <div class="scroll-body">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+    </div>
+
+    <div class="snapshot-header">
+      <h3>📱 你的快手钱包数据</h3>
+      <div class="snapshot-data-row">
+        <div class="snapshot-data-item">
+          <div class="snapshot-data-label">当前零钱余额</div>
+          <div class="snapshot-data-val" id="disp-balance">--<span> 元</span></div>
+        </div>
+        <div class="snapshot-data-item">
+          <div class="snapshot-data-label">近90天月均消费</div>
+          <div class="snapshot-data-val" id="disp-monthly">--<span> 元</span></div>
+        </div>
+      </div>
+      <div class="income-diff-bar" id="income-diff">
+        你的余额若存入储蓄险，一年后预计多赚
+        <strong id="income-diff-num" style="font-size:18px;"> -- </strong> 元
+      </div>
+    </div>
+
+    <div class="gap-alert" id="gap-alert">
+      <div class="gap-alert-title">⚠️ 消费-储蓄缺口较大</div>
+      <div class="gap-alert-desc" id="gap-alert-desc"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">确认你的信息 <span class="card-title-badge">可修改</span></div>
+      <div class="form-row">
+        <div class="form-item">
+          <div class="form-label">零钱余额（元）<span class="auto-tag">自动获取</span></div>
+          <input class="form-input" type="number" id="input-balance" placeholder="请输入" oninput="onFormChange()" />
+        </div>
+        <div class="form-item">
+          <div class="form-label">月均收入估算（元）<span class="auto-tag">自动估算</span></div>
+          <input class="form-input" type="number" id="input-income" placeholder="请输入" oninput="onFormChange()" />
+        </div>
+        <div class="form-item">
+          <div class="form-label">近90天月均消费（元）<span class="auto-tag">自动获取</span></div>
+          <input class="form-input" type="number" id="input-monthly" placeholder="请输入" oninput="onFormChange()" />
+        </div>
+        <div class="form-item">
+          <div class="form-label">你的年龄</div>
+          <select class="form-select" id="input-age" onchange="onFormChange()">
+            <option value="">请选择</option>
+            <option value="22">25岁以下</option>
+            <option value="27">25-30岁</option>
+            <option value="35">30-40岁</option>
+            <option value="45">40岁以上</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <div class="form-label">家庭状况</div>
+          <select class="form-select" id="input-family" onchange="onFormChange()">
+            <option value="single">单身/无子女</option>
+            <option value="couple">已婚/无子女</option>
+            <option value="parent">有子女（有教育支出）</option>
+            <option value="multi">多重家庭责任</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <div class="form-label">理财目标</div>
+          <select class="form-select" id="input-goal" onchange="onFormChange()">
+            <option value="habit">先养成存钱习惯</option>
+            <option value="protect">家庭保障为主</option>
+            <option value="grow">资产保值增值</option>
+            <option value="pension">养老规划</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <div class="form-label">每月可投入金额（元）<span class="auto-tag">建议值</span></div>
+          <input class="form-input" type="number" id="input-invest" placeholder="请输入" oninput="onFormChange()" />
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">数据仅用于本次规划，不会上传或存储</div>
+  </div>
+
+  <div class="footer-btn-wrap">
+    <button class="btn-primary" id="btn-calc" onclick="calcAndShowResult()">生成我的专属保险方案 →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 2: 推荐结果页 ═══════════════ -->
+<div id="page-result" class="page">
+  <div class="nav">
+    <button class="nav-back" onclick="goBack()">←</button>
+    <div class="nav-title">我的保险方案</div>
+    <div class="nav-step">2/2</div>
+  </div>
+
+  <div class="scroll-body">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+    </div>
+
+    <div class="result-header" id="result-header">
+      <div class="level-tag">🎯 <span id="result-level-tag">成长期用户</span></div>
+      <h3 id="result-title">你的专属保险方案</h3>
+      <p id="result-desc">根据你的财务状况，为你量身定制以下保险规划</p>
+    </div>
+
+    <div class="score-bar-wrap">
+      <div class="score-bar-title">📈 你的财务健康评分</div>
+      <div class="score-dim">
+        <div class="score-dim-label">财富水位</div>
+        <div class="score-dim-bar"><div class="score-dim-fill" id="bar-wealth" style="width:0%"></div></div>
+        <div class="score-dim-val" id="val-wealth">-</div>
+      </div>
+      <div class="score-dim">
+        <div class="score-dim-label">消费能力</div>
+        <div class="score-dim-bar"><div class="score-dim-fill" id="bar-consume" style="width:0%"></div></div>
+        <div class="score-dim-val" id="val-consume">-</div>
+      </div>
+      <div class="score-dim">
+        <div class="score-dim-label">余额稳定</div>
+        <div class="score-dim-bar"><div class="score-dim-fill" id="bar-stable" style="width:0%"></div></div>
+        <div class="score-dim-val" id="val-stable">-</div>
+      </div>
+      <div class="score-dim">
+        <div class="score-dim-label">人生阶段</div>
+        <div class="score-dim-bar"><div class="score-dim-fill" id="bar-stage" style="width:0%"></div></div>
+        <div class="score-dim-val" id="val-stage">-</div>
+      </div>
+      <div class="score-dim">
+        <div class="score-dim-label">家庭责任</div>
+        <div class="score-dim-bar"><div class="score-dim-fill" id="bar-family" style="width:0%"></div></div>
+        <div class="score-dim-val" id="val-family">-</div>
+      </div>
+    </div>
+
+    <div id="recommendation-area"></div>
+
+    <div class="disclaimer">
+      以上推荐仅供参考，具体收益以保险合同为准<br>
+      保险产品由合作保险公司承保，快手钱包提供技术服务
+    </div>
+  </div>
+
+  <div class="footer-btn-wrap">
+    <button class="btn-primary" onclick="showToast('产品咨询功能即将上线，敬请期待！')">立即咨询 · 0手续费投保</button>
+    <button class="btn-secondary" onclick="goToSnapshot()">重新调整信息</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//   产品数据层
+// ═══════════════════════════════════════════════════
+const PRODUCTS = {
+  // 活钱保系列（短期灵活）
+  flexible: {
+    id: 'flexible',
+    icon: '💰', bgColor: '#fff3ef',
+    tag: '🟠 随存随取', tagClass: 'tag-orange',
+    name: '快手活钱保·灵活版',
+    sub: '保险公司保障 · 随时取用 · 节假日不断收益',
+    rate: 1.80, rateStr: '1.80%',
+    minAmt: 1, holdDays: 0,
+    metrics: [
+      { val: '1.80%', label: '近7日年化', color: 'orange' },
+      { val: '¥1', label: '起存金额', color: '' },
+      { val: '秒到账', label: '赎回速度', color: '' },
+    ],
+    btnText: '立即存入活钱保',
+    btnClass: 'orange',
+  },
+  short30: {
+    id: 'short30',
+    icon: '📅', bgColor: '#e8faf3',
+    tag: '🟢 短期稳收益', tagClass: 'tag-green',
+    name: '稳享30天',
+    sub: '锁定30天 · 收益超余额宝 · 到期自动续',
+    rate: 2.60, rateStr: '2.60%',
+    minAmt: 100, holdDays: 30,
+    metrics: [
+      { val: '2.60%', label: '成立以来年化', color: 'green' },
+      { val: '¥100', label: '起存金额', color: '' },
+      { val: '30天', label: '建议持有', color: '' },
+    ],
+    btnText: '存入稳享30天',
+    btnClass: 'green',
+  },
+  short180: {
+    id: 'short180',
+    icon: '📈', bgColor: '#e8faf3',
+    tag: '🟢 中期优选', tagClass: 'tag-green',
+    name: '稳享180天',
+    sub: '持有半年 · 收益行业前列 · 新品首发',
+    rate: 2.80, rateStr: '2.80%',
+    minAmt: 500, holdDays: 180,
+    metrics: [
+      { val: '2.80%', label: '成立以来年化', color: 'green' },
+      { val: '¥500', label: '起存金额', color: '' },
+      { val: '180天', label: '建议持有', color: '' },
+    ],
+    btnText: '存入稳享180天',
+    btnClass: 'green',
+  },
+  annuity: {
+    id: 'annuity',
+    icon: '🌅', bgColor: '#fff5f7',
+    tag: '⭐ 养老首选', tagClass: 'tag-red',
+    name: '快手国民年金保险',
+    sub: '养老规划 · 按月领取 · 活多久领多久',
+    rate: 3.20, rateStr: '3.2%',
+    minAmt: 100, holdDays: -1,
+    metrics: [
+      { val: '3.2%', label: '保证利率', color: '' },
+      { val: '¥100', label: '月缴最低', color: '' },
+      { val: '终身', label: '领取年限', color: '' },
+    ],
+    btnText: '查看年金险详情',
+    btnClass: '',
+  },
+  savings_life: {
+    id: 'savings_life',
+    icon: '🏦', bgColor: '#fff0f2',
+    tag: '⭐ 储蓄首选', tagClass: 'tag-red',
+    name: '快手稳盈增额终身寿',
+    sub: '保额逐年递增 · 保障+储蓄一体 · 灵活减保',
+    rate: 3.50, rateStr: '3.5%',
+    minAmt: 500, holdDays: -1,
+    metrics: [
+      { val: '3.5%', label: '保证利率', color: '' },
+      { val: '¥500', label: '月缴最低', color: '' },
+      { val: '终身', label: '保障期限', color: '' },
+    ],
+    btnText: '查看增额终身寿详情',
+    btnClass: '',
+  },
+  child_edu: {
+    id: 'child_edu',
+    icon: '🎒', bgColor: '#fff0f6',
+    tag: '🌸 亲子专属', tagClass: 'tag-red',
+    name: '少儿成长金（教育年金）',
+    sub: '专为子女教育储备 · 按学段定时领取',
+    rate: 3.30, rateStr: '3.3%',
+    minAmt: 200, holdDays: -1,
+    metrics: [
+      { val: '3.3%', label: '保证利率', color: '' },
+      { val: '¥200', label: '月缴最低', color: '' },
+      { val: '定时领', label: '领取方式', color: '' },
+    ],
+    btnText: '了解少儿教育金',
+    btnClass: '',
+  },
+};
+
+// ═══════════════════════════════════════════════════
+//   模拟数据（实际接入替换为真实 API）
+// ═══════════════════════════════════════════════════
+const MOCK_USER = {
+  balance: 3200,
+  monthly_spend: 2800,
+  balance_trend: 3,
+  age: 32,
+  has_baby_consume: true,
+  income_estimate: 7500,
+};
+
+// ═══════════════════════════════════════════════════
+//   页面状态
+// ═══════════════════════════════════════════════════
+let currentPage = 'page-welcome';
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  currentPage = id;
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  if (currentPage === 'page-snapshot') showPage('page-welcome');
+  else if (currentPage === 'page-result') showPage('page-snapshot');
+}
+
+// ═══════════════════════════════════════════════════
+//   欢迎页 → 财务快照
+// ═══════════════════════════════════════════════════
+function goToSnapshot() {
+  document.getElementById('disp-balance').innerHTML = MOCK_USER.balance + '<span> 元</span>';
+  document.getElementById('disp-monthly').innerHTML = MOCK_USER.monthly_spend + '<span> 元</span>';
+
+  document.getElementById('input-balance').value = MOCK_USER.balance;
+  document.getElementById('input-monthly').value = MOCK_USER.monthly_spend;
+  document.getElementById('input-income').value = MOCK_USER.income_estimate;
+  document.getElementById('input-invest').value = Math.round(MOCK_USER.income_estimate * 0.15);
+
+  const age = MOCK_USER.age;
+  document.getElementById('input-age').value = age < 25 ? '22' : age < 30 ? '27' : age < 40 ? '35' : '45';
+  document.getElementById('input-family').value = MOCK_USER.has_baby_consume ? 'parent' : 'single';
+
+  onFormChange();
+  showPage('page-snapshot');
+}
+
+function onFormChange() {
+  checkGapAlert();
+  updateIncomeDiff();
+}
+
+// 消费-储蓄缺口警示
+function checkGapAlert() {
+  const balance = parseFloat(document.getElementById('input-balance').value) || 0;
+  const monthly = parseFloat(document.getElementById('input-monthly').value) || 0;
+  const alertEl = document.getElementById('gap-alert');
+  const descEl = document.getElementById('gap-alert-desc');
+
+  if (monthly > 1000 && balance < monthly) {
+    const suggestSave = Math.round(monthly * 0.15);
+    const monthsToTarget = Math.ceil(3000 / suggestSave);
+    descEl.textContent = `月消费 ${monthly} 元，但余额仅 ${balance} 元，储蓄率偏低。建议每月存入 ${suggestSave} 元，约 ${monthsToTarget} 个月后可开通储蓄险。`;
+    alertEl.classList.add('show');
+  } else {
+    alertEl.classList.remove('show');
+  }
+}
+
+// 收益差异提示（存入储蓄险 vs 放着不动）
+function updateIncomeDiff() {
+  const balance = parseFloat(document.getElementById('input-balance').value) || 0;
+  const diffEl = document.getElementById('income-diff');
+  const numEl = document.getElementById('income-diff-num');
+  if (balance >= 500) {
+    // 储蓄险3.5% vs 银行活期0.2%，差3.3%
+    const extra = Math.round(balance * 0.033);
+    numEl.textContent = extra.toLocaleString();
+    diffEl.classList.add('show');
+  } else {
+    diffEl.classList.remove('show');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//   评分引擎
+// ═══════════════════════════════════════════════════
+function calcScore(data) {
+  let wealth = 1;
+  if (data.balance >= 10000) wealth = 4;
+  else if (data.balance >= 3000) wealth = 3;
+  else if (data.balance >= 1000) wealth = 2;
+
+  let consume = 1;
+  if (data.monthly >= 5000) consume = 4;
+  else if (data.monthly >= 2000) consume = 3;
+  else if (data.monthly >= 500) consume = 2;
+
+  let stable = 1;
+  const ratio = data.balance / (data.monthly || 1);
+  if (ratio >= 3) stable = 4;
+  else if (ratio >= 1.5) stable = 3;
+  else if (ratio >= 0.5) stable = 2;
+
+  let stage = 1;
+  if (data.age >= 40) stage = 4;
+  else if (data.age >= 30) stage = 3;
+  else if (data.age >= 25) stage = 2;
+
+  const familyMap = { single: 1, couple: 2, parent: 3, multi: 4 };
+  const family = familyMap[data.family] || 1;
+
+  const total = wealth*0.25 + consume*0.25 + stable*0.20 + stage*0.15 + family*0.15;
+  return { total: parseFloat(total.toFixed(2)), wealth, consume, stable, stage, family };
+}
+
+function getLevel(total) {
+  if (total >= 3.4) return { code: 'L4', name: '成熟期', tag: '🏆 成熟期用户', color: 'linear-gradient(135deg,#e8112d 0%,#c00 100%)', desc: '你已具备清晰的财务规划能力，是布局长期储蓄险和年金险的最佳时机。' };
+  if (total >= 2.6) return { code: 'L3', name: '成长期', tag: '🌿 成长期用户', color: 'linear-gradient(135deg,#e8112d 0%,#ff6b4a 100%)', desc: '正处于财富积累黄金阶段，推荐储蓄险锁定长期收益，配置家庭保障。' };
+  if (total >= 1.8) return { code: 'L2', name: '积累期', tag: '🌱 积累期用户', color: 'linear-gradient(135deg,#ff5f2e 0%,#ff8c5a 100%)', desc: '余额积累已初具规模，可从短期稳健产品起步，逐步过渡到储蓄险。' };
+  return { code: 'L1', name: '起步期', tag: '🌾 起步期用户', color: 'linear-gradient(135deg,#FAAD14 0%,#f90 100%)', desc: '先从灵活存款养成存钱习惯，余额达标后解锁更高收益的保险产品。' };
+}
+
+// ═══════════════════════════════════════════════════
+//   产品卡片 HTML 模板
+// ═══════════════════════════════════════════════════
+function renderProductCard(p, featured, reason) {
+  const metricsHtml = p.metrics.map(m =>
+    `<div class="product-metric">
+      <div class="metric-val ${m.color}">${m.val}</div>
+      <div class="metric-label">${m.label}</div>
+    </div>`
+  ).join('');
+
+  return `
+    <div class="product-card${featured ? ' featured' : ''}">
+      <div class="product-card-header">
+        <div class="product-icon-box" style="background:${p.bgColor}">${p.icon}</div>
+        <div class="product-meta">
+          <div class="product-tag ${p.tagClass}">${p.tag}</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-sub">${p.sub}</div>
+        </div>
+      </div>
+      <div class="product-card-body">
+        <div class="product-metrics">${metricsHtml}</div>
+        <div class="product-reason">${reason}</div>
+        <button class="btn-invest ${p.btnClass}" onclick="showToast('即将跳转产品详情，敬请期待！')">${p.btnText}</button>
+      </div>
+    </div>`;
+}
+
+// 年金险计算器
+function renderAnnuityCalc(invest) {
+  return `
+    <div class="annuity-calc">
+      <div class="annuity-calc-title">🧮 年金险收益计算器</div>
+      <div class="calc-row">
+        <div class="calc-label">每月缴费</div>
+        <input class="calc-input" type="number" id="calc-invest" value="${invest}" oninput="updateCalcResult()" />
+        <div class="calc-label">元</div>
+      </div>
+      <div class="calc-row">
+        <div class="calc-label">缴费期限</div>
+        <select class="calc-select" id="calc-years" onchange="updateCalcResult()">
+          <option value="10">10年</option>
+          <option value="15" selected>15年</option>
+          <option value="20">20年</option>
+          <option value="30">30年</option>
+        </select>
+      </div>
+      <div class="calc-result-box" id="calc-result-box">
+        <div class="calc-result-row">
+          <div class="calc-result-label">累计缴费</div>
+          <div class="calc-result-val gray" id="calc-total-in">计算中...</div>
+        </div>
+        <div class="calc-result-row">
+          <div class="calc-result-label">60岁时累计账户价值</div>
+          <div class="calc-result-val" id="calc-total-out">计算中...</div>
+        </div>
+        <div class="calc-result-row">
+          <div class="calc-result-label">每年可领取年金</div>
+          <div class="calc-result-val" id="calc-annual">计算中...</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// 储蓄险成长对比表
+function renderGrowthTable(invest) {
+  const rate = 0.035;
+  const years = [5, 10, 15, 20];
+  const bankRate = 0.025; // 银行3年定存
+  let rows = '';
+  years.forEach(y => {
+    const totalIn = invest * 12 * y;
+    const savingsVal = Math.round(totalIn * Math.pow(1 + rate, y) * 0.95); // 简化估算
+    const bankVal = Math.round(totalIn * Math.pow(1 + bankRate, y));
+    const isHighlight = y === 10;
+    rows += `<tr${isHighlight ? ' class="highlight-row"' : ''}>
+      <td>第 ${y} 年</td>
+      <td class="gray-val">¥${totalIn.toLocaleString()}</td>
+      <td class="gray-val">¥${bankVal.toLocaleString()}</td>
+      <td class="red-val">¥${savingsVal.toLocaleString()}</td>
+    </tr>`;
+  });
+
+  return `
+    <div class="growth-chart">
+      <div class="growth-chart-title">📊 储蓄险长期价值对比</div>
+      <div class="growth-chart-sub">月缴 ¥${invest}，到期账户价值预测</div>
+      <table class="growth-table">
+        <thead>
+          <tr>
+            <th>年份</th>
+            <th>累计缴费</th>
+            <th>银行定存</th>
+            <th>稳盈终身寿</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="font-size:11px;color:var(--gray-5);margin-top:8px;">
+        *以月缴¥${invest}、保证利率3.5%估算，实际以合同条款为准
+      </div>
+    </div>`;
+}
+
+// 习惯养成卡
+function renderHabitCard(invest, balance) {
+  const target = Math.max(3000, invest * 6);
+  const pct = Math.min(100, Math.round((balance / target) * 100));
+  const monthsLeft = balance >= target ? 0 : Math.ceil((target - balance) / invest);
+
+  return `
+    <div class="habit-card">
+      <div class="habit-title">⚡ 存钱习惯养成计划</div>
+      <div style="font-size:13px;color:var(--gray-7);margin-bottom:10px;line-height:1.6;">
+        每月存入 <strong style="color:var(--ks-orange)">¥${invest}</strong>，
+        ${monthsLeft > 0 ? monthsLeft + ' 个月后' : '现在即可'}解锁储蓄险资格
+      </div>
+      <div class="habit-progress-label">
+        <span>当前余额 ¥${balance}</span>
+        <span>目标 ¥${target}</span>
+      </div>
+      <div class="habit-progress-wrap">
+        <div class="habit-progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="habit-steps">
+        <div class="habit-step">
+          <div class="habit-step-dot step-active">1</div>
+          <div class="habit-step-label">活钱保<br>养成习惯</div>
+        </div>
+        <div class="habit-step">
+          <div class="habit-step-dot step-todo">2</div>
+          <div class="habit-step-label">余额达标<br>¥${target}</div>
+        </div>
+        <div class="habit-step">
+          <div class="habit-step-dot step-todo">3</div>
+          <div class="habit-step-label">解锁<br>储蓄险</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// 短期产品列表
+function renderShortList() {
+  const items = [
+    { ...PRODUCTS.flexible },
+    { ...PRODUCTS.short30 },
+    { ...PRODUCTS.short180 },
+    { rate: 2.66, rateStr: '2.66%', name: '稳享365天', sub: '持有1年·行业收益第一', tag: '行业第一', tagBg: '#e8faf3', tagColor: 'var(--ks-green)', holdLabel: '365天', holdDays: 365 },
+  ];
+  const html = items.map(p => `
+    <div class="short-product-item" onclick="showToast('即将跳转产品详情，敬请期待！')">
+      <div class="spi-rate">${p.rateStr}<small>年化收益</small></div>
+      <div class="spi-info">
+        <div class="spi-name">${p.name}</div>
+        <div class="spi-sub">${p.sub || (p.holdDays === 0 ? '随时可取' : `建议持有${p.holdDays}天`)}</div>
+      </div>
+      ${p.tag ? `<div class="spi-tag" style="background:${p.tagBg||'var(--ks-orange-light)'};color:${p.tagColor||'var(--ks-orange)'}">${p.tag}</div>` : '<div style="font-size:18px;">›</div>'}
+    </div>
+  `).join('');
+  return `<div class="short-product-list">${html}</div>`;
+}
+
+// ═══════════════════════════════════════════════════
+//   推荐逻辑矩阵（三维路由）
+//   余额 × 年龄 × 目标 → 产品组合
+// ═══════════════════════════════════════════════════
+function buildRecommendations(data, score, level) {
+  let html = '';
+  const invest = parseFloat(document.getElementById('input-invest').value) || Math.round(data.monthly * 0.15);
+  const goal = document.getElementById('input-goal').value;
+
+  const isHighConsumeGap = data.monthly > 1000 && data.balance < data.monthly;
+  const isYoung = data.age < 25;
+  const isMiddle = data.age >= 25 && data.age < 40;
+  const isSenior = data.age >= 40;
+  const hasFamilyNeeds = data.family === 'parent' || data.family === 'multi';
+  const isPensionGoal = goal === 'pension';
+  const isGrowGoal = goal === 'grow';
+  const isHighBalance = data.balance >= 5000;
+
+  // ─── 路径 A：余额不足，先养成习惯 ───
+  if (isHighConsumeGap || level.code === 'L1') {
+    html += `<div class="section-title">📌 第一步：养成存钱习惯</div>`;
+    html += renderHabitCard(invest, data.balance);
+
+    html += `<div class="section-title">💡 适合现在的起步产品</div>`;
+    html += renderShortList();
+
+    html += `<div class="section-divider">— 余额积累后，解锁以下高收益产品 —</div>`;
+  }
+
+  // ─── 路径 B：有子女 → 教育年金 ───
+  if (hasFamilyNeeds && !isHighConsumeGap) {
+    html += `<div class="section-title">🎒 家庭保障 · 子女教育金</div>`;
+    html += renderProductCard(
+      PRODUCTS.child_edu,
+      true,
+      `检测到你有<strong>子女教育类消费</strong>，孩子教育金是家庭支出的重要一环。少儿教育年金在孩子升学时定时领取，保证 <strong>3.3% 利率</strong>，比银行定存高 130%，专款专用不动摇。`
+    );
+  }
+
+  // ─── 路径 C：养老目标 / 中老年用户 → 年金险 ───
+  if (isPensionGoal || isSenior || (isMiddle && !isHighConsumeGap)) {
+    html += `<div class="section-title">🌅 ${isPensionGoal || isSenior ? '养老规划 · 年金险首推' : '中期规划 · 年金险配置'}</div>`;
+    html += renderProductCard(
+      PRODUCTS.annuity,
+      true,
+      isSenior
+        ? `40岁以上是规划养老的<strong>黄金窗口期</strong>。年金险保证 <strong>3.2% 复利增长</strong>，60岁起可按月领取，活多久领多久，有效对冲长寿风险。比银行储蓄利率高 3 倍以上。`
+        : `现在开始规划养老，时间是你的最大优势。月缴 ¥${invest} 坚持 <strong>${Math.max(10, 60-data.age)}</strong> 年，退休后每月可领 ¥${Math.round(invest * 2.5).toLocaleString()}+ 养老金。`
+    );
+    html += renderAnnuityCalc(invest);
+  }
+
+  // ─── 路径 D：余额充足 / 增值目标 → 储蓄险 ───
+  if (isHighBalance || isGrowGoal || level.code === 'L3' || level.code === 'L4') {
+    html += `<div class="section-title">🏦 ${level.code === 'L4' ? '核心配置 · 储蓄险旗舰款' : '稳健增值 · 储蓄险推荐'}</div>`;
+    html += renderProductCard(
+      PRODUCTS.savings_life,
+      true,
+      level.code === 'L4'
+        ? `你的余额积累良好，增额终身寿是<strong>高净值用户的核心配置</strong>。保证 <strong>3.5% 复利</strong>，保额逐年递增，支持灵活减保，同时提供身故保障。10年现金价值比银行定存高 <strong>约 25%</strong>。`
+        : `你的零钱存入储蓄险，一年预计多赚 <strong>¥${Math.round(data.balance * 0.033).toLocaleString()}</strong>。增额终身寿保证 3.5% 利率写入合同，远超银行定存，是闲置资金的最优去处。`
+    );
+    html += renderGrowthTable(invest);
+  }
+
+  // ─── L2：过渡路径，给短期产品 ───
+  if (level.code === 'L2' && !isHighBalance) {
+    html += `<div class="section-title">📅 适合你的稳步增值方案</div>`;
+    html += renderShortList();
+  }
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════
+//   年金计算器更新
+// ═══════════════════════════════════════════════════
+function updateCalcResult() {
+  const monthly = parseFloat(document.getElementById('calc-invest')?.value) || 500;
+  const years = parseInt(document.getElementById('calc-years')?.value) || 15;
+  const totalIn = monthly * 12 * years;
+  const rate = 0.032;
+  // 简化：复利终值 × 减保系数
+  const accountVal = Math.round(totalIn * Math.pow(1 + rate, years) * 0.92);
+  const annualPension = Math.round(accountVal * 0.055); // 约5.5%年金化
+
+  const setEl = (id, txt) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  };
+  setEl('calc-total-in', `¥${totalIn.toLocaleString()}`);
+  setEl('calc-total-out', `¥${accountVal.toLocaleString()}`);
+  setEl('calc-annual', `¥${annualPension.toLocaleString()}/年`);
+}
+
+// ═══════════════════════════════════════════════════
+//   计算并展示结果
+// ═══════════════════════════════════════════════════
+function calcAndShowResult() {
+  const balance = parseFloat(document.getElementById('input-balance').value);
+  const monthly = parseFloat(document.getElementById('input-monthly').value);
+  const ageVal = document.getElementById('input-age').value;
+  const family = document.getElementById('input-family').value;
+
+  if (!ageVal || !balance || !monthly) {
+    showToast('请填写完整信息');
+    return;
+  }
+
+  const ageMap = { '22': 22, '27': 27, '35': 35, '45': 45 };
+  const age = ageMap[ageVal] || 27;
+  const data = { balance, monthly, age, family };
+  const score = calcScore(data);
+  const level = getLevel(score.total);
+
+  // 更新结果头部
+  const header = document.getElementById('result-header');
+  header.style.background = level.color;
+  document.getElementById('result-level-tag').textContent = level.tag;
+  document.getElementById('result-title').textContent = `${level.name}用户的专属保险方案`;
+  document.getElementById('result-desc').textContent = level.desc;
+
+  // 更新评分条（延迟触发动画）
+  const setBar = (id, val, valId) => {
+    setTimeout(() => {
+      document.getElementById(id).style.width = ((val / 4) * 100) + '%';
+      document.getElementById(valId).textContent = val.toFixed(1);
+    }, 100);
+  };
+  setBar('bar-wealth', score.wealth, 'val-wealth');
+  setBar('bar-consume', score.consume, 'val-consume');
+  setBar('bar-stable', score.stable, 'val-stable');
+  setBar('bar-stage', score.stage, 'val-stage');
+  setBar('bar-family', score.family, 'val-family');
+
+  // 渲染推荐区域
+  document.getElementById('recommendation-area').innerHTML = buildRecommendations(data, score, level);
+
+  // 初始化计算器
+  setTimeout(updateCalcResult, 200);
+
+  showPage('page-result');
+}
+
+// ═══════════════════════════════════════════════════
+//   Toast
+// ═══════════════════════════════════════════════════
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>

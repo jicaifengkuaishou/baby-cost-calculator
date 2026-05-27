@@ -1,0 +1,107 @@
+<!--pages/fertility/fertility.wxml-->
+<view class="container fertility-page">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-fill" style="width: 33.33%;"></view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">生育规划</view>
+    <view class="page-subtitle">计划生几个宝宝？</view>
+    <view class="step-indicator">2/6</view>
+  </view>
+
+  <!-- 表单内容 -->
+  <view class="form-container">
+    <!-- 孩子数量 -->
+    <view class="input-group card">
+      <view class="input-label">
+        👶 打算生几个孩子
+        <text class="input-required">*</text>
+      </view>
+      <view class="number-selector">
+        <view class="number-grid">
+          <view class="number-item {{childCount === 1 ? 'active' : ''}}" bindtap="selectChildCount" data-count="1">
+            1个
+          </view>
+          <view class="number-item {{childCount === 2 ? 'active' : ''}}" bindtap="selectChildCount" data-count="2">
+            2个
+          </view>
+          <view class="number-item {{childCount === 3 ? 'active' : ''}}" bindtap="selectChildCount" data-count="3">
+            3个
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第一个孩子 -->
+    <view class="input-group card" wx:if="{{childCount >= 1}}">
+      <view class="input-label">
+        🍼 第1个孩子
+      </view>
+      <view class="child-info">
+        <view class="info-row">
+          <text class="info-label">预计出生年份</text>
+          <picker mode="selector" range="{{birthYearList}}" value="{{child1YearIndex}}" bindchange="onChild1YearChange">
+            <view class="picker-inline">
+              {{birthYearList[child1YearIndex]}}
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第二个孩子 -->
+    <view class="input-group card" wx:if="{{childCount >= 2}}">
+      <view class="input-label">
+        🍼 第2个孩子
+      </view>
+      <view class="child-info">
+        <view class="info-row">
+          <text class="info-label">预计出生年份</text>
+          <picker mode="selector" range="{{birthYearList}}" value="{{child2YearIndex}}" bindchange="onChild2YearChange">
+            <view class="picker-inline">
+              {{birthYearList[child2YearIndex]}}
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第三个孩子 -->
+    <view class="input-group card" wx:if="{{childCount >= 3}}">
+      <view class="input-label">
+        🍼 第3个孩子
+      </view>
+      <view class="child-info">
+        <view class="info-row">
+          <text class="info-label">预计出生年份</text>
+          <picker mode="selector" range="{{birthYearList}}" value="{{child3YearIndex}}" bindchange="onChild3YearChange">
+            <view class="picker-inline">
+              {{birthYearList[child3YearIndex]}}
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <!-- 生育提示 -->
+    <view class="tips-card" wx:if="{{childCount >= 2}}">
+      <view class="tips-icon">💡</view>
+      <view class="tips-text">
+        建议孩子间隔2-3年，有助于更好地照顾每个孩子
+      </view>
+    </view>
+  </view>
+
+  <!-- 按钮组 -->
+  <view class="btn-group">
+    <view class="btn-secondary" bindtap="prevStep">
+      ← 上一步
+    </view>
+    <view class="btn-primary" bindtap="nextStep">
+      下一步 →
+    </view>
+  </view>
+</view>
