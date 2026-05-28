@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>快手财富 · 业务整体方案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root{
+    --bg:#0a0e1a;
+    --bg2:#11172a;
+    --card:#161c33;
+    --card2:#1c2440;
+    --line:rgba(255,255,255,.08);
+    --text:#e6e8ef;
+    --muted:#8a93a8;
+    --orange:#ff6e00;
+    --orange2:#ffa340;
+    --blue:#3a82ff;
+    --blue2:#6ab0ff;
+    --green:#16d39a;
+    --red:#ff5b5b;
+    --gold:#ffc857;
+  }
+  html,body{ background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  body{ scroll-behavior:smooth; }
+  /* ===== 整体布局 ===== */
+  .layout{ display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+  /* 左侧目录 */
+  .nav{
+    position:sticky; top:0; height:100vh; padding:32px 20px;
+    background:linear-gradient(180deg,#0d1224 0%,#0a0e1a 100%);
+    border-right:1px solid var(--line);
+    overflow-y:auto;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; margin-bottom:32px; }
+  .brand-logo{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--orange),var(--orange2)); display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:18px; }
+  .brand-title{ font-size:15px; font-weight:700; }
+  .brand-sub{ font-size:11px; color:var(--muted); }
+  .nav-list{ list-style:none; }
+  .nav-list li{ margin-bottom:4px; }
+  .nav-list a{ display:block; padding:10px 12px; color:var(--muted); text-decoration:none; font-size:13px; border-radius:8px; transition:.2s; border-left:2px solid transparent; }
+  .nav-list a:hover{ background:rgba(255,110,0,.08); color:var(--text); }
+  .nav-list a.active{ background:rgba(255,110,0,.12); color:#fff; border-left-color:var(--orange); }
+  .nav-list span{ display:inline-block; width:22px; color:var(--orange); font-weight:700; font-size:12px; }
+
+  /* 主内容 */
+  .main{ padding:60px 80px; max-width:1100px; }
+  section{ margin-bottom:100px; scroll-margin-top:20px; }
+  .section-tag{ display:inline-block; padding:4px 12px; background:rgba(255,110,0,.1); color:var(--orange); border-radius:20px; font-size:12px; margin-bottom:16px; font-weight:600; letter-spacing:1px; }
+  h1{ font-size:42px; font-weight:800; margin-bottom:24px; line-height:1.2; }
+  h1 .accent{ background:linear-gradient(135deg,var(--orange),var(--orange2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  h2{ font-size:30px; font-weight:800; margin-bottom:20px; }
+  h3{ font-size:20px; font-weight:700; margin:24px 0 12px; }
+  p{ color:#b8c0d4; font-size:15px; margin-bottom:12px; }
+
+  /* Hero */
+  .hero{ padding:80px 0 40px; position:relative; }
+  .hero::before{
+    content:''; position:absolute; top:-60px; right:-100px; width:500px; height:500px;
+    background:radial-gradient(circle,rgba(255,110,0,.18) 0%,transparent 70%); pointer-events:none;
+  }
+  .hero h1{ font-size:56px; }
+  .hero .lead{ font-size:18px; color:var(--muted); max-width:680px; margin-bottom:32px; }
+  .hero-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:40px; }
+  .stat{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px 20px; }
+  .stat-num{ font-size:32px; font-weight:800; background:linear-gradient(135deg,var(--orange),var(--orange2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .stat-label{ font-size:13px; color:var(--muted); margin-top:6px; }
+
+  /* 卡片 */
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:24px; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+  /* 表格 */
+  table{ width:100%; border-collapse:collapse; margin:16px 0; background:var(--card); border-radius:12px; overflow:hidden; }
+  th,td{ padding:14px 16px; text-align:left; font-size:14px; border-bottom:1px solid var(--line); }
+  th{ background:var(--card2); color:var(--text); font-weight:700; font-size:13px; letter-spacing:.5px; }
+  td{ color:#c8d0e4; }
+  tr:last-child td{ border-bottom:none; }
+  tr:hover td{ background:rgba(255,255,255,.02); }
+  .badge{ display:inline-block; padding:2px 10px; border-radius:10px; font-size:12px; font-weight:600; }
+  .badge-orange{ background:rgba(255,110,0,.15); color:var(--orange); }
+  .badge-blue{ background:rgba(58,130,255,.15); color:var(--blue2); }
+  .badge-green{ background:rgba(22,211,154,.15); color:var(--green); }
+  .badge-gold{ background:rgba(255,200,87,.15); color:var(--gold); }
+
+  /* 用户分层金字塔 */
+  .pyramid{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:30px 0; }
+  .level{ background:linear-gradient(90deg,var(--card2),var(--card)); border:1px solid var(--line); border-radius:12px; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; transition:.3s; }
+  .level:hover{ transform:translateX(4px); border-color:var(--orange); }
+  .level-l4{ width:30%; background:linear-gradient(90deg,#3a2e1a,#2a2210); border-color:var(--gold); }
+  .level-l3{ width:45%; background:linear-gradient(90deg,#1f2a4a,#152040); border-color:var(--blue); }
+  .level-l2{ width:60%; background:linear-gradient(90deg,#1f3a3a,#152e2e); border-color:var(--green); }
+  .level-l1{ width:75%; background:linear-gradient(90deg,#332010,#231510); border-color:var(--orange); }
+  .level-l0{ width:90%; background:linear-gradient(90deg,#2a1f33,#1f1525); border-color:#a36bff; }
+  .level-name{ font-weight:700; font-size:15px; }
+  .level-pct{ font-size:13px; color:var(--muted); }
+  .level-detail{ font-size:13px; color:#b8c0d4; }
+
+  /* 产品矩阵 */
+  .matrix{ display:grid; grid-template-columns:120px repeat(3,1fr); gap:12px; }
+  .matrix .h{ font-weight:700; padding:12px; background:var(--card2); border-radius:10px; text-align:center; font-size:13px; }
+  .matrix .row-name{ display:flex; align-items:center; padding:0 12px; font-weight:700; font-size:14px; }
+  .product-cell{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:13px; transition:.2s; }
+  .product-cell:hover{ border-color:var(--orange); }
+  .product-cell .pn{ font-weight:700; margin-bottom:2px; }
+  .product-cell .pd{ color:var(--muted); font-size:12px; }
+  .row-active{ border-left:3px solid var(--orange); padding-left:10px; }
+
+  /* 流量场景 */
+  .scene{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; position:relative; overflow:hidden; }
+  .scene::before{ content:''; position:absolute; top:-40px; right:-40px; width:120px; height:120px; border-radius:50%; opacity:.15; }
+  .scene-a::before{ background:var(--orange); }
+  .scene-b::before{ background:var(--blue); }
+  .scene-c::before{ background:var(--green); }
+  .scene-d::before{ background:var(--gold); }
+  .scene-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:12px; }
+  .scene-a .scene-icon{ background:rgba(255,110,0,.15); }
+  .scene-b .scene-icon{ background:rgba(58,130,255,.15); }
+  .scene-c .scene-icon{ background:rgba(22,211,154,.15); }
+  .scene-d .scene-icon{ background:rgba(255,200,87,.15); }
+  .scene h3{ font-size:17px; margin:0 0 6px; }
+  .scene-tag{ font-size:12px; color:var(--muted); margin-bottom:12px; }
+  .scene ul{ list-style:none; }
+  .scene ul li{ padding:6px 0; font-size:13px; color:#c8d0e4; padding-left:18px; position:relative; }
+  .scene ul li::before{ content:'▸'; position:absolute; left:0; color:var(--orange); }
+  .scene-num{ font-size:22px; font-weight:800; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); }
+  .scene-num small{ font-size:12px; color:var(--muted); font-weight:400; }
+
+  /* 漏斗 */
+  .funnel{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:24px 0; }
+  .fr{ display:flex; align-items:center; justify-content:space-between; padding:14px 24px; border-radius:10px; font-weight:600; font-size:14px; }
+  .fr-1{ width:100%; background:linear-gradient(90deg,rgba(255,110,0,.25),rgba(255,110,0,.1)); }
+  .fr-2{ width:80%; background:linear-gradient(90deg,rgba(255,110,0,.3),rgba(255,110,0,.12)); }
+  .fr-3{ width:60%; background:linear-gradient(90deg,rgba(255,110,0,.4),rgba(255,110,0,.15)); }
+  .fr-4{ width:40%; background:linear-gradient(90deg,rgba(255,110,0,.5),rgba(255,110,0,.2)); }
+  .fr-5{ width:25%; background:linear-gradient(90deg,rgba(255,110,0,.7),rgba(255,110,0,.3)); }
+  .fr-6{ width:15%; background:linear-gradient(90deg,rgba(255,110,0,.9),rgba(255,110,0,.4)); }
+  .fr-pct{ font-size:13px; color:#fff; }
+
+  /* 架构图 */
+  .arch{ display:flex; flex-direction:column; gap:8px; margin:20px 0; }
+  .arch-row{ display:flex; align-items:center; padding:18px 24px; border-radius:12px; gap:20px; border:1px solid var(--line); }
+  .arch-row .ar-l{ font-weight:800; font-size:14px; min-width:90px; color:var(--orange); }
+  .arch-row .ar-r{ flex:1; font-size:13px; color:#c8d0e4; }
+  .arch-1{ background:linear-gradient(90deg,rgba(255,110,0,.15),rgba(255,110,0,.04)); }
+  .arch-2{ background:linear-gradient(90deg,rgba(58,130,255,.15),rgba(58,130,255,.04)); }
+  .arch-3{ background:linear-gradient(90deg,rgba(255,91,91,.15),rgba(255,91,91,.04)); }
+  .arch-4{ background:linear-gradient(90deg,rgba(22,211,154,.15),rgba(22,211,154,.04)); }
+  .arch-5{ background:linear-gradient(90deg,rgba(163,107,255,.15),rgba(163,107,255,.04)); }
+
+  /* 牌照 */
+  .license{ display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  .license-status{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .ls-done{ background:var(--green); box-shadow:0 0 8px var(--green); }
+  .ls-doing{ background:var(--gold); box-shadow:0 0 8px var(--gold); }
+  .ls-plan{ background:var(--blue); }
+  .ls-far{ background:#666; }
+  .license-name{ flex:1; font-weight:600; font-size:14px; }
+  .license-time{ font-size:12px; color:var(--muted); }
+
+  /* 时间轴 */
+  .timeline{ position:relative; padding-left:30px; }
+  .timeline::before{ content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background:linear-gradient(180deg,var(--orange),var(--blue),var(--green),var(--gold)); }
+  .tl-item{ position:relative; padding-bottom:30px; }
+  .tl-item::before{ content:''; position:absolute; left:-26px; top:8px; width:14px; height:14px; border-radius:50%; background:var(--bg); border:3px solid var(--orange); }
+  .tl-item:nth-child(2)::before{ border-color:var(--blue); }
+  .tl-item:nth-child(3)::before{ border-color:var(--green); }
+  .tl-item:nth-child(4)::before{ border-color:var(--gold); }
+  .tl-q{ font-weight:800; font-size:18px; margin-bottom:4px; }
+  .tl-theme{ font-size:13px; color:var(--orange); margin-bottom:10px; }
+  .tl-list{ list-style:none; margin:8px 0; }
+  .tl-list li{ font-size:13px; color:#c8d0e4; padding:4px 0; padding-left:18px; position:relative; }
+  .tl-list li::before{ content:'·'; position:absolute; left:6px; color:var(--orange); }
+  .tl-target{ background:var(--card); border-left:3px solid var(--orange); padding:10px 14px; margin-top:10px; font-size:13px; border-radius:6px; }
+
+  /* KPI 表 */
+  .kpi-table th{ text-align:center; }
+  .kpi-table td{ text-align:center; font-weight:600; }
+  .kpi-table td:first-child{ text-align:left; color:var(--muted); }
+  .kpi-table tr:last-child td{ color:var(--orange); font-weight:800; }
+
+  /* footer */
+  .footer{ text-align:center; padding:40px 0; color:var(--muted); font-size:12px; border-top:1px solid var(--line); margin-top:40px; }
+
+  /* responsive */
+  @media (max-width:1024px){
+    .layout{ grid-template-columns:1fr; }
+    .nav{ position:relative; height:auto; }
+    .main{ padding:40px 24px; }
+    .hero h1{ font-size:36px; }
+    .hero-stats{ grid-template-columns:repeat(2,1fr); }
+    .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; }
+    .matrix{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- 左侧目录 -->
+  <aside class="nav">
+    <div class="brand">
+      <div class="brand-logo">K</div>
+      <div>
+        <div class="brand-title">快手财富</div>
+        <div class="brand-sub">业务整体方案 v1.0</div>
+      </div>
+    </div>
+    <ul class="nav-list">
+      <li><a href="#hero" class="active"><span>00</span>方案概览</a></li>
+      <li><a href="#ch1"><span>01</span>战略定位</a></li>
+      <li><a href="#ch2"><span>02</span>用户分层</a></li>
+      <li><a href="#ch3"><span>03</span>产品矩阵</a></li>
+      <li><a href="#ch4"><span>04</span>场景流量</a></li>
+      <li><a href="#ch5"><span>05</span>内容+财富</a></li>
+      <li><a href="#ch6"><span>06</span>技术架构</a></li>
+      <li><a href="#ch7"><span>07</span>合规风险</a></li>
+      <li><a href="#ch8"><span>08</span>运营节奏</a></li>
+      <li><a href="#ch9"><span>09</span>组织目标</a></li>
+      <li><a href="#ch10"><span>10</span>对标分析</a></li>
+    </ul>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="main">
+
+    <!-- Hero -->
+    <section id="hero" class="hero">
+      <div class="section-tag">KUAISHOU WEALTH · 2026 业务规划</div>
+      <h1>懂老铁的<span class="accent">财富管家</span><br>普惠 · 内容 · 场景</h1>
+      <p class="lead">对标蚂蚁财富 / 微信理财通 / 京东金融，基于快手 4 亿 DAU + 老铁信任经济，构建一套"看得懂、买得起、敢托付"的财富业务体系。</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">300亿</div><div class="stat-label">一年期 AUM 目标</div></div>
+        <div class="stat"><div class="stat-num">1500万</div><div class="stat-label">付费用户目标</div></div>
+        <div class="stat"><div class="stat-num">5大</div><div class="stat-label">业务板块</div></div>
+        <div class="stat"><div class="stat-num">4季度</div><div class="stat-label">滚动落地节奏</div></div>
+      </div>
+    </section>
+
+    <!-- Ch1 战略定位 -->
+    <section id="ch1">
+      <div class="section-tag">01 / WHY · 战略定位</div>
+      <h2>为什么快手要做财富业务？</h2>
+      <p>居民可投资资产突破 278 万亿，存款利率持续下行，下沉市场理财渗透率仅 12%。快手坐拥 8 亿 MAU 中国最具信任经济的内容平台，是普惠财富最后一块价值洼地。</p>
+
+      <h3>1.1 行业空间</h3>
+      <div class="grid-3">
+        <div class="card"><div class="stat-num">278<small style="font-size:14px;">万亿</small></div><div class="stat-label">居民可投资资产</div><p style="margin-top:8px;font-size:12px;">2024 数据，年增 8%</p></div>
+        <div class="card"><div class="stat-num">2.3<small style="font-size:14px;">亿</small></div><div class="stat-label">互联网理财用户</div><p style="margin-top:8px;font-size:12px;">渗透率 23%，仍有翻倍空间</p></div>
+        <div class="card"><div class="stat-num">12<small style="font-size:14px;">%</small></div><div class="stat-label">下沉市场渗透率</div><p style="margin-top:8px;font-size:12px;">蓝海市场，快手核心人群</p></div>
+      </div>
+
+      <h3>1.2 快手差异化优势</h3>
+      <table>
+        <tr><th>维度</th><th>优势</th></tr>
+        <tr><td><span class="badge badge-orange">用户规模</span></td><td>DAU 4 亿 / MAU 7 亿，三线及以下占比 <b>64%</b></td></tr>
+        <tr><td><span class="badge badge-blue">信任经济</span></td><td>老铁文化 + 私域强信任，主播-用户关系链可复用到金融顾问</td></tr>
+        <tr><td><span class="badge badge-green">内容场景</span></td><td>短视频 + 直播原生场景，金融教育门槛降低 80%</td></tr>
+        <tr><td><span class="badge badge-gold">支付基础</span></td><td>快手支付已上线，钱包月活破亿，资金留存能力初现</td></tr>
+        <tr><td><span class="badge badge-orange">数据资产</span></td><td>消费、社交、内容偏好数据闭环，驱动精准分层</td></tr>
+      </table>
+
+      <h3>1.3 战略口号 & 北极星</h3>
+      <div class="card" style="background:linear-gradient(135deg,rgba(255,110,0,.12),rgba(255,163,64,.05));border-color:var(--orange);">
+        <div style="font-size:24px;font-weight:800;margin-bottom:10px;">"懂老铁的财富管家"</div>
+        <p style="font-size:15px;color:#fff;">看得懂 · 买得起 · 敢托付</p>
+        <p style="margin-top:12px;font-size:13px;color:var(--muted);">三大主张：内容化 / 普惠化 / 场景化</p>
+      </div>
+      <div class="grid-4" style="margin-top:16px;">
+        <div class="card"><div class="stat-num">300亿</div><div class="stat-label">总 AUM (Y1)</div></div>
+        <div class="card"><div class="stat-num">1500万</div><div class="stat-label">付费用户</div></div>
+        <div class="card"><div class="stat-num">≥35%</div><div class="stat-label">30 日复购</div></div>
+        <div class="card"><div class="stat-num">≥50</div><div class="stat-label">NPS</div></div>
+      </div>
+    </section>
+
+    <!-- Ch2 用户分层 -->
+    <section id="ch2">
+      <div class="section-tag">02 / WHO · 用户分层</div>
+      <h2>5 层金字塔，覆盖全生命周期</h2>
+      <p>参考蚂蚁/理财通五级分层，结合快手用户画像，划分 L0-L4 五层，匹配差异化产品与服务。底层 60% 是快手核心增量人群。</p>
+
+      <div class="pyramid">
+        <div class="level level-l4"><div><div class="level-name">L4 高净值 <span class="badge badge-gold">1%</span></div><div class="level-detail">>100w · 财富传承 → 私募/家办（远期）</div></div></div>
+        <div class="level level-l3"><div><div class="level-name">L3 成熟 <span class="badge badge-blue">4%</span></div><div class="level-detail">10-100w · 资产配置 → 公募基金/FOF/保险组合</div></div></div>
+        <div class="level level-l2"><div><div class="level-name">L2 进阶 <span class="badge badge-green">10%</span></div><div class="level-detail">1-10w · 稳健收益 → 储蓄险/银行理财/债基</div></div></div>
+        <div class="level level-l1"><div><div class="level-name">L1 入门 <span class="badge badge-orange">25%</span></div><div class="level-detail">1k-1w · 比活期多赚 → 活钱宝/短债/找零自动转</div></div></div>
+        <div class="level level-l0"><div><div class="level-name">L0 小白 <span style="background:rgba(163,107,255,.2);color:#a36bff;padding:2px 10px;border-radius:10px;font-size:12px;">60%</span></div><div class="level-detail"><1k · 不亏钱+尝鲜 → 体验金/新人专享/钱袋子</div></div></div>
+      </div>
+
+      <h3>5 维度评分模型（已在 finplan demo 落地）</h3>
+      <div class="grid-3">
+        <div class="card"><b style="color:var(--orange);">① 财富水位</b><p style="margin-top:8px;font-size:13px;">钱包余额 + 历史持仓</p></div>
+        <div class="card"><b style="color:var(--orange);">② 消费能力</b><p style="margin-top:8px;font-size:13px;">近 30 天支付流水</p></div>
+        <div class="card"><b style="color:var(--orange);">③ 余额稳定性</b><p style="margin-top:8px;font-size:13px;">最低/平均余额比</p></div>
+        <div class="card"><b style="color:var(--orange);">④ 人生阶段</b><p style="margin-top:8px;font-size:13px;">年龄 + 婚育推断</p></div>
+        <div class="card"><b style="color:var(--orange);">⑤ 家庭特征</b><p style="margin-top:8px;font-size:13px;">社交+内容偏好推断</p></div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(255,110,0,.12),rgba(255,163,64,.05));border-color:var(--orange);"><b>加权评分</b><p style="margin-top:8px;font-size:13px;">输出 L0-L4 + 推荐组合</p></div>
+      </div>
+    </section>
+
+    <!-- Ch3 产品矩阵 -->
+    <section id="ch3">
+      <div class="section-tag">03 / WHAT · 产品矩阵</div>
+      <h2>5 大板块 × 3 层产品</h2>
+      <p>横轴 5 大业务板块，纵轴 3 层产品（入门/主推/进阶），共 15 款核心产品，覆盖全用户分层。</p>
+
+      <div class="matrix" style="margin:24px 0;">
+        <div class="h"></div>
+        <div class="h">入门款 (L0-L1)</div>
+        <div class="h">主推款 (L1-L2)</div>
+        <div class="h">进阶款 (L2-L3)</div>
+
+        <div class="row-name row-active">活钱管理</div>
+        <div class="product-cell"><div class="pn">钱袋子</div><div class="pd">找零+零钱留存</div></div>
+        <div class="product-cell" style="border-color:var(--orange);"><div class="pn">活钱宝 ⭐</div><div class="pd">货基 T+0</div></div>
+        <div class="product-cell"><div class="pn">短债基金</div><div class="pd">中低风险</div></div>
+
+        <div class="row-name row-active">稳健理财</div>
+        <div class="product-cell"><div class="pn">体验金</div><div class="pd">新人专享</div></div>
+        <div class="product-cell" style="border-color:var(--orange);"><div class="pn">储蓄险 ⭐</div><div class="pd">增额终身寿</div></div>
+        <div class="product-cell"><div class="pn">银行理财</div><div class="pd">养老 FOF</div></div>
+
+        <div class="row-name">权益基金</div>
+        <div class="product-cell"><div class="pn">定投宝</div><div class="pd">10 元起</div></div>
+        <div class="product-cell"><div class="pn">指数基金</div><div class="pd">宽基/行业</div></div>
+        <div class="product-cell"><div class="pn">主动权益</div><div class="pd">明星基金</div></div>
+
+        <div class="row-name">保险保障</div>
+        <div class="product-cell"><div class="pn">百万医疗</div><div class="pd">0 元抵扣</div></div>
+        <div class="product-cell"><div class="pn">重疾/意外</div><div class="pd">家庭刚需</div></div>
+        <div class="product-cell"><div class="pn">高端医疗</div><div class="pd">寿险</div></div>
+
+        <div class="row-name">财富工具</div>
+        <div class="product-cell"><div class="pn">钱包记账</div><div class="pd">资产看板入口</div></div>
+        <div class="product-cell" style="border-color:var(--orange);"><div class="pn">AI 规划师 ⭐</div><div class="pd">5 维度引擎</div></div>
+        <div class="product-cell"><div class="pn">全资产看板</div><div class="pd">L3+ 用户</div></div>
+      </div>
+
+      <h3>4 大旗舰单品</h3>
+      <div class="grid-2">
+        <div class="card"><h3 style="color:var(--orange);margin-top:0;">⭐ 活钱宝</h3><p>T+0 货基组合，对标余额宝/零钱通。目标年化 <b style="color:var(--green);">1.8-2.2%</b>，1 元起投，万份收益每日推送。</p></div>
+        <div class="card"><h3 style="color:var(--orange);margin-top:0;">⭐ 储蓄险（增额寿）</h3><p>头部寿险公司合作，3-5 年期 IRR <b style="color:var(--green);">2.8-3.0%</b>，对标支付宝增额寿，主打"敢托付"心智。</p></div>
+        <div class="card"><h3 style="color:var(--orange);margin-top:0;">⭐ 小金保</h3><p>保险版"活钱宝"，对标京东小金保，灵活赎回 + 加息券，钱袋子+退款留存场景核心承接。</p></div>
+        <div class="card"><h3 style="color:var(--orange);margin-top:0;">⭐ AI 财富规划师</h3><p>基于 5 维度评分自动生成方案，已在 finplan demo 验证。L0 小白专属"一键规划"。</p></div>
+      </div>
+    </section>
+
+    <!-- Ch4 场景流量 -->
+    <section id="ch4">
+      <div class="section-tag">04 / HOW · 场景流量</div>
+      <h2>4 大快手独有获客场景</h2>
+      <p>快手不像电商和社交平台，而是"内容+支付+下沉"三位一体，拥有 4 大独家流量场景，月可触达 5 亿+ 用户。</p>
+
+      <div class="grid-2">
+        <div class="scene scene-a">
+          <div class="scene-icon">💳</div>
+          <h3>A. 支付场景</h3>
+          <div class="scene-tag">最大流量池 · 高转化</div>
+          <ul>
+            <li>电商支付完成 → 钱袋子留存零钱</li>
+            <li>直播打赏剩余 → 自动转入活钱</li>
+            <li>退款资金 → 留存 7 天给加息券</li>
+          </ul>
+          <div class="scene-num">3 亿+ <small>月人次触达</small></div>
+        </div>
+        <div class="scene scene-b">
+          <div class="scene-icon">🎬</div>
+          <h3>B. 内容场景</h3>
+          <div class="scene-tag">差异化护城河 · 高心智</div>
+          <ul>
+            <li>财经达人短视频流（财富频道）</li>
+            <li>直播挂购买组件（持牌白名单）</li>
+            <li>金融知识图文 + 测评工具</li>
+          </ul>
+          <div class="scene-num">1.5 亿+ <small>月人次触达</small></div>
+        </div>
+        <div class="scene scene-c">
+          <div class="scene-icon">🪙</div>
+          <h3>C. 任务场景</h3>
+          <div class="scene-tag">激励体系 · 高频次</div>
+          <ul>
+            <li>金币任务（看视频得体验金）</li>
+            <li>签到/做任务领理财券</li>
+            <li>邀请好友 PK 收益榜</li>
+          </ul>
+          <div class="scene-num">5000 万+ <small>月人次触达</small></div>
+        </div>
+        <div class="scene scene-d">
+          <div class="scene-icon">💬</div>
+          <h3>D. 私域场景</h3>
+          <div class="scene-tag">高客单价 · 高 LTV</div>
+          <ul>
+            <li>财富顾问 IP 号 + 私信 1V1</li>
+            <li>群运营（已购+高潜）</li>
+            <li>AI 数字人 7×24h 答疑</li>
+          </ul>
+          <div class="scene-num">2000 万+ <small>月人次触达</small></div>
+        </div>
+      </div>
+
+      <h3>转化漏斗</h3>
+      <div class="funnel">
+        <div class="fr fr-1"><span>流量曝光</span><span class="fr-pct">100%</span></div>
+        <div class="fr fr-2"><span>内容吸引</span><span class="fr-pct">30%</span></div>
+        <div class="fr fr-3"><span>体验金/工具</span><span class="fr-pct">15%</span></div>
+        <div class="fr fr-4"><span>风险测评</span><span class="fr-pct">8%</span></div>
+        <div class="fr fr-5"><span>首单转化</span><span class="fr-pct">3%</span></div>
+        <div class="fr fr-6"><span>复购沉淀</span><span class="fr-pct">1.2%</span></div>
+      </div>
+      <p style="text-align:center;color:var(--muted);font-size:13px;">关键提效节点：体验金转化率 <b style="color:var(--orange);">行业 8% → 目标 15%</b></p>
+    </section>
+
+    <!-- Ch5 内容+财富 -->
+    <section id="ch5">
+      <div class="section-tag">05 / DIFFERENTIATION · 内容化护城河</div>
+      <h2>内容/直播 + 财富 = 差异化护城河</h2>
+      <p>这是快手对蚂蚁/理财通/京东的最大差异点。内容化把"金融教育"变成"金融娱乐"，让 L0 小白能听懂、敢决策。</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0;">📺 财富频道独立 Tab</h3>
+          <p>钱包页底部新增 Tab，与"我的"、"账单"并列。形态：短视频科普 70% + 直播 20% + 图文 10%。算法策略：用户分层 + 兴趣推荐 + 转化漏斗反哺。</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">🎤 持牌机构入驻</h3>
+          <p>严格白名单：基金销售/保险经纪/银行理财子。直播双录（合规要求）+ 实时风控审核。主播分层：S 级（机构 IP）/ A 级（持证顾问）/ B 级（财经 KOL）。</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">🤖 AI 数字人客服</h3>
+          <p>7×24h 不打烊，基础 Q&A + 产品推荐 + 风险揭示。复杂问题转人工持证顾问。预计可承接 80% 一线客服压力。</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">🏆 老铁理财故事 (UGC)</h3>
+          <p>合规审核后展示用户晒收益内容，月度老铁榜（隐私脱敏）。激发"邻居都赚了我也来"的下沉用户决策心智。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ch6 技术架构 -->
+    <section id="ch6">
+      <div class="section-tag">06 / TECH · 技术架构</div>
+      <h2>5 层技术架构</h2>
+      <p>从触达到接入，五层架构，对齐持牌金融机构标准，复用快手数据中台能力。</p>
+
+      <div class="arch">
+        <div class="arch-row arch-1"><div class="ar-l">触达层</div><div class="ar-r">钱包 Tab · 付款后弹层 · Push · 私信 · 直播挂件 · 短视频组件</div></div>
+        <div class="arch-row arch-2"><div class="ar-l">算法中台</div><div class="ar-r">5 维度分层引擎 · 推荐 · ABTest · 反洗钱模型 · LTV 预测</div></div>
+        <div class="arch-row arch-3"><div class="ar-l">风控合规</div><div class="ar-r">双录 · 适当性管理 · 冷静期 · 风险揭示 · KYC · 反欺诈</div></div>
+        <div class="arch-row arch-4"><div class="ar-l">资产中台</div><div class="ar-r">产品库 · 行情 · 净值 · 清算 · 订单引擎（T+0/T+1/长期）</div></div>
+        <div class="arch-row arch-5"><div class="ar-l">接入层</div><div class="ar-r">基金销售 · 保险经纪 · 银行理财代销 · 第三方支付</div></div>
+      </div>
+
+      <h3>关键技术指标</h3>
+      <div class="grid-4">
+        <div class="card"><div class="stat-num">99.99%</div><div class="stat-label">系统可用性</div></div>
+        <div class="card"><div class="stat-num">99.95%</div><div class="stat-label">交易成功率</div></div>
+        <div class="card"><div class="stat-num">&lt;200ms</div><div class="stat-label">P99 延迟</div></div>
+        <div class="card"><div class="stat-num">1亿笔</div><div class="stat-label">日峰值</div></div>
+      </div>
+    </section>
+
+    <!-- Ch7 合规风险 -->
+    <section id="ch7">
+      <div class="section-tag">07 / RISK · 合规与风险</div>
+      <h2>金融业务的生命线</h2>
+      <p>合规优先，宁可慢、不可错。所有业务必须先持牌后开张，所有产品必须先双录后销售。</p>
+
+      <h3>必备牌照清单</h3>
+      <div class="grid-2" style="gap:12px;">
+        <div class="license"><div class="license-status ls-done"></div><div class="license-name">第三方支付</div><div class="license-time">已有</div></div>
+        <div class="license"><div class="license-status ls-doing"></div><div class="license-name">基金销售</div><div class="license-time">Q2 落地</div></div>
+        <div class="license"><div class="license-status ls-doing"></div><div class="license-name">保险经纪</div><div class="license-time">Q2 落地</div></div>
+        <div class="license"><div class="license-status ls-plan"></div><div class="license-name">银行理财代销</div><div class="license-time">Q3 启动</div></div>
+        <div class="license"><div class="license-status ls-far"></div><div class="license-name">公募基金</div><div class="license-time">24 月+</div></div>
+        <div class="license"><div class="license-status ls-far"></div><div class="license-name">私募</div><div class="license-time">36 月+</div></div>
+      </div>
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;"></span>已持有
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin:0 6px 0 16px;"></span>申请中
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin:0 6px 0 16px;"></span>规划中
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#666;margin:0 6px 0 16px;"></span>远期
+      </p>
+
+      <h3>4 大风控体系</h3>
+      <table>
+        <tr><th>体系</th><th>核心要求</th></tr>
+        <tr><td><b>投资者保护</b></td><td>分层准入 · 禁止越级销售 · 风险测评年度更新 · 冷静期（保险 15 天/理财 24h）· 风险揭示醒目阅读 10 秒</td></tr>
+        <tr><td><b>数据隐私</b></td><td>个保法合规 · 知情同意 · 最小必要 · 可撤回 · 境内存储/处理 · 算法备案</td></tr>
+        <tr><td><b>反洗钱</b></td><td>大额交易监测（5w+）· 可疑交易上报 · KYC · 与监管直连</td></tr>
+        <tr><td><b>主播管理</b></td><td>白名单 · 实时审核 · 一票否决 · 双录留存 · 持证销售</td></tr>
+      </table>
+    </section>
+
+    <!-- Ch8 运营节奏 -->
+    <section id="ch8">
+      <div class="section-tag">08 / ROADMAP · 运营节奏</div>
+      <h2>4 季度滚动落地</h2>
+      <p>从"留得住"到"敢托付"再到"看得懂"，最后形成"普惠化"飞轮。每季度都有明确的业务里程碑。</p>
+
+      <div class="timeline" style="margin-top:30px;">
+        <div class="tl-item">
+          <div class="tl-q">Q1 · 活钱基础盘</div>
+          <div class="tl-theme">"留得住"</div>
+          <ul class="tl-list">
+            <li>钱包升级（已部分上线）</li>
+            <li>活钱宝（货基组合）上线</li>
+            <li>体验金体系搭建</li>
+            <li>钱袋子全量推送</li>
+          </ul>
+          <div class="tl-target">目标：AUM <b style="color:var(--orange);">30 亿</b> / 付费用户 <b style="color:var(--orange);">200 万</b></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-q">Q2 · 稳健理财</div>
+          <div class="tl-theme">"敢托付"</div>
+          <ul class="tl-list">
+            <li>储蓄险全量</li>
+            <li>保险严选 H5（已有 demo）</li>
+            <li>小金保上线</li>
+            <li>财富顾问私域试点</li>
+          </ul>
+          <div class="tl-target">目标：AUM <b style="color:var(--orange);">100 亿</b> / 付费用户 <b style="color:var(--orange);">600 万</b></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-q">Q3 · 内容化</div>
+          <div class="tl-theme">"看得懂"</div>
+          <ul class="tl-list">
+            <li>公募基金代销牌照接入</li>
+            <li>财富 Tab 灰度（10% 用户）</li>
+            <li>AI 财富规划师全量</li>
+            <li>直播理财（持牌主播 100+）</li>
+          </ul>
+          <div class="tl-target">目标：AUM <b style="color:var(--orange);">200 亿</b> / 付费用户 <b style="color:var(--orange);">1000 万</b></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-q">Q4 · 飞轮启动</div>
+          <div class="tl-theme">"普惠化"</div>
+          <ul class="tl-list">
+            <li>财富频道全量</li>
+            <li>银行理财代销</li>
+            <li>老铁理财故事 UGC</li>
+            <li>海外/港股探索（远期占位）</li>
+          </ul>
+          <div class="tl-target">目标：AUM <b style="color:var(--orange);">300 亿</b> / 付费用户 <b style="color:var(--orange);">1500 万</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ch9 组织目标 -->
+    <section id="ch9">
+      <div class="section-tag">09 / ORG · 组织与目标</div>
+      <h2>200 → 500 人组织升级</h2>
+      <p>一期 200 人快速搭建，二期 500 人全量铺开。Top 5 关键岗位优先到位，决定业务能否启动。</p>
+
+      <h3>团队配置</h3>
+      <table>
+        <tr><th>职能</th><th>一期</th><th>二期</th><th>关键岗位</th></tr>
+        <tr><td>业务/产品</td><td>30</td><td>80</td><td>财富业务 GM、产品总监</td></tr>
+        <tr><td>技术</td><td>80</td><td>200</td><td>架构师、风控专家、安全</td></tr>
+        <tr><td>风控合规</td><td>20</td><td>60</td><td><span class="badge badge-orange">合规总监</span> <span class="badge badge-orange">风控总监</span></td></tr>
+        <tr><td>资产/采购</td><td>15</td><td>40</td><td><span class="badge badge-orange">资产总监</span></td></tr>
+        <tr><td>运营</td><td>30</td><td>70</td><td>内容/私域/用户运营</td></tr>
+        <tr><td>客服</td><td>25</td><td>50</td><td>持证顾问、AI 训练师</td></tr>
+        <tr><td><b>合计</b></td><td><b>200</b></td><td><b>500</b></td><td>—</td></tr>
+      </table>
+
+      <h3>Top 5 关键岗位（一号位招聘）</h3>
+      <div class="grid-3">
+        <div class="card"><b style="color:var(--orange);">① 合规总监</b><p style="margin-top:8px;font-size:13px;">强一类持牌经验，有银保监关系</p></div>
+        <div class="card"><b style="color:var(--orange);">② 风控总监</b><p style="margin-top:8px;font-size:13px;">互联网+金融双背景</p></div>
+        <div class="card"><b style="color:var(--orange);">③ 资产总监</b><p style="margin-top:8px;font-size:13px;">一线机构资源</p></div>
+        <div class="card"><b style="color:var(--orange);">④ 财富业务 GM</b><p style="margin-top:8px;font-size:13px;">业务一号位</p></div>
+        <div class="card"><b style="color:var(--orange);">⑤ AI 算法负责人</b><p style="margin-top:8px;font-size:13px;">推荐 + 大模型</p></div>
+      </div>
+
+      <h3>核心 KPI 拆解</h3>
+      <table class="kpi-table">
+        <tr><th>维度</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>
+        <tr><td>AUM (亿)</td><td>30</td><td>100</td><td>200</td><td>300</td></tr>
+        <tr><td>付费用户 (万)</td><td>200</td><td>600</td><td>1000</td><td>1500</td></tr>
+        <tr><td>人均 AUM (元)</td><td>1500</td><td>1800</td><td>2000</td><td>2000</td></tr>
+        <tr><td>复购率</td><td>20%</td><td>25%</td><td>30%</td><td>35%</td></tr>
+        <tr><td>营收 (亿)</td><td>0.3</td><td>1.5</td><td>4</td><td>8</td></tr>
+      </table>
+    </section>
+
+    <!-- Ch10 对标分析 -->
+    <section id="ch10">
+      <div class="section-tag">10 / BENCHMARK · 对标分析</div>
+      <h2>差异化定位 vs 三巨头</h2>
+      <p>不与蚂蚁/腾讯/京东在中高端用户上正面竞争，而是抢占下沉+内容化的蓝海市场。</p>
+
+      <table>
+        <tr><th>维度</th><th>蚂蚁财富</th><th>理财通</th><th>京东金融</th><th style="color:var(--orange);">快手财富</th></tr>
+        <tr><td>AUM</td><td>4.5 万亿</td><td>1.2 万亿</td><td>5000 亿</td><td><b style="color:var(--orange);">300 亿（Y1）</b></td></tr>
+        <tr><td>用户</td><td>7 亿</td><td>2 亿</td><td>1.5 亿</td><td><b style="color:var(--orange);">1500 万（Y1）</b></td></tr>
+        <tr><td>核心场景</td><td>支付（淘宝）</td><td>微信生态</td><td>电商</td><td><b style="color:var(--orange);">内容+支付+下沉</b></td></tr>
+        <tr><td>差异点</td><td>余额宝起家</td><td>微信社交</td><td>京东信用</td><td><b style="color:var(--orange);">老铁信任+短视频</b></td></tr>
+        <tr><td>主推单品</td><td>余额宝/养老金</td><td>零钱通</td><td>小金保/京东金贴</td><td><b style="color:var(--orange);">活钱宝/储蓄险</b></td></tr>
+        <tr><td>代表牌照</td><td>支付/基金/保险全</td><td>支付/基金/保险</td><td>支付/基金/保险</td><td><b style="color:var(--orange);">支付（其他申请中）</b></td></tr>
+      </table>
+
+      <h3>已沉淀的 demo 资产（可复用）</h3>
+      <div class="grid-3">
+        <div class="card"><b>📱 钱包主页</b><p style="margin-top:6px;font-size:12px;color:var(--muted);">kuaishou-wallet/</p></div>
+        <div class="card"><b>🧠 5 维度规划引擎</b><p style="margin-top:6px;font-size:12px;color:var(--muted);">kuaishou-finplan/</p></div>
+        <div class="card"><b>🛡️ 保险严选</b><p style="margin-top:6px;font-size:12px;color:var(--muted);">kuaishou-insurance-h5/</p></div>
+        <div class="card"><b>💰 钱袋子+退款留存</b><p style="margin-top:6px;font-size:12px;color:var(--muted);">kuaishou-qiandaizi/</p></div>
+        <div class="card"><b>⚡ 活钱宝</b><p style="margin-top:6px;font-size:12px;color:var(--muted);">kuaishou-active-bao/</p></div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(255,110,0,.12),rgba(255,163,64,.05));border-color:var(--orange);"><b>📊 业务整体方案</b><p style="margin-top:6px;font-size:12px;">本方案 v1.0</p></div>
+      </div>
+
+      <h3>三大风险与应对</h3>
+      <table>
+        <tr><th>风险</th><th>影响</th><th>应对</th></tr>
+        <tr><td>牌照延期</td><td>业务无法上线</td><td>双轨：自营 + 持牌合作</td></tr>
+        <tr><td>监管收紧</td><td>业务受限</td><td>提前对齐监管，预留 30% 弹性</td></tr>
+        <tr><td>主播违规</td><td>合规风险</td><td>白名单 + 实时审核 + 一票否决</td></tr>
+      </table>
+    </section>
+
+    <div class="footer">
+      <p>快手财富业务整体方案 · v1.0 · 2026</p>
+      <p style="margin-top:6px;">本方案为业务规划草案，所有数据均为内部预估，最终以监管批复与公司决策为准</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // 滚动高亮目录
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.nav-list a');
+  function onScroll(){
+    let cur = 'hero';
+    sections.forEach(s=>{
+      const top = s.getBoundingClientRect().top;
+      if(top < 200) cur = s.id;
+    });
+    navLinks.forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+</script>
+</body>
+</html>
