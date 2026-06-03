@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>快手保险·四阶段跃迁路线图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --orange: #FF4500;
+    --gold: #FFD700;
+    --gold-light: #FFF0A0;
+    --bg: #060612;
+    --bg2: #0D0D2B;
+    --card: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.08);
+    --text: #E8E8F8;
+    --muted: rgba(232,232,248,0.55);
+    --phase1: #4FC3F7;
+    --phase2: #81C784;
+    --phase3: #FFB74D;
+    --phase4: #F06292;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,69,0,0.4); border-radius: 2px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    padding: 0 24px;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(6,6,18,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .nav-logo {
+    font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
+    background: linear-gradient(90deg, var(--orange), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .nav-dots {
+    display: flex; gap: 8px;
+  }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--card-border); cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active { background: var(--orange); transform: scale(1.3); }
+
+  /* ─── SECTIONS ─── */
+  section {
+    min-height: 100vh;
+    padding: 80px 24px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(255,69,0,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(255,215,0,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ─── FADE-IN ANIMATION ─── */
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ─── SECTION LABEL ─── */
+  .sec-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--orange);
+    margin-bottom: 12px;
+  }
+  .sec-title {
+    font-size: clamp(26px, 6vw, 42px);
+    font-weight: 800; line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .sec-sub {
+    font-size: 14px; color: var(--muted);
+    margin-bottom: 36px; line-height: 1.6;
+  }
+
+  /* ─── SCREEN 1: HERO ─── */
+  #s1 { text-align: center; align-items: center; justify-content: center; }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,69,0,0.4);
+    background: rgba(255,69,0,0.1);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--orange); margin-bottom: 24px;
+  }
+  .hero-title {
+    font-size: clamp(32px, 8vw, 56px);
+    font-weight: 900; line-height: 1.15;
+    background: linear-gradient(135deg, #ffffff 0%, var(--gold) 60%, var(--orange) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+  }
+  .hero-desc {
+    font-size: 16px; color: var(--muted); margin-bottom: 48px;
+    max-width: 360px; line-height: 1.7;
+  }
+  .hero-metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; width: 100%; max-width: 480px;
+  }
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 20px 12px;
+    position: relative; overflow: hidden;
+  }
+  .metric-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--orange), var(--gold));
+  }
+  .metric-val {
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 800; color: var(--gold);
+    line-height: 1.1; margin-bottom: 4px;
+  }
+  .metric-lbl { font-size: 11px; color: var(--muted); }
+
+  .scroll-hint {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--muted); font-size: 11px;
+    animation: bounce 2s infinite;
+  }
+  .scroll-arrow { font-size: 18px; }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+  /* ─── SCREEN 2: TIMELINE ─── */
+  .phase-timeline {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .phase-card {
+    border-radius: 16px; padding: 20px;
+    border: 1px solid var(--card-border);
+    background: var(--card);
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .phase-card:active { transform: scale(0.99); }
+  .phase-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .phase-card.p1::before { background: var(--phase1); }
+  .phase-card.p2::before { background: var(--phase2); }
+  .phase-card.p3::before { background: var(--phase3); }
+  .phase-card.p4::before { background: var(--phase4); }
+  .phase-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .phase-num {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 3px 10px; border-radius: 10px;
+    margin-bottom: 6px; display: inline-block;
+  }
+  .p1 .phase-num { background: rgba(79,195,247,0.15); color: var(--phase1); }
+  .p2 .phase-num { background: rgba(129,199,132,0.15); color: var(--phase2); }
+  .p3 .phase-num { background: rgba(255,183,77,0.15); color: var(--phase3); }
+  .p4 .phase-num { background: rgba(240,98,146,0.15); color: var(--phase4); }
+  .phase-mode {
+    font-size: 16px; font-weight: 700;
+  }
+  .phase-time {
+    font-size: 11px; color: var(--muted);
+    text-align: right; white-space: nowrap; padding-top: 3px;
+  }
+  .phase-metrics {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .pm-item { }
+  .pm-val {
+    font-size: 20px; font-weight: 800; color: var(--gold);
+  }
+  .pm-key { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .phase-milestone {
+    font-size: 12px; color: var(--muted); margin-top: 12px;
+    line-height: 1.6; padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  /* ─── SCREEN 3-6: STAGE DETAIL ─── */
+  .stage-banner {
+    border-radius: 16px; padding: 20px;
+    margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .stage-banner::before {
+    content: ''; position: absolute; inset: 0; opacity: 0.12;
+  }
+  .s3-banner { background: linear-gradient(135deg, rgba(79,195,247,0.15), rgba(79,195,247,0.05)); border: 1px solid rgba(79,195,247,0.25); }
+  .s4-banner { background: linear-gradient(135deg, rgba(129,199,132,0.15), rgba(129,199,132,0.05)); border: 1px solid rgba(129,199,132,0.25); }
+  .s5-banner { background: linear-gradient(135deg, rgba(255,183,77,0.15), rgba(255,183,77,0.05)); border: 1px solid rgba(255,183,77,0.25); }
+  .s6-banner { background: linear-gradient(135deg, rgba(240,98,146,0.15), rgba(240,98,146,0.05)); border: 1px solid rgba(240,98,146,0.25); }
+
+  .banner-phase { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .s3-banner .banner-phase { color: var(--phase1); }
+  .s4-banner .banner-phase { color: var(--phase2); }
+  .s5-banner .banner-phase { color: var(--phase3); }
+  .s6-banner .banner-phase { color: var(--phase4); }
+  .banner-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .banner-time { font-size: 12px; color: var(--muted); }
+
+  /* ─── TIMELINE TABLE ─── */
+  .tl-table { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .tl-row {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+  .tl-date {
+    font-size: 12px; font-weight: 700; white-space: nowrap;
+    padding-top: 1px; min-width: 56px;
+  }
+  .s3 .tl-date { color: var(--phase1); }
+  .s4 .tl-date { color: var(--phase2); }
+  .s5 .tl-date { color: var(--phase3); }
+  .tl-dot {
+    width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;
+  }
+  .s3 .tl-dot { background: var(--phase1); }
+  .s4 .tl-dot { background: var(--phase2); }
+  .s5 .tl-dot { background: var(--phase3); }
+  .tl-content { font-size: 13px; color: var(--text); line-height: 1.55; flex: 1; }
+
+  /* ─── ACTION TABLE ─── */
+  .action-table { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .action-row {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+  .action-title { font-size: 13px; font-weight: 700; color: var(--phase3); }
+  .s6 .action-title { color: var(--phase4); }
+  .action-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    border-radius: 14px; padding: 18px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,69,0,0.05));
+    border: 1px solid rgba(255,215,0,0.2);
+    margin-bottom: 24px;
+  }
+  .hb-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 8px; }
+  .hb-content { font-size: 14px; color: var(--text); line-height: 1.6; }
+  .hb-big { font-size: 22px; font-weight: 800; color: var(--gold); }
+
+  /* ─── TARGET BAR ─── */
+  .target-bar {
+    border-radius: 14px; padding: 18px 20px;
+    display: flex; flex-wrap: wrap; gap: 16px;
+    background: var(--card); border: 1px solid var(--card-border);
+  }
+  .tb-item { flex: 1; min-width: 100px; }
+  .tb-val { font-size: 22px; font-weight: 800; color: var(--gold); }
+  .tb-key { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ─── GRID CARDS ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .g-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 16px;
+  }
+  .g-card-title { font-size: 12px; font-weight: 700; color: var(--phase4); margin-bottom: 6px; }
+  .g-card-content { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ─── BIG NUMBER ─── */
+  .big-number {
+    font-size: clamp(48px, 12vw, 72px);
+    font-weight: 900; line-height: 1;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ─── FINAL SCREEN OVERRIDE ─── */
+  #s6 { text-align: left; }
+  .vision-nums {
+    display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px;
+  }
+  .vn-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+  .vn-icon { font-size: 22px; }
+  .vn-num { font-size: 20px; font-weight: 800; color: var(--gold); }
+  .vn-text { font-size: 12px; color: var(--muted); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center; padding: 32px 24px;
+    font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--card-border);
+  }
+  footer span { color: var(--orange); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">快手保险 · 路线图</div>
+  <div class="nav-dots" id="navDots">
+    <div class="nav-dot active" onclick="scrollTo(0,0)"></div>
+    <div class="nav-dot" onclick="document.getElementById('s2').scrollIntoView({behavior:'smooth'})"></div>
+    <div class="nav-dot" onclick="document.getElementById('s3').scrollIntoView({behavior:'smooth'})"></div>
+    <div class="nav-dot" onclick="document.getElementById('s4').scrollIntoView({behavior:'smooth'})"></div>
+    <div class="nav-dot" onclick="document.getElementById('s5').scrollIntoView({behavior:'smooth'})"></div>
+    <div class="nav-dot" onclick="document.getElementById('s6').scrollIntoView({behavior:'smooth'})"></div>
+  </div>
+</nav>
+
+<!-- ════════════════════ SCREEN 1: HERO ════════════════════ -->
+<section id="s1">
+  <div class="hero-badge reveal">2026 Q3 — 2028 H2+</div>
+  <h1 class="hero-title reveal reveal-delay-1">快手保险<br>四阶段跃迁</h1>
+  <p class="hero-desc reveal reveal-delay-2">从 API 联合销售起步，三年内完成经纪自营全面升级，构建快手金融长期护城河</p>
+  <div class="hero-metrics reveal reveal-delay-3">
+    <div class="metric-card">
+      <div class="metric-val">100亿<span style="font-size:14px">+</span></div>
+      <div class="metric-lbl">目标保有量</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">破亿</div>
+      <div class="metric-lbl">首年佣金</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">3年</div>
+      <div class="metric-lbl">完整跃迁</div>
+    </div>
+  </div>
+  <div class="scroll-hint reveal reveal-delay-4">
+    <div class="scroll-arrow">↓</div>
+    <span>向下探索</span>
+  </div>
+</section>
+
+<!-- ════════════════════ SCREEN 2: OVERALL TIMELINE ════════════════════ -->
+<section id="s2">
+  <div class="sec-label reveal">3.1 整体动线</div>
+  <h2 class="sec-title reveal reveal-delay-1">四阶段<br>跃迁地图</h2>
+  <p class="sec-sub reveal reveal-delay-2">保有量从 5 亿跃升至 100 亿+，年收入从 200 万突破至 2-3 亿</p>
+
+  <div class="phase-timeline">
+    <!-- Phase 1 -->
+    <div class="phase-card p1 reveal reveal-delay-1">
+      <div class="phase-head">
+        <div>
+          <div class="phase-num">阶段一</div>
+          <div class="phase-mode">API 联合销售搭建</div>
+        </div>
+        <div class="phase-time">2026 Q3–Q4<br>6 个月</div>
+      </div>
+      <div class="phase-metrics">
+        <div class="pm-item">
+          <div class="pm-val">5亿</div>
+          <div class="pm-key">保有量目标</div>
+        </div>
+        <div class="pm-item">
+          <div class="pm-val">200万</div>
+          <div class="pm-key">年收入</div>
+        </div>
+      </div>
+      <div class="phase-milestone">9月底首家保司上线 ／ 12月底3家接入，产品池15+</div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-card p2 reveal reveal-delay-2">
+      <div class="phase-head">
+        <div>
+          <div class="phase-num">阶段二</div>
+          <div class="phase-mode">API 模式规模化</div>
+        </div>
+        <div class="phase-time">2027 全年</div>
+      </div>
+      <div class="phase-metrics">
+        <div class="pm-item">
+          <div class="pm-val">30亿</div>
+          <div class="pm-key">保有量目标</div>
+        </div>
+        <div class="pm-item">
+          <div class="pm-val">2000万</div>
+          <div class="pm-key">年收入</div>
+        </div>
+      </div>
+      <div class="phase-milestone">单月破千万 ／ 电商金融化 ／ 开户用户破百万</div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-card p3 reveal reveal-delay-3">
+      <div class="phase-head">
+        <div>
+          <div class="phase-num">阶段三</div>
+          <div class="phase-mode">经纪自营试点</div>
+        </div>
+        <div class="phase-time">2028 H1</div>
+      </div>
+      <div class="phase-metrics">
+        <div class="pm-item">
+          <div class="pm-val">60亿</div>
+          <div class="pm-key">保有量目标</div>
+        </div>
+        <div class="pm-item">
+          <div class="pm-val">8000万</div>
+          <div class="pm-key">年收入</div>
+        </div>
+      </div>
+      <div class="phase-milestone">自建持牌队伍 ／ 双录上线 ／ 主播主导销售试点</div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase-card p4 reveal reveal-delay-4">
+      <div class="phase-head">
+        <div>
+          <div class="phase-num">阶段四</div>
+          <div class="phase-mode">经纪自营全面升级</div>
+        </div>
+        <div class="phase-time">2028 H2+</div>
+      </div>
+      <div class="phase-metrics">
+        <div class="pm-item">
+          <div class="pm-val">100亿+</div>
+          <div class="pm-key">保有量目标</div>
+        </div>
+        <div class="pm-item">
+          <div class="pm-val">破亿</div>
+          <div class="pm-key">首年佣金</div>
+        </div>
+      </div>
+      <div class="phase-milestone">全量切换经纪自营 ／ 长期储蓄险主推 ／ 年总收入2-3亿</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SCREEN 3: STAGE 1 ════════════════════ -->
+<section id="s3" class="s3">
+  <div class="stage-banner s3-banner reveal">
+    <div class="banner-phase">阶段一 · 2026 Q3–Q4</div>
+    <div class="banner-title">API 联合销售搭建</div>
+    <div class="banner-time">目标：跑通站内闭环，验证 API 模式转化效率，积累用户数据</div>
+  </div>
+
+  <div class="tl-table reveal reveal-delay-1">
+    <div class="tl-row">
+      <div class="tl-date">7月底</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">钱包稳健理财入口上线，触发节点设计：余额管理、收益到账、绑卡完成</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-date">9月底</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">首家保司 API 对接完成（优先弘康，已有京东 97 亿验证），3-5 款流量型产品上线</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-date">12月底</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">3 家保司 API 接入（弘康 + 国寿养老 + 人保养老），产品池扩展至 15+ 款</div>
+    </div>
+  </div>
+
+  <div class="target-bar reveal reveal-delay-2">
+    <div class="tb-item">
+      <div class="tb-val">5亿</div>
+      <div class="tb-key">保有量目标</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">200万</div>
+      <div class="tb-key">年收入预期</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">3家</div>
+      <div class="tb-key">保司接入</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">15+</div>
+      <div class="tb-key">在售产品</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SCREEN 4: STAGE 2 ════════════════════ -->
+<section id="s4" class="s4">
+  <div class="stage-banner s4-banner reveal">
+    <div class="banner-phase">阶段二 · 2027 全年</div>
+    <div class="banner-title">API 模式规模化</div>
+    <div class="banner-time">目标：借助内容和电商场景将业务从金融频道扩散至全站，实现单月收入破千万</div>
+  </div>
+
+  <div class="tl-table reveal reveal-delay-1">
+    <div class="tl-row">
+      <div class="tl-date">4月底</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">电商场景金融化：返现资产化（电商返现默认入理财账户，复购率提升 8-15%）+ 找零理财（订单尾数自动转入零钱理财）</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-date">6月底</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">内容种草矩阵：3-5 位头部财经主播深度合作；「为父母养老」「给孩子存」场景化短视频体系</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-date">12月底</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">累计开户用户突破百万，单月收入破千万</div>
+    </div>
+  </div>
+
+  <div class="highlight-box reveal reveal-delay-2">
+    <div class="hb-label">核心突破</div>
+    <div class="hb-content">电商返现→理财账户沉淀，预计提升复购率 <span class="hb-big">8-15%</span></div>
+  </div>
+
+  <div class="target-bar reveal reveal-delay-3">
+    <div class="tb-item">
+      <div class="tb-val">30亿</div>
+      <div class="tb-key">保有量目标</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">2000万</div>
+      <div class="tb-key">年收入</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">100万+</div>
+      <div class="tb-key">开户用户</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">千万</div>
+      <div class="tb-key">单月收入</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SCREEN 5: STAGE 3 ════════════════════ -->
+<section id="s5" class="s5">
+  <div class="stage-banner s5-banner reveal">
+    <div class="banner-phase">阶段三 · 2028 H1</div>
+    <div class="banner-title">经纪自营试点</div>
+    <div class="banner-time">目标：启动经纪自营试点，单客 LTV 实现 15 倍跃升</div>
+  </div>
+
+  <div class="highlight-box reveal reveal-delay-1">
+    <div class="hb-label">LTV 跃升</div>
+    <div class="hb-content">单客价值从 <span class="hb-big">0.02</span> → <span class="hb-big">0.30</span> 元/元保费，约 <span class="hb-big">15倍</span> 提升</div>
+  </div>
+
+  <div class="action-table reveal reveal-delay-2">
+    <div class="action-row">
+      <div class="action-title">自建持牌销售队伍</div>
+      <div class="action-desc">招募保险经纪人 200-500 人，先以主播 + 客服双线模式启动</div>
+    </div>
+    <div class="action-row">
+      <div class="action-title">双录系统上线</div>
+      <div class="action-desc">满足银保监会监管要求的销售过程录音录像系统</div>
+    </div>
+    <div class="action-row">
+      <div class="action-title">试点产品切换</div>
+      <div class="action-desc">选择 1-2 款高客单价产品（增额终身寿、长期年金）走自营模式</div>
+    </div>
+    <div class="action-row">
+      <div class="action-title">内容深度赋能</div>
+      <div class="action-desc">财经主播持牌后承担销售角色，参考保险代理人直播模式</div>
+    </div>
+  </div>
+
+  <div class="target-bar reveal reveal-delay-3">
+    <div class="tb-item">
+      <div class="tb-val">60亿</div>
+      <div class="tb-key">保有量目标</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">20亿</div>
+      <div class="tb-key">自营试点</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">8000万</div>
+      <div class="tb-key">年收入</div>
+    </div>
+    <div class="tb-item">
+      <div class="tb-val">500人</div>
+      <div class="tb-key">经纪人队伍</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SCREEN 6: STAGE 4 ════════════════════ -->
+<section id="s6" class="s6">
+  <div class="stage-banner s6-banner reveal">
+    <div class="banner-phase">阶段四 · 2028 H2+</div>
+    <div class="banner-title">经纪自营全面升级</div>
+    <div class="banner-time">目标：从规模驱动转向价值驱动，构建长期护城河</div>
+  </div>
+
+  <div class="grid-2 reveal reveal-delay-1">
+    <div class="g-card">
+      <div class="g-card-title">产品矩阵升级</div>
+      <div class="g-card-content">主推增额终身寿、长期年金、商养价值型产品</div>
+    </div>
+    <div class="g-card">
+      <div class="g-card-title">销售生态完善</div>
+      <div class="g-card-content">持牌经纪人队伍扩展至 2000+，覆盖全国</div>
+    </div>
+    <div class="g-card">
+      <div class="g-card-title">续期收入沉淀</div>
+      <div class="g-card-content">续期佣金尾巴显现，年化 2 亿+ 稳定贡献</div>
+    </div>
+    <div class="g-card">
+      <div class="g-card-title">老带新裂变</div>
+      <div class="g-card-content">用户分层 + 资产分层 + 定投体系</div>
+    </div>
+  </div>
+
+  <div class="vision-nums reveal reveal-delay-2">
+    <div class="vn-row">
+      <div class="vn-icon">📦</div>
+      <div>
+        <div class="vn-num">100亿+</div>
+        <div class="vn-text">保有量目标</div>
+      </div>
+    </div>
+    <div class="vn-row">
+      <div class="vn-icon">💰</div>
+      <div>
+        <div class="vn-num">首年佣金破亿</div>
+        <div class="vn-text">核心里程碑</div>
+      </div>
+    </div>
+    <div class="vn-row">
+      <div class="vn-icon">📈</div>
+      <div>
+        <div class="vn-num">2–3亿</div>
+        <div class="vn-text">年总收入（含续期）</div>
+      </div>
+    </div>
+    <div class="vn-row">
+      <div class="vn-icon">👥</div>
+      <div>
+        <div class="vn-num">2000+</div>
+        <div class="vn-text">持牌经纪人</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box reveal reveal-delay-3" style="text-align:center;">
+    <div class="hb-label">最终愿景</div>
+    <div class="hb-content" style="font-size:16px;">快手保险经纪 · 服务 5 亿用户的长期财富管理平台</div>
+  </div>
+</section>
+
+<footer>
+  <p>快手保险业务路线图 · 内部战略文件 · <span>2026–2028</span></p>
+  <p style="margin-top:6px;">保有量目标 100亿+ · 首年佣金破亿 · 年总收入 2-3亿</p>
+</footer>
+
+<script>
+  // ─── Intersection Observer for reveal animations ───
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── Nav dot active state ───
+  const sections = document.querySelectorAll('section');
+  const dots = document.querySelectorAll('.nav-dot');
+  const secObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = Array.from(sections).indexOf(e.target);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    });
+  }, { threshold: 0.5 });
+  sections.forEach(s => secObserver.observe(s));
+</script>
+</body>
+</html>
