@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>孙悟险·明亚 | 储蓄险直播间</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand-red: #E8232A;
+    --brand-orange: #FF6B1A;
+    --brand-gold: #FFD000;
+    --brand-dark: #1A0A00;
+    --text-white: #FFFFFF;
+    --text-light: rgba(255,255,255,0.85);
+    --cart-bg: #FF3040;
+    --badge-live: #FF3030;
+    --panel-bg: rgba(10,5,0,0.88);
+    --card-bg: rgba(255,255,255,0.08);
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'PingFang SC', 'Noto Serif SC', sans-serif;
+  }
+
+  /* ──────────────────── 直播间容器 ──────────────────── */
+  .livestream {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    height: 100vh;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #0D0600;
+  }
+
+  /* ──────────────────── 背景视频占位 ──────────────────── */
+  .bg-video {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 60% 30%, rgba(80,40,10,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse at 20% 70%, rgba(60,20,0,0.4) 0%, transparent 50%),
+      linear-gradient(180deg, #2A1505 0%, #1A0A02 40%, #0D0600 100%);
+    z-index: 0;
+  }
+
+  /* 书架背景效果 */
+  .bg-bookshelf {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 52%;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(80,40,15,0.25) 0px, rgba(80,40,15,0.25) 18px,
+        transparent 18px, transparent 40px
+      ),
+      linear-gradient(180deg, rgba(100,55,20,0.3) 0%, transparent 100%);
+    z-index: 0;
+  }
+
+  /* 主播人物区 */
+  .presenter-area {
+    position: absolute;
+    bottom: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 48%;
+    background: radial-gradient(ellipse at 50% 80%, rgba(255,160,60,0.12) 0%, transparent 70%);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* 手写板书文字 */
+  .handwritten-notes {
+    position: absolute;
+    top: 18%;
+    left: 8%;
+    z-index: 2;
+    pointer-events: none;
+    font-family: 'Ma Shan Zheng', cursive;
+  }
+
+  .handwritten-notes .note {
+    position: absolute;
+    color: rgba(240,220,180,0.75);
+    font-size: 22px;
+    line-height: 1.3;
+    transform: rotate(-3deg);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  }
+  .handwritten-notes .note.n1 { top: 0; left: 0; font-size: 28px; }
+  .handwritten-notes .note.n2 { top: 20px; left: 140px; font-size: 26px; transform: rotate(2deg); }
+  .handwritten-notes .note.n3 { top: 80px; left: 20px; font-size: 32px; transform: rotate(-2deg); }
+  .handwritten-notes .note.n4 { top: 110px; left: 0; font-size: 28px; }
+  .handwritten-notes .note.n5 { top: 80px; left: 150px; font-size: 26px; transform: rotate(1deg); }
+  .handwritten-notes .note.n6 { top: 120px; left: 150px; font-size: 24px; transform: rotate(-1deg); }
+
+  /* ──────────────────── 顶部状态栏 ──────────────────── */
+  .status-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 100;
+  }
+
+  .status-time {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-white);
+  }
+
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .status-icons span {
+    font-size: 13px;
+    color: var(--text-white);
+  }
+
+  /* ──────────────────── 顶部导航栏 ──────────────────── */
+  .top-nav {
+    position: absolute;
+    top: 44px; left: 0; right: 0;
+    height: 52px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  /* 主播信息 */
+  .host-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .host-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B1A, #E8232A);
+    border: 2px solid var(--brand-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .host-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .host-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .host-cert {
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  /* 关注按钮 */
+  .follow-btn {
+    background: linear-gradient(135deg, var(--brand-red), var(--brand-orange));
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* 观看人数 */
+  .viewer-count {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  /* 关闭按钮 */
+  .close-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  /* 业务执照 */
+  .cert-badge {
+    position: absolute;
+    top: 44px; left: 0; right: 0;
+    height: 20px;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    z-index: 99;
+  }
+
+  .cert-badge span {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+  }
+
+  /* ──────────────────── 标题横幅 ──────────────────── */
+  .title-banner {
+    position: absolute;
+    top: 116px; left: 0; right: 0;
+    z-index: 90;
+    padding: 0 6px;
+  }
+
+  .title-line1 {
+    background: linear-gradient(90deg, var(--brand-red) 0%, #C41E1E 100%);
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .title-number {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--brand-gold);
+    font-family: 'Noto Serif SC', serif;
+    text-shadow: 0 0 20px rgba(255,208,0,0.5);
+    flex-shrink: 0;
+  }
+
+  .title-text1 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--text-white);
+    flex-shrink: 0;
+  }
+
+  .title-divider {
+    font-size: 18px;
+    color: var(--brand-gold);
+    flex-shrink: 0;
+  }
+
+  .title-badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+
+  .title-badge {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-white);
+  }
+
+  .title-line2 {
+    background: linear-gradient(90deg, #B01010 0%, var(--brand-red) 100%);
+    padding: 5px 10px;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--brand-gold);
+    letter-spacing: 1px;
+    border-radius: 0 0 4px 4px;
+  }
+
+  /* 副标题 */
+  .subtitle-banner {
+    position: absolute;
+    top: 185px; left: 6px; right: 6px;
+    z-index: 90;
+    background: rgba(0,0,0,0.7);
+    padding: 5px 10px;
+    border-radius: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .subtitle-item {
+    font-size: 12px;
+    color: var(--brand-gold);
+    white-space: nowrap;
+  }
+
+  .subtitle-sep {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ──────────────────── 右侧功能区 ──────────────────── */
+  .right-panel {
+    position: absolute;
+    top: 110px;
+    right: 12px;
+    z-index: 95;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .panel-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .panel-icon-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+  }
+
+  .panel-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .panel-icon:active { transform: scale(0.92); }
+
+  .panel-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+  }
+
+  /* 直播广场按钮 */
+  .plaza-btn {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* ──────────────────── 底部展馆 ──────────────────── */
+  .exhibition-bar {
+    position: absolute;
+    top: 220px;
+    right: 0;
+    z-index: 90;
+    background: rgba(0,0,0,0.55);
+    padding: 4px 10px;
+    border-radius: 20px 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .exhibition-bar span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .exhibition-count {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ──────────────────── 购物车悬浮按钮 ──────────────────── */
+  .cart-float-btn {
+    position: absolute;
+    bottom: 120px;
+    right: 14px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    animation: cartPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes cartPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  .cart-btn-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF3040, #FF6B1A);
+    box-shadow: 0 4px 20px rgba(255,48,64,0.6), 0 0 0 3px rgba(255,48,64,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    position: relative;
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--brand-gold);
+    color: #1A0A00;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 1px 5px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .cart-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--brand-gold);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+
+  /* ──────────────────── 投资提示 ──────────────────── */
+  .invest-notice {
+    position: absolute;
+    bottom: 200px;
+    left: 12px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.4);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .invest-notice .notice-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    flex-shrink: 0;
+  }
+
+  .invest-notice span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+  }
+
+  /* ──────────────────── 弹幕区 ──────────────────── */
+  .danmu-area {
+    position: absolute;
+    bottom: 200px;
+    left: 0;
+    right: 80px;
+    height: 120px;
+    z-index: 90;
+    padding: 0 12px;
+    overflow: hidden;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .danmu-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    animation: danmuFadeIn 0.3s ease-out;
+  }
+
+  @keyframes danmuFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .danmu-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    margin-top: 1px;
+  }
+
+  .danmu-bubble {
+    background: rgba(0,0,0,0.45);
+    border-radius: 12px;
+    padding: 4px 10px;
+    max-width: calc(100% - 30px);
+  }
+
+  .danmu-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brand-gold);
+  }
+
+  .danmu-text {
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.4;
+  }
+
+  /* ──────────────────── 系统消息 ──────────────────── */
+  .system-msg {
+    position: absolute;
+    bottom: 198px;
+    left: 0;
+    right: 80px;
+    padding: 0 12px;
+    z-index: 91;
+  }
+
+  .sys-bubble {
+    background: rgba(0,0,0,0.55);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    max-height: 80px;
+    overflow: hidden;
+  }
+
+  /* ──────────────────── 热门弹幕 ──────────────────── */
+  .hot-danmu {
+    position: absolute;
+    bottom: 182px;
+    left: 12px;
+    right: 80px;
+    z-index: 92;
+  }
+
+  .hot-danmu-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 20px;
+    padding: 5px 12px;
+    overflow: hidden;
+  }
+
+  .hot-tag {
+    background: var(--brand-gold);
+    color: var(--brand-dark);
+    font-size: 9px;
+    font-weight: 900;
+    padding: 1px 5px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .hot-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B1A, #E8232A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .hot-text {
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ──────────────────── 底部输入栏 ──────────────────── */
+  .bottom-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    padding: 10px 12px 24px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%);
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input-box {
+    flex: 1;
+    height: 38px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0 16px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    cursor: text;
+  }
+
+  .bottom-icons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .bottom-icon {
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  /* ──────────────────── 购物车面板 ──────────────────── */
+  .cart-panel {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 75vh;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    z-index: 300;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .cart-panel.open {
+    transform: translateY(0);
+  }
+
+  .panel-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 299;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  .panel-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* 购物车头部 */
+  .cart-header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .cart-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1A1A1A;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cart-title-badge {
+    background: #FF3040;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  .cart-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* 购物车内容区 */
+  .cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  /* 精选商品标签 */
+  .cart-section-header {
+    padding: 12px 16px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-tag {
+    background: linear-gradient(90deg, var(--brand-red), var(--brand-orange));
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .section-hint {
+    font-size: 12px;
+    color: #999;
+  }
+
+  /* 产品卡片 */
+  .product-card {
+    margin: 0 16px 12px;
+    background: #F8F6F3;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1.5px solid rgba(232,35,42,0.08);
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+  }
+
+  .product-card:active { transform: scale(0.98); }
+
+  .product-card.featured {
+    border-color: rgba(255,107,26,0.3);
+    background: linear-gradient(135deg, #FFF9F4 0%, #FFF4EE 100%);
+  }
+
+  .product-card-inner {
+    padding: 14px;
+  }
+
+  /* 热销标签 */
+  .product-hot-label {
+    position: absolute;
+    top: 0; left: 0;
+    background: linear-gradient(90deg, var(--brand-red), var(--brand-orange));
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 0 0 10px 0;
+  }
+
+  .product-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-top: 4px;
+  }
+
+  .product-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #E8232A, #FF6B1A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    flex-shrink: 0;
+    line-height: 1.2;
+    box-shadow: 0 3px 10px rgba(232,35,42,0.3);
+  }
+
+  .product-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .product-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1A1A1A;
+    line-height: 1.3;
+  }
+
+  .product-company {
+    font-size: 11px;
+    color: #888;
+    margin-top: 3px;
+  }
+
+  .product-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .ptag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .ptag-red { background: rgba(232,35,42,0.08); color: var(--brand-red); }
+  .ptag-orange { background: rgba(255,107,26,0.08); color: var(--brand-orange); }
+  .ptag-gold { background: rgba(255,208,0,0.15); color: #A87000; }
+  .ptag-blue { background: rgba(30,120,255,0.08); color: #1E78FF; }
+
+  /* 产品核心数据 */
+  .product-metrics {
+    display: flex;
+    gap: 0;
+    margin-top: 12px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 10px;
+  }
+
+  .metric-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 6px;
+    border-right: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .metric-item:last-child { border-right: none; }
+
+  .metric-value {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--brand-red);
+    line-height: 1;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .metric-value .unit {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand-orange);
+  }
+
+  .metric-label {
+    font-size: 10px;
+    color: #999;
+    margin-top: 3px;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* 产品底部行动区 */
+  .product-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .product-price-area {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-price-hint {
+    font-size: 10px;
+    color: #999;
+  }
+
+  .product-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-red);
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  .price-num {
+    font-size: 20px;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .product-cta {
+    background: linear-gradient(135deg, var(--brand-red), var(--brand-orange));
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 9px 22px;
+    border-radius: 22px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(232,35,42,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .product-cta:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(232,35,42,0.3);
+  }
+
+  /* 保障说明区 */
+  .guarantee-strip {
+    margin: 0 16px 12px;
+    background: #FFF8E7;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,208,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .g-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .g-content {
+    flex: 1;
+  }
+
+  .g-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #A87000;
+  }
+
+  .g-desc {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* 底部声明 */
+  .cart-footer {
+    padding: 10px 16px 16px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+
+  .disclaimer {
+    font-size: 10px;
+    color: #BBB;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* ──────────────────── 礼物动效区 ──────────────────── */
+  .gift-float {
+    position: absolute;
+    bottom: 190px;
+    right: 80px;
+    z-index: 95;
+    pointer-events: none;
+  }
+
+  .gift-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+    border-radius: 20px;
+    padding: 4px 10px 4px 4px;
+    animation: floatUp 3s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(0); }
+    10% { opacity: 1; }
+    80% { opacity: 1; transform: translateY(-40px); }
+    100% { opacity: 0; transform: translateY(-60px); }
+  }
+
+  .gift-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B1A, var(--brand-red));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .gift-text {
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .gift-emoji {
+    font-size: 16px;
+  }
+
+  /* ──────────────────── 小时榜标签 ──────────────────── */
+  .rank-tag {
+    position: absolute;
+    top: 100px;
+    left: 12px;
+    z-index: 90;
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* 波纹动效 */
+  @keyframes ripple {
+    0% { transform: scale(0.95); opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  .cart-btn-icon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(255,48,64,0.4);
+    animation: ripple 2s ease-out infinite;
+  }
+</style>
+</head>
+<body>
+<div class="livestream" id="app">
+
+  <!-- 背景层 -->
+  <div class="bg-video"></div>
+  <div class="bg-bookshelf"></div>
+
+  <!-- 手写板书 -->
+  <div class="handwritten-notes">
+    <div class="note n1">养老年金</div>
+    <div class="note n2">60岁</div>
+    <div class="note n3">2000</div>
+    <div class="note n4">5000</div>
+    <div class="note n5">55岁</div>
+    <div class="note n6">50岁</div>
+  </div>
+
+  <!-- 主播人物展示区 -->
+  <div class="presenter-area">
+    <div style="width:100%;height:100%;background:url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"/>')"></div>
+  </div>
+
+  <!-- 状态栏 -->
+  <div class="status-bar">
+    <span class="status-time" id="clockTime">21:52</span>
+    <div class="status-icons">
+      <span>📶</span>
+      <span>📶</span>
+      <span>🔋</span>
+    </div>
+  </div>
+
+  <!-- 执照条 -->
+  <div class="cert-badge">
+    <span>孙悟险~明亚 &nbsp;执业证号：26050037000080062024000124</span>
+  </div>
+
+  <!-- 小时榜 -->
+  <div class="rank-tag">小时榜</div>
+
+  <!-- 顶部导航栏 -->
+  <div class="top-nav">
+    <div class="host-info">
+      <div class="host-avatar">孙</div>
+      <div class="host-meta">
+        <div class="host-name">
+          孙悟险~明亚
+          <span style="font-size:11px;background:#1E90FF;color:white;padding:1px 5px;border-radius:3px;font-weight:500">明亚保险经纪</span>
+        </div>
+        <div class="host-cert">34本场点赞</div>
+      </div>
+    </div>
+    <button class="follow-btn">关注</button>
+    <div class="viewer-count">👁 <span id="viewerCount">7</span></div>
+    <div class="close-btn" onclick="window.location.reload()">✕</div>
+  </div>
+
+  <!-- 标题横幅 -->
+  <div class="title-banner">
+    <div class="title-line1">
+      <span class="title-number">100万</span>
+      <span class="title-text1">储蓄</span>
+      <span class="title-divider">丨</span>
+      <div class="title-badges">
+        <span class="title-badge">传承</span>
+        <span class="title-divider">丨</span>
+        <span class="title-badge">养老</span>
+      </div>
+    </div>
+    <div class="title-line2">如何给孩子留钱？</div>
+  </div>
+
+  <!-- 副标题 -->
+  <div class="subtitle-banner">
+    <span class="subtitle-item">储蓄险/增额寿/年金险</span>
+    <span class="subtitle-sep">·</span>
+    <span class="subtitle-item">中高净值配置</span>
+  </div>
+
+  <!-- 资质标签行 -->
+  <div style="position:absolute;top:228px;left:6px;right:6px;z-index:88;display:flex;flex-wrap:wrap;gap:4px;padding:0 4px;">
+    <span style="font-size:11px;color:rgba(255,208,0,0.9);white-space:nowrap;">保险从业12年</span>
+    <span style="font-size:11px;color:rgba(255,255,255,0.3)">·</span>
+    <span style="font-size:11px;color:rgba(255,208,0,0.9);white-space:nowrap;">山东大学硕士</span>
+    <span style="font-size:11px;color:rgba(255,255,255,0.3)">·</span>
+    <span style="font-size:11px;color:rgba(255,208,0,0.9);white-space:nowrap;">COT</span>
+    <span style="font-size:11px;color:rgba(255,255,255,0.3)">·</span>
+    <span style="font-size:11px;color:rgba(255,208,0,0.9);white-space:nowrap;">服务全国</span>
+    <span style="font-size:11px;color:rgba(255,255,255,0.3)">·</span>
+    <span style="font-size:11px;color:rgba(255,208,0,0.9);white-space:nowrap;">省业绩TOP</span>
+  </div>
+
+  <!-- 右侧功能区 -->
+  <div class="right-panel">
+    <div class="panel-item">
+      <div class="plaza-btn">直播广场 ›</div>
+    </div>
+    <div class="panel-item">
+      <div class="panel-icon">❤️</div>
+    </div>
+    <div class="panel-item">
+      <div class="panel-icon">💬</div>
+    </div>
+    <div class="panel-item">
+      <div class="panel-icon">⬆️</div>
+      <div class="panel-label">分享</div>
+    </div>
+  </div>
+
+  <!-- 基础展馆 -->
+  <div class="exhibition-bar">
+    <span>基础展馆</span>
+    <span class="exhibition-count">0/12</span>
+  </div>
+
+  <!-- 投资提示 -->
+  <div class="invest-notice" style="bottom: 310px;">
+    <div class="notice-icon">i</div>
+    <span>投资有风险，决策需谨慎</span>
+  </div>
+
+  <!-- 弹幕区 -->
+  <div class="danmu-area" id="danmuArea">
+    <div class="danmu-item">
+      <div class="danmu-avatar" style="background:linear-gradient(135deg,#FF6B1A,#E8232A)">赵</div>
+      <div class="danmu-bubble">
+        <div class="danmu-name">赵老铁996</div>
+        <div class="danmu-text">增额寿和年金险有什么区别？</div>
+      </div>
+    </div>
+    <div class="danmu-item">
+      <div class="danmu-avatar" style="background:linear-gradient(135deg,#1E78FF,#0056CC)">李</div>
+      <div class="danmu-bubble">
+        <div class="danmu-name">李财富自由</div>
+        <div class="danmu-text">老师讲得太好了！👍</div>
+      </div>
+    </div>
+    <div class="danmu-item">
+      <div class="danmu-avatar" style="background:linear-gradient(135deg,#00B96B,#008F50)">王</div>
+      <div class="danmu-bubble">
+        <div class="danmu-name">王小明的妈妈</div>
+        <div class="danmu-text">每月2000能配什么产品？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 系统消息 -->
+  <div class="system-msg">
+    <div class="sys-bubble">
+      欢迎来到直播间！理性消费，如主播在直播中以不当方式诱导打赏，请谨慎辨别。切勿私下交易，以防人身财产损失，谨防网络诈骗。
+    </div>
+  </div>
+
+  <!-- 热门弹幕 -->
+  <div class="hot-danmu">
+    <div class="hot-danmu-content">
+      <div class="hot-tag">热门</div>
+      <div class="hot-icon">孙</div>
+      <div class="hot-text">银行低利率时代挪储，分红时代增额寿和年金险如何选？</div>
+    </div>
+  </div>
+
+  <!-- 礼物动效 -->
+  <div class="gift-float" id="giftFloat"></div>
+
+  <!-- 购物车悬浮按钮 -->
+  <div class="cart-float-btn" id="cartFloatBtn" onclick="openCart()">
+    <div class="cart-btn-icon">
+      🛒
+      <div class="cart-badge">3</div>
+    </div>
+    <div class="cart-label">购物车</div>
+  </div>
+
+  <!-- 底部输入栏 -->
+  <div class="bottom-bar">
+    <div class="input-row">
+      <div class="input-box">说点什么...</div>
+      <div class="bottom-icons">
+        <span class="bottom-icon">😊</span>
+        <span class="bottom-icon" style="font-size:28px;" onclick="sendGift()">🎁</span>
+        <span class="bottom-icon">⬆️</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 蒙层 -->
+  <div class="panel-overlay" id="panelOverlay" onclick="closeCart()"></div>
+
+  <!-- 购物车面板 -->
+  <div class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+      <div class="cart-title">
+        直播间专属产品
+        <span class="cart-title-badge">3款</span>
+      </div>
+      <button class="cart-close" onclick="closeCart()">✕</button>
+    </div>
+
+    <div class="cart-body">
+      <!-- 精选推荐标签 -->
+      <div class="cart-section-header">
+        <div class="section-tag">🔥 直播间精选</div>
+        <span class="section-hint">限时专属咨询通道</span>
+      </div>
+
+      <!-- 产品1：增额终身寿 -->
+      <div class="product-card featured">
+        <div class="product-hot-label">🔥 主播力荐</div>
+        <div class="product-card-inner">
+          <div class="product-header">
+            <div class="product-logo">增额<br>终身寿</div>
+            <div class="product-info">
+              <div class="product-name">弘运增额终身寿险</div>
+              <div class="product-company">大家人寿 · 传承储蓄首选</div>
+              <div class="product-tags">
+                <span class="ptag ptag-red">3.5%复利增值</span>
+                <span class="ptag ptag-orange">终身锁定</span>
+                <span class="ptag ptag-gold">传承规划</span>
+                <span class="ptag ptag-blue">免体检</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-metrics">
+            <div class="metric-item">
+              <div class="metric-value">3.5<span class="unit">%</span></div>
+              <div class="metric-label">增额<br>复利率</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">30<span class="unit">年</span></div>
+              <div class="metric-label">保障<br>期限</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">100<span class="unit">万</span></div>
+              <div class="metric-label">最高<br>保额</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">灵<span class="unit">活</span></div>
+              <div class="metric-label">可减保<br>取用</div>
+            </div>
+          </div>
+
+          <div class="product-action">
+            <div class="product-price-area">
+              <div class="product-price-hint">起投金额</div>
+              <div class="product-price">
+                ¥<span class="price-num">2,000</span><span style="font-size:11px;color:#999">/年</span>
+              </div>
+            </div>
+            <button class="product-cta" onclick="openInsurance('增额终身寿')">立即咨询</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 产品2：养老年金 -->
+      <div class="product-card">
+        <div class="product-card-inner">
+          <div class="product-header">
+            <div class="product-logo" style="background:linear-gradient(135deg,#FF8C00,#FF4500)">养老<br>年金</div>
+            <div class="product-info">
+              <div class="product-name">金生有约养老年金险</div>
+              <div class="product-company">中国人寿 · 养老规划专属</div>
+              <div class="product-tags">
+                <span class="ptag ptag-red">3.2%预定利率</span>
+                <span class="ptag ptag-orange">60岁领取</span>
+                <span class="ptag ptag-gold">活多久领多久</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-metrics">
+            <div class="metric-item">
+              <div class="metric-value">3.2<span class="unit">%</span></div>
+              <div class="metric-label">预定<br>利率</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">20<span class="unit">年</span></div>
+              <div class="metric-label">交费<br>期限</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">60<span class="unit">岁</span></div>
+              <div class="metric-label">开始<br>领取</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">终<span class="unit">身</span></div>
+              <div class="metric-label">领取<br>方式</div>
+            </div>
+          </div>
+
+          <div class="product-action">
+            <div class="product-price-area">
+              <div class="product-price-hint">起投金额</div>
+              <div class="product-price">
+                ¥<span class="price-num">5,000</span><span style="font-size:11px;color:#999">/年</span>
+              </div>
+            </div>
+            <button class="product-cta" onclick="openInsurance('养老年金')">立即咨询</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 产品3：传承储蓄险 -->
+      <div class="product-card">
+        <div class="product-card-inner">
+          <div class="product-header">
+            <div class="product-logo" style="background:linear-gradient(135deg,#6A0DAD,#9B59B6)">传承<br>储蓄</div>
+            <div class="product-info">
+              <div class="product-name">盛世福2.0增额终身寿</div>
+              <div class="product-company">太平人寿 · 中高净值传承</div>
+              <div class="product-tags">
+                <span class="ptag ptag-red">3.5%增额</span>
+                <span class="ptag" style="background:rgba(106,13,173,0.08);color:#6A0DAD">定向传承</span>
+                <span class="ptag ptag-gold">遗产规划</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-metrics">
+            <div class="metric-item">
+              <div class="metric-value">3.5<span class="unit">%</span></div>
+              <div class="metric-label">增额<br>复利</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">500<span class="unit">万</span></div>
+              <div class="metric-label">最高<br>保额</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">指<span class="unit">定</span></div>
+              <div class="metric-label">受益人<br>传承</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">隔<span class="unit">离</span></div>
+              <div class="metric-label">债务<br>隔离</div>
+            </div>
+          </div>
+
+          <div class="product-action">
+            <div class="product-price-area">
+              <div class="product-price-hint">起投金额</div>
+              <div class="product-price">
+                ¥<span class="price-num">10,000</span><span style="font-size:11px;color:#999">/年</span>
+              </div>
+            </div>
+            <button class="product-cta" style="background:linear-gradient(135deg,#6A0DAD,#9B59B6);box-shadow:0 4px 12px rgba(106,13,173,0.4)" onclick="openInsurance('传承储蓄险')">立即咨询</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 保障说明 -->
+      <div class="guarantee-strip">
+        <div class="g-icon">🛡️</div>
+        <div class="g-content">
+          <div class="g-title">孙老师专业服务承诺</div>
+          <div class="g-desc">保险从业12年 · 山东大学硕士 · COT认证 · 全国服务 · 省级业绩TOP</div>
+        </div>
+      </div>
+
+      <div style="height:8px"></div>
+    </div>
+
+    <div class="cart-footer">
+      <div class="disclaimer">本页内容仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>具体产品条款以保险公司合同为准 · 请理性规划个人财务</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 咨询弹窗 -->
+<div id="consultModal" style="display:none;position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.7)" onclick="closeConsult()"></div>
+  <div style="position:relative;background:white;border-radius:20px;width:88%;max-width:360px;padding:24px;text-align:center;">
+    <div style="font-size:32px;margin-bottom:12px">📱</div>
+    <div style="font-size:18px;font-weight:700;color:#1A1A1A;margin-bottom:6px" id="consultTitle">咨询产品</div>
+    <div style="font-size:13px;color:#666;line-height:1.6;margin-bottom:20px">
+      孙悟险老师将在直播结束后<br>为您提供1对1专属咨询服务<br><br>
+      <span style="color:#E8232A;font-weight:600">保险从业12年 · COT认证顾问</span>
+    </div>
+    <button onclick="closeConsult()" style="width:100%;height:46px;background:linear-gradient(135deg,#E8232A,#FF6B1A);color:white;font-size:16px;font-weight:700;border:none;border-radius:23px;cursor:pointer;box-shadow:0 4px 15px rgba(232,35,42,0.4)">
+      预约咨询 →
+    </button>
+    <div style="margin-top:10px;font-size:11px;color:#BBB">点击预约即视为同意相关服务条款</div>
+  </div>
+</div>
+
+<script>
+  // 实时时钟
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clockTime').textContent =
+      now.getHours().toString().padStart(2,'0') + ':' +
+      now.getMinutes().toString().padStart(2,'0');
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // 观看人数动态变化
+  let viewers = 7;
+  setInterval(() => {
+    if (Math.random() > 0.5) {
+      viewers += Math.floor(Math.random() * 3);
+    } else {
+      viewers = Math.max(5, viewers - 1);
+    }
+    document.getElementById('viewerCount').textContent = viewers;
+  }, 3000);
+
+  // 购物车开关
+  function openCart() {
+    document.getElementById('cartPanel').classList.add('open');
+    document.getElementById('panelOverlay').classList.add('open');
+  }
+
+  function closeCart() {
+    document.getElementById('cartPanel').classList.remove('open');
+    document.getElementById('panelOverlay').classList.remove('open');
+  }
+
+  // 咨询弹窗
+  function openInsurance(name) {
+    const modal = document.getElementById('consultModal');
+    document.getElementById('consultTitle').textContent = '咨询：' + name;
+    modal.style.display = 'flex';
+  }
+
+  function closeConsult() {
+    document.getElementById('consultModal').style.display = 'none';
+  }
+
+  // 礼物动效
+  const gifts = ['🌹','💝','🎊','💎','🎁','⭐'];
+  const giftNames = ['老铁','财富自由','小可爱','老板','土豪'];
+  function sendGift() {
+    const area = document.getElementById('giftFloat');
+    const div = document.createElement('div');
+    div.className = 'gift-item';
+    const name = giftNames[Math.floor(Math.random() * giftNames.length)];
+    const emoji = gifts[Math.floor(Math.random() * gifts.length)];
+    div.innerHTML = `
+      <div class="gift-avatar">${name[0]}</div>
+      <div class="gift-text">${name}送出了</div>
+      <div class="gift-emoji">${emoji}</div>
+    `;
+    area.appendChild(div);
+    setTimeout(() => div.remove(), 3100);
+  }
+
+  // 自动弹幕
+  const danmuList = [
+    { name: '小财神888', text: '老师，增额寿的收益怎么算？', color: 'linear-gradient(135deg,#FF6B1A,#E8232A)' },
+    { name: '稳健投资者', text: '请问这款产品可以中途退保吗？', color: 'linear-gradient(135deg,#1E78FF,#0056CC)' },
+    { name: '妈妈的烦恼', text: '想给孩子存100万，怎么规划？', color: 'linear-gradient(135deg,#9B59B6,#6A0DAD)' },
+    { name: '退休规划师', text: '年金险和增额寿哪个更适合退休？', color: 'linear-gradient(135deg,#00B96B,#008F50)' },
+    { name: '高净值老铁', text: '孙老师讲解非常专业！', color: 'linear-gradient(135deg,#FF4500,#FF8C00)' },
+    { name: '谨慎的小李', text: '投资有风险这个要注意啊', color: 'linear-gradient(135deg,#2ECC71,#1ABC9C)' },
+  ];
+
+  let danmuIndex = 0;
+  setInterval(() => {
+    const area = document.getElementById('danmuArea');
+    if (area.children.length > 4) {
+      area.removeChild(area.firstChild);
+    }
+
+    const d = danmuList[danmuIndex % danmuList.length];
+    danmuIndex++;
+
+    const div = document.createElement('div');
+    div.className = 'danmu-item';
+    div.innerHTML = `
+      <div class="danmu-avatar" style="background:${d.color}">${d.name[0]}</div>
+      <div class="danmu-bubble">
+        <div class="danmu-name">${d.name}</div>
+        <div class="danmu-text">${d.text}</div>
+      </div>
+    `;
+    area.appendChild(div);
+  }, 4000);
+
+  // 自动送礼
+  setInterval(() => {
+    if (Math.random() > 0.6) sendGift();
+  }, 6000);
+</script>
+</body>
+</html>
