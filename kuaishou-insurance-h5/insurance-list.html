@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>快手保险理财</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ks-orange: #FF5E1A;
+      --ks-orange-light: #FF7A42;
+      --ks-orange-pale: #FFF2EC;
+      --ks-red: #E8341A;
+      --ks-gold: #F5A623;
+      --ks-gold-light: #FFD166;
+      --ks-bg: #F4F5F8;
+      --ks-white: #FFFFFF;
+      --ks-text-primary: #1A1A2E;
+      --ks-text-secondary: #666880;
+      --ks-text-muted: #9A9BB0;
+      --ks-border: #EAEAF0;
+      --ks-card-shadow: 0 2px 12px rgba(26,26,46,0.06);
+      --ks-card-radius: 14px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--ks-bg);
+      color: var(--ks-text-primary);
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    /* ===== STATUS BAR MOCK ===== */
+    .status-bar {
+      height: 44px;
+      background: #FFF8F5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ks-text-primary);
+    }
+    .status-bar .time { font-size: 15px; font-weight: 700; }
+    .status-icons { display: flex; gap: 6px; align-items: center; }
+    .status-icons svg { width: 16px; height: 16px; fill: var(--ks-text-primary); }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: linear-gradient(160deg, #FFF4EE 0%, #FFEEE6 50%, #FFF8F5 100%);
+      padding: 0 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 rgba(255,94,26,0.08);
+    }
+    .header-top {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-back {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer; padding: 0;
+      color: var(--ks-text-primary);
+    }
+    .header-title {
+      font-size: 18px; font-weight: 700;
+      color: var(--ks-text-primary);
+      letter-spacing: -0.3px;
+    }
+    .header-search {
+      flex: 1;
+      height: 34px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 17px;
+      display: flex; align-items: center;
+      padding: 0 12px; gap: 6px;
+      border: 1px solid rgba(255,94,26,0.12);
+    }
+    .header-search span {
+      font-size: 13px; color: var(--ks-text-muted);
+    }
+    .header-more {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ks-text-primary);
+    }
+
+    /* ===== CATEGORY TABS ===== */
+    .category-tabs {
+      display: flex;
+      padding: 8px 0 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      gap: 0;
+    }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .tab-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      min-width: 72px; cursor: pointer;
+      flex-shrink: 0;
+    }
+    .tab-icon {
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      transition: transform 0.18s;
+      position: relative;
+    }
+    .tab-item:active .tab-icon { transform: scale(0.92); }
+    .tab-label {
+      font-size: 12px; font-weight: 500;
+      color: var(--ks-text-secondary);
+      white-space: nowrap;
+    }
+    .tab-item.active .tab-label {
+      color: var(--ks-orange);
+      font-weight: 700;
+    }
+    .tab-item.active .tab-icon {
+      background: var(--ks-orange) !important;
+      box-shadow: 0 4px 12px rgba(255,94,26,0.35);
+    }
+    .tab-active-pill {
+      position: absolute;
+      bottom: -4px;
+      left: 50%; transform: translateX(-50%);
+      width: 20px; height: 3px;
+      background: var(--ks-orange);
+      border-radius: 2px;
+    }
+    .tab-icon-tuijian { background: linear-gradient(135deg, #FF6B3D, #FF3B1A); }
+    .tab-icon-qihuo   { background: linear-gradient(135deg, #FF9A5C, #FF6B2B); }
+    .tab-icon-baoxian { background: linear-gradient(135deg, #4E8FFF, #2166FF); }
+    .tab-icon-yanglao { background: linear-gradient(135deg, #FFB547, #FF8C1A); }
+    .tab-icon-gengduo { background: linear-gradient(135deg, #7A7FFF, #4A50FF); }
+
+    /* ===== SCROLL CONTENT ===== */
+    .scroll-content {
+      padding: 12px 14px 80px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    /* ===== FILTER PILLS ===== */
+    .filter-pills {
+      display: flex; gap: 8px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .filter-pills::-webkit-scrollbar { display: none; }
+    .pill {
+      flex-shrink: 0;
+      height: 30px; padding: 0 14px;
+      border-radius: 15px;
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center;
+      cursor: pointer; transition: all 0.18s;
+      border: 1.5px solid transparent;
+    }
+    .pill-active {
+      background: linear-gradient(135deg, #FF5E1A, #FF3D1A);
+      color: white;
+      box-shadow: 0 3px 10px rgba(255,94,26,0.3);
+    }
+    .pill-inactive {
+      background: var(--ks-white);
+      color: var(--ks-text-secondary);
+      border-color: var(--ks-border);
+    }
+
+    /* ===== HERO BANNER ===== */
+    .hero-banner {
+      background: var(--ks-white);
+      border-radius: var(--ks-card-radius);
+      overflow: hidden;
+      box-shadow: var(--ks-card-shadow);
+    }
+    .hero-inner {
+      background: linear-gradient(135deg, #FFF0E8 0%, #FFE4D8 100%);
+      margin: 14px;
+      border-radius: 12px;
+      padding: 20px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-inner::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 130px; height: 130px;
+      background: radial-gradient(circle, rgba(255,94,26,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge-row {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 10px;
+    }
+    .hero-badge {
+      background: linear-gradient(135deg, #FF5E1A, #FF3D1A);
+      color: white;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+    .hero-koudian { color: var(--ks-text-muted); font-size: 12px; }
+    .hero-title {
+      font-size: 20px; font-weight: 900;
+      color: var(--ks-text-primary);
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+    .hero-subtitle { font-size: 12px; color: var(--ks-text-secondary); margin-bottom: 16px; }
+
+    .compare-row {
+      display: flex; align-items: center; gap: 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .compare-left {
+      flex: 1; padding: 12px 14px;
+      text-align: center;
+      border-right: 1px solid #F0F0F0;
+    }
+    .compare-right {
+      flex: 1.1; padding: 12px 14px;
+      text-align: center;
+      background: linear-gradient(135deg, #FFF4EE, #FFE8DC);
+      position: relative;
+    }
+    .compare-label { font-size: 11px; color: var(--ks-text-muted); margin-bottom: 4px; }
+    .compare-rate {
+      font-size: 24px; font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .compare-rate .unit { font-size: 14px; font-weight: 600; }
+    .compare-rate-low { color: var(--ks-text-secondary); }
+    .compare-rate-high { color: var(--ks-orange); }
+    .compare-desc { font-size: 11px; color: var(--ks-text-muted); margin-top: 2px; }
+    .compare-arrow {
+      width: 28px; height: 28px;
+      background: var(--ks-orange);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      position: absolute; left: -14px; top: 50%; transform: translateY(-50%);
+      box-shadow: 0 2px 8px rgba(255,94,26,0.4);
+    }
+    .compare-product-name {
+      font-size: 12px; font-weight: 700;
+      color: var(--ks-orange); margin-bottom: 4px;
+    }
+
+    .hero-cta {
+      width: 100%;
+      height: 44px;
+      background: linear-gradient(135deg, #FF5E1A, #FF3000);
+      color: white;
+      border: none;
+      border-radius: 22px;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(255,60,0,0.35);
+      transition: transform 0.15s;
+    }
+    .hero-cta:active { transform: scale(0.97); }
+
+    .hero-dots {
+      display: flex; justify-content: center; gap: 5px;
+      padding: 10px 0 14px;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 3px; background: #DDDDDD; }
+    .dot.active { width: 18px; background: var(--ks-orange); }
+
+    /* ===== HOT SALE SECTION ===== */
+    .hot-sale-card {
+      background: var(--ks-white);
+      border-radius: var(--ks-card-radius);
+      padding: 16px;
+      box-shadow: var(--ks-card-shadow);
+    }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 700;
+      color: var(--ks-orange);
+      margin-bottom: 10px;
+    }
+    .fire-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--ks-orange);
+      box-shadow: 0 0 0 3px rgba(255,94,26,0.2);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 3px rgba(255,94,26,0.2); }
+      50%      { box-shadow: 0 0 0 6px rgba(255,94,26,0.05); }
+    }
+    .hot-product-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .hot-product-info {}
+    .hot-product-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .hot-product-desc { font-size: 13px; color: var(--ks-text-muted); }
+    .hot-product-desc span { color: var(--ks-orange); font-weight: 600; }
+    .btn-look {
+      height: 34px; padding: 0 18px;
+      border: 1.5px solid var(--ks-orange);
+      background: transparent;
+      color: var(--ks-orange);
+      font-size: 13px; font-weight: 600;
+      border-radius: 17px; cursor: pointer;
+      transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-look:active { background: var(--ks-orange); color: white; }
+
+    /* ===== PRODUCT LIST ===== */
+    .product-list-card {
+      background: var(--ks-white);
+      border-radius: var(--ks-card-radius);
+      overflow: hidden;
+      box-shadow: var(--ks-card-shadow);
+    }
+    .product-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--ks-border);
+      cursor: pointer;
+      transition: background 0.12s;
+      position: relative;
+    }
+    .product-item:last-child { border-bottom: none; }
+    .product-item:active { background: #FFF8F5; }
+
+    .product-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .product-name-row {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .product-name { font-size: 15px; font-weight: 700; }
+    .product-tag {
+      display: inline-flex; align-items: center;
+      height: 18px; padding: 0 6px;
+      border-radius: 4px;
+      font-size: 11px; font-weight: 600;
+    }
+    .tag-new {
+      background: linear-gradient(135deg, #FF5E1A, #FF3000);
+      color: white;
+    }
+    .tag-top {
+      background: linear-gradient(135deg, #FFB547, #FF8C1A);
+      color: white;
+    }
+    .tag-stable {
+      background: #EEF4FF;
+      color: #3B6FFF;
+      border: 1px solid #C5D8FF;
+    }
+    .tag-flexible {
+      background: #F0FFF4;
+      color: #2EAA5A;
+      border: 1px solid #B3E9C8;
+    }
+    .product-desc { font-size: 12px; color: var(--ks-text-muted); }
+
+    .product-metrics {
+      display: flex; align-items: flex-end; gap: 0;
+    }
+    .metric {
+      flex: 1;
+      display: flex; flex-direction: column;
+    }
+    .metric + .metric {
+      border-left: 1px solid var(--ks-border);
+      padding-left: 16px;
+    }
+    .metric-value {
+      font-size: 22px; font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .metric-value .unit { font-size: 14px; font-weight: 700; }
+    .metric-value-orange { color: var(--ks-orange); }
+    .metric-value-dark { color: var(--ks-text-primary); }
+    .metric-label { font-size: 11px; color: var(--ks-text-muted); margin-top: 3px; }
+
+    .product-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px dashed var(--ks-border);
+    }
+    .product-guarantee {
+      display: flex; gap: 8px;
+    }
+    .guarantee-item {
+      display: flex; align-items: center; gap: 3px;
+      font-size: 11px; color: var(--ks-text-muted);
+    }
+    .guarantee-item svg { width: 12px; height: 12px; }
+    .btn-buy {
+      height: 30px; padding: 0 16px;
+      background: linear-gradient(135deg, #FF5E1A, #FF3000);
+      color: white;
+      border: none; border-radius: 15px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255,60,0,0.25);
+      transition: transform 0.12s;
+    }
+    .btn-buy:active { transform: scale(0.95); }
+
+    /* ===== ACTIVITY BAO CARD ===== */
+    .huoqian-card {
+      border-radius: var(--ks-card-radius);
+      overflow: hidden;
+      box-shadow: var(--ks-card-shadow);
+      background: var(--ks-white);
+    }
+    .huoqian-header {
+      background: linear-gradient(135deg, #1A2EFF 0%, #0F1DB0 100%);
+      padding: 14px 16px 16px;
+      position: relative; overflow: hidden;
+    }
+    .huoqian-header::after {
+      content: '';
+      position: absolute;
+      right: -20px; top: -20px;
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    }
+    .huoqian-title-row { display: flex; align-items: center; gap: 8px; }
+    .huoqian-title { font-size: 16px; font-weight: 800; color: white; }
+    .huoqian-subtitle { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+    .huoqian-body { padding: 14px 16px; }
+    .huoqian-metrics {
+      display: flex; gap: 0;
+    }
+    .huoqian-metric {
+      flex: 1; text-align: center;
+      padding: 10px 0;
+    }
+    .huoqian-metric + .huoqian-metric {
+      border-left: 1px solid var(--ks-border);
+    }
+    .hm-value { font-size: 20px; font-weight: 900; color: var(--ks-orange); }
+    .hm-label { font-size: 11px; color: var(--ks-text-muted); margin-top: 2px; }
+    .huoqian-cta {
+      width: 100%;
+      height: 40px;
+      background: linear-gradient(135deg, #1A2EFF, #0F1DB0);
+      color: white;
+      border: none; border-radius: 20px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; margin-top: 12px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 3px 12px rgba(26,46,255,0.3);
+    }
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px;
+      height: 70px;
+      background: var(--ks-white);
+      border-top: 1px solid var(--ks-border);
+      display: flex; align-items: stretch;
+      z-index: 200;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px; cursor: pointer;
+    }
+    .nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+    .nav-label { font-size: 11px; color: var(--ks-text-muted); }
+    .nav-item.active .nav-label { color: var(--ks-orange); font-weight: 700; }
+    .nav-item.active .nav-icon svg { fill: var(--ks-orange); }
+    .nav-icon svg { fill: var(--ks-text-muted); }
+
+    .nav-center {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+    }
+    .nav-center-btn {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #FF5E1A, #FF3000);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 12px rgba(255,60,0,0.35);
+      margin-top: -10px;
+    }
+    .nav-center-btn svg { fill: white; width: 20px; height: 20px; }
+    .nav-center-label { font-size: 11px; color: var(--ks-text-muted); }
+
+    /* ===== DIVIDER LABEL ===== */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px;
+      padding: 4px 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--ks-border); }
+    .divider-text { font-size: 12px; color: var(--ks-text-muted); white-space: nowrap; }
+
+    /* ===== SCROLL ANIMATION ===== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== NOTICE BANNER ===== */
+    .notice-banner {
+      background: linear-gradient(135deg, #FFF7F0, #FFEFE4);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(255,94,26,0.12);
+    }
+    .notice-icon { font-size: 16px; flex-shrink: 0; }
+    .notice-scroll {
+      flex: 1; overflow: hidden;
+      font-size: 12px; color: var(--ks-text-secondary);
+      white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-60%); }
+    }
+
+    /* ===== RISK DISCLAIMER ===== */
+    .risk-text {
+      text-align: center;
+      font-size: 11px; color: var(--ks-text-muted);
+      padding: 4px 0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <span class="time">20:47</span>
+  <div class="status-icons">
+    <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33C16.4 22 17 21.4 17 20.67V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <button class="btn-back">
+      <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+        <path d="M9 1L1 9L9 17" stroke="#1A1A2E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="header-title">快手理财</span>
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="6" cy="6" r="5" stroke="#9A9BB0" stroke-width="1.5"/>
+        <path d="M10 10L13 13" stroke="#9A9BB0" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>稳稳赚收益，好产品</span>
+    </div>
+    <div class="header-more">
+      <svg width="20" height="4" viewBox="0 0 20 4" fill="#1A1A2E">
+        <circle cx="2" cy="2" r="2"/><circle cx="10" cy="2" r="2"/><circle cx="18" cy="2" r="2"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="category-tabs">
+    <div class="tab-item">
+      <div class="tab-icon tab-icon-tuijian">🏠</div>
+      <span class="tab-label">推荐</span>
+    </div>
+    <div class="tab-item">
+      <div class="tab-icon tab-icon-qihuo">📈</div>
+      <span class="tab-label">期货</span>
+    </div>
+    <div class="tab-item active">
+      <div class="tab-icon tab-icon-baoxian" style="background: var(--ks-orange); box-shadow: 0 4px 12px rgba(255,94,26,0.4);">🛡️</div>
+      <span class="tab-label">保险理财</span>
+    </div>
+    <div class="tab-item">
+      <div class="tab-icon tab-icon-yanglao">👴</div>
+      <span class="tab-label">养老金</span>
+    </div>
+    <div class="tab-item">
+      <div class="tab-icon tab-icon-gengduo">⚡</div>
+      <span class="tab-label">更多服务</span>
+    </div>
+  </div>
+</div>
+
+<!-- Scroll Content -->
+<div class="scroll-content">
+
+  <!-- Notice Banner -->
+  <div class="notice-banner fade-up">
+    <span class="notice-icon">📢</span>
+    <div class="notice-scroll">
+      老铁们注意：保险理财产品保证利率已锁定，不受市场波动影响，写入合同受法律保护！ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 新用户专享：快手老铁宝首单最高加息 0.3%！ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="filter-pills fade-up">
+    <div class="pill pill-active">🔥 新品上线</div>
+    <div class="pill pill-inactive">🎁 老铁福利</div>
+    <div class="pill pill-inactive">📆 日日正收益</div>
+    <div class="pill pill-inactive">🏆 销量榜</div>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner fade-up">
+    <div class="hero-inner">
+      <div class="hero-badge-row">
+        <span class="hero-badge">🔥 限时加息</span>
+        <span class="hero-koudian">保证利率写入合同</span>
+      </div>
+      <div class="hero-title">老铁宝·稳盈终身寿</div>
+      <div class="hero-subtitle">稳定正收益 · 收益碾压银行存款</div>
+
+      <div class="compare-row">
+        <div class="compare-left">
+          <div class="compare-label">银行存款</div>
+          <div class="compare-rate compare-rate-low">
+            0.95<span class="unit">%</span>
+          </div>
+          <div class="compare-desc">一年期存款利率</div>
+        </div>
+        <div class="compare-right">
+          <div class="compare-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="white">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+          <div class="compare-product-name">大家稳盈盈终身寿</div>
+          <div class="compare-rate compare-rate-high">
+            3.0<span class="unit">%</span>
+          </div>
+          <div class="compare-desc">成立以来年化</div>
+        </div>
+      </div>
+      <button class="hero-cta">立即体验 →</button>
+    </div>
+    <div class="hero-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <!-- Hot Sale -->
+  <div class="hot-sale-card fade-up">
+    <div class="section-tag">
+      <div class="fire-dot"></div>
+      储蓄保险热销
+    </div>
+    <div class="hot-product-row">
+      <div class="hot-product-info">
+        <div class="hot-product-name">快手小金保·理财宝</div>
+        <div class="hot-product-desc">历史天天正收益 &nbsp;
+          <span>75% 可灵活周转</span>
+        </div>
+      </div>
+      <button class="btn-look">去看看</button>
+    </div>
+  </div>
+
+  <!-- 活钱保 Section Header -->
+  <div class="section-divider fade-up">
+    <div class="divider-line"></div>
+    <div class="divider-text">💧 活钱保 · 灵活取用</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- 活钱保 Card -->
+  <div class="huoqian-card fade-up">
+    <div class="huoqian-header">
+      <div class="huoqian-title-row">
+        <span class="huoqian-title">💧 活钱保</span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:8px;">1年以内</span>
+      </div>
+      <div class="huoqian-subtitle">追求收益高于同类基金 · 随取随用</div>
+    </div>
+    <div class="huoqian-body">
+      <div class="huoqian-metrics">
+        <div class="huoqian-metric">
+          <div class="hm-value">2.18%</div>
+          <div class="hm-label">近7日年化</div>
+        </div>
+        <div class="huoqian-metric">
+          <div class="hm-value">T+0</div>
+          <div class="hm-label">当日到账</div>
+        </div>
+        <div class="huoqian-metric">
+          <div class="hm-value">1元</div>
+          <div class="hm-label">最低起购</div>
+        </div>
+      </div>
+      <button class="huoqian-cta">存入活钱保，钱不停歇</button>
+    </div>
+  </div>
+
+  <!-- 定期保险理财 Header -->
+  <div class="section-divider fade-up">
+    <div class="divider-line"></div>
+    <div class="divider-text">📅 定期增值 · 锁收益</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- Product List -->
+  <div class="product-list-card fade-up">
+
+    <!-- Product 1 -->
+    <div class="product-item">
+      <div class="product-header">
+        <div>
+          <div class="product-name-row">
+            <span class="product-name">国民养老180天</span>
+            <span class="product-tag tag-new">新品首发</span>
+          </div>
+          <div class="product-desc">中国人寿承保 · 快手老铁专享加息</div>
+        </div>
+      </div>
+      <div class="product-metrics">
+        <div class="metric">
+          <div class="metric-value metric-value-orange">2.59<span class="unit">%</span></div>
+          <div class="metric-label">成立以来年化收益</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value metric-value-dark">180<span class="unit" style="font-size:12px;font-weight:600;color:var(--ks-text-secondary)">天</span></div>
+          <div class="metric-label">建议持有</div>
+        </div>
+      </div>
+      <div class="product-footer">
+        <div class="product-guarantee">
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#2EAA5A" stroke-width="1.2"/><path d="M3.5 6l2 2 3-3" stroke="#2EAA5A" stroke-width="1.2" stroke-linecap="round"/></svg>
+            保障本金安全
+          </div>
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#3B6FFF" stroke-width="1.2"/><path d="M6 3v3l2 2" stroke="#3B6FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+            到期自动续期
+          </div>
+        </div>
+        <button class="btn-buy">立即购买</button>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-item">
+      <div class="product-header">
+        <div>
+          <div class="product-name-row">
+            <span class="product-name">国民养老365天</span>
+            <span class="product-tag tag-top">行业收益第一</span>
+          </div>
+          <div class="product-desc">太平人寿承保 · 预定利率锁定3年</div>
+        </div>
+      </div>
+      <div class="product-metrics">
+        <div class="metric">
+          <div class="metric-value metric-value-orange">3.00<span class="unit">%</span></div>
+          <div class="metric-label">成立以来年化收益</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value metric-value-dark">365<span class="unit" style="font-size:12px;font-weight:600;color:var(--ks-text-secondary)">天</span></div>
+          <div class="metric-label">建议持有</div>
+        </div>
+      </div>
+      <div class="product-footer">
+        <div class="product-guarantee">
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#2EAA5A" stroke-width="1.2"/><path d="M3.5 6l2 2 3-3" stroke="#2EAA5A" stroke-width="1.2" stroke-linecap="round"/></svg>
+            保证利率合同约定
+          </div>
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M6 1l1.35 2.73L10.5 4.27l-2.25 2.19.53 3.09L6 7.98l-2.78 1.57.53-3.09L1.5 4.27l3.15-.54L6 1z" stroke="#FFB547" stroke-width="1.2"/></svg>
+            月月正收益
+          </div>
+        </div>
+        <button class="btn-buy">立即购买</button>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-item">
+      <div class="product-header">
+        <div>
+          <div class="product-name-row">
+            <span class="product-name">增额终身寿·稳盈3号</span>
+            <span class="product-tag tag-stable">保证收益</span>
+          </div>
+          <div class="product-desc">阳光人寿承保 · 复利增值 · 长期锁收益</div>
+        </div>
+      </div>
+      <div class="product-metrics">
+        <div class="metric">
+          <div class="metric-value metric-value-orange">3.20<span class="unit">%</span></div>
+          <div class="metric-label">保证年化收益率</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value metric-value-dark">3<span class="unit" style="font-size:12px;font-weight:600;color:var(--ks-text-secondary)">年</span></div>
+          <div class="metric-label">建议持有</div>
+        </div>
+      </div>
+      <div class="product-footer">
+        <div class="product-guarantee">
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#2EAA5A" stroke-width="1.2"/><path d="M3.5 6l2 2 3-3" stroke="#2EAA5A" stroke-width="1.2" stroke-linecap="round"/></svg>
+            复利增值可传承
+          </div>
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><rect x="1.5" y="2.5" width="9" height="7" rx="1.5" stroke="#3B6FFF" stroke-width="1.2"/><path d="M4 2.5V1.5M8 2.5V1.5" stroke="#3B6FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+            随时退保无损失
+          </div>
+        </div>
+        <button class="btn-buy">立即购买</button>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-item">
+      <div class="product-header">
+        <div>
+          <div class="product-name-row">
+            <span class="product-name">快手分红宝·季季领</span>
+            <span class="product-tag tag-flexible">灵活分红</span>
+          </div>
+          <div class="product-desc">中国平安承保 · 季度分红 · 老铁专属</div>
+        </div>
+      </div>
+      <div class="product-metrics">
+        <div class="metric">
+          <div class="metric-value metric-value-orange">3.50<span class="unit">%</span></div>
+          <div class="metric-label">历史综合收益率</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value metric-value-dark">5<span class="unit" style="font-size:12px;font-weight:600;color:var(--ks-text-secondary)">年</span></div>
+          <div class="metric-label">建议持有</div>
+        </div>
+      </div>
+      <div class="product-footer">
+        <div class="product-guarantee">
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M6 1l1.35 2.73L10.5 4.27l-2.25 2.19.53 3.09L6 7.98l-2.78 1.57.53-3.09L1.5 4.27l3.15-.54L6 1z" stroke="#FFB547" stroke-width="1.2"/></svg>
+            季季现金分红
+          </div>
+          <div class="guarantee-item">
+            <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#2EAA5A" stroke-width="1.2"/><path d="M3.5 6l2 2 3-3" stroke="#2EAA5A" stroke-width="1.2" stroke-linecap="round"/></svg>
+            满3年可取部分
+          </div>
+        </div>
+        <button class="btn-buy">立即购买</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Risk Disclaimer -->
+  <div class="risk-text fade-up">
+    📋 投资有风险，购买需谨慎<br/>
+    保险理财产品由保险公司承保，收益受市场影响，历史业绩不代表未来表现
+  </div>
+
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <div class="nav-item active">
+    <div class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22">
+        <path d="M3 9L11 3L19 9V19H13V14H9V19H3V9Z"/>
+      </svg>
+    </div>
+    <span class="nav-label" style="color:var(--ks-orange);">首页</span>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22">
+        <path d="M4 4h14v14H4zM8 4v14M12 8h4M12 12h4"/>
+      </svg>
+    </div>
+    <span class="nav-label">稳健理财</span>
+  </div>
+  <div class="nav-item nav-center">
+    <div class="nav-center-btn">
+      <svg width="22" height="22" viewBox="0 0 22 22">
+        <circle cx="11" cy="9" r="4"/>
+        <path d="M3 19c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <span class="nav-center-label">投顾小宝</span>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22">
+        <path d="M4 4h14M4 9h14M4 14h7"/>
+        <circle cx="15" cy="16" r="4"/>
+        <path d="M13.5 16l1.5 1.5 2.5-2.5"/>
+      </svg>
+    </div>
+    <span class="nav-label">自选</span>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22">
+        <rect x="3" y="10" width="4" height="9" rx="1"/>
+        <rect x="9" y="6" width="4" height="13" rx="1"/>
+        <rect x="15" y="3" width="4" height="16" rx="1"/>
+      </svg>
+    </div>
+    <span class="nav-label">持仓</span>
+  </div>
+</div>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Banner auto-slide dots
+  let dotIdx = 0;
+  const dots = document.querySelectorAll('.dot');
+  setInterval(() => {
+    dots.forEach(d => d.classList.remove('active'));
+    dotIdx = (dotIdx + 1) % dots.length;
+    dots[dotIdx].classList.add('active');
+  }, 3000);
+
+  // Tab switching
+  document.querySelectorAll('.tab-item').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Filter pills
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', function() {
+      document.querySelectorAll('.pill').forEach(p => {
+        p.classList.remove('pill-active');
+        p.classList.add('pill-inactive');
+      });
+      this.classList.add('pill-active');
+      this.classList.remove('pill-inactive');
+    });
+  });
+
+  // Bottom nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
