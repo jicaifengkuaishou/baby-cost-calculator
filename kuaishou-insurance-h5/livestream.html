@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>孙悟险·明亚 | 储蓄险直播间</title>
+<title>孙悟险·盛大 | 储蓄险直播间</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1117,7 +1117,65 @@
 
   <!-- 主播人物展示区 -->
   <div class="presenter-area">
-    <div style="width:100%;height:100%;background:url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"/>')"></div>
+    <!-- 主播人物SVG剪影 -->
+    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;bottom:0;">
+      <!-- 书架背景 -->
+      <rect x="0" y="0" width="300" height="250" fill="rgba(60,35,15,0.4)" rx="0"/>
+      <rect x="10" y="20" width="18" height="80" fill="rgba(120,70,30,0.5)" rx="2"/>
+      <rect x="32" y="35" width="14" height="65" fill="rgba(90,50,20,0.4)" rx="2"/>
+      <rect x="50" y="15" width="22" height="85" fill="rgba(150,80,30,0.5)" rx="2"/>
+      <rect x="76" y="28" width="16" height="72" fill="rgba(110,60,25,0.4)" rx="2"/>
+      <rect x="96" y="10" width="20" height="90" fill="rgba(140,75,28,0.5)" rx="2"/>
+      <rect x="200" y="18" width="18" height="82" fill="rgba(120,65,25,0.4)" rx="2"/>
+      <rect x="222" y="30" width="15" height="70" fill="rgba(100,55,20,0.5)" rx="2"/>
+      <rect x="241" y="12" width="22" height="88" fill="rgba(145,78,28,0.4)" rx="2"/>
+      <rect x="267" y="25" width="16" height="75" fill="rgba(115,62,24,0.5)" rx="2"/>
+      <!-- 书架搁板 -->
+      <rect x="0" y="110" width="300" height="8" fill="rgba(80,45,18,0.6)" rx="2"/>
+      <rect x="0" y="205" width="300" height="8" fill="rgba(80,45,18,0.6)" rx="2"/>
+      <!-- 台灯光效 -->
+      <radialGradient id="lampGlow" cx="75%" cy="30%" r="40%">
+        <stop offset="0%" stop-color="rgba(255,200,80,0.4)"/>
+        <stop offset="100%" stop-color="rgba(255,150,30,0)"/>
+      </radialGradient>
+      <ellipse cx="230" cy="80" rx="80" ry="90" fill="url(#lampGlow)"/>
+      <!-- 主播人物剪影 -->
+      <!-- 身体轮廓（西装） -->
+      <path d="M75 390 L75 280 Q75 260 95 255 L115 248 L150 240 L185 248 L205 255 Q225 260 225 280 L225 390 Z" fill="rgba(25,20,15,0.85)"/>
+      <!-- 西装翻领 -->
+      <path d="M115 248 L150 290 L150 390" fill="rgba(15,12,8,0.9)"/>
+      <path d="M185 248 L150 290" fill="rgba(15,12,8,0.9)"/>
+      <!-- 衬衫/领带 -->
+      <path d="M138 248 L150 270 L162 248" fill="rgba(220,215,210,0.7)"/>
+      <rect x="146" y="268" width="8" height="50" fill="rgba(180,20,20,0.5)" rx="2"/>
+      <!-- 颈部 -->
+      <rect x="137" y="228" width="26" height="26" fill="rgba(195,155,110,0.85)" rx="6"/>
+      <!-- 头部 -->
+      <ellipse cx="150" cy="200" rx="38" ry="42" fill="rgba(195,155,110,0.9)"/>
+      <!-- 头发 -->
+      <path d="M112 188 Q110 160 120 148 Q135 130 150 128 Q165 126 178 136 Q192 148 192 170 L188 188 Q175 165 165 162 Q152 160 138 162 Q124 165 112 188 Z" fill="rgba(30,20,10,0.95)"/>
+      <!-- 眼镜框 -->
+      <rect x="126" y="193" width="20" height="14" rx="5" fill="none" stroke="rgba(30,20,10,0.85)" stroke-width="2.5"/>
+      <rect x="154" y="193" width="20" height="14" rx="5" fill="none" stroke="rgba(30,20,10,0.85)" stroke-width="2.5"/>
+      <line x1="146" y1="200" x2="154" y2="200" stroke="rgba(30,20,10,0.85)" stroke-width="2"/>
+      <line x1="112" y1="200" x2="126" y2="200" stroke="rgba(30,20,10,0.75)" stroke-width="2"/>
+      <line x1="174" y1="200" x2="188" y2="200" stroke="rgba(30,20,10,0.75)" stroke-width="2"/>
+      <!-- 眼睛 -->
+      <ellipse cx="136" cy="200" rx="5" ry="4" fill="rgba(30,20,10,0.8)"/>
+      <ellipse cx="164" cy="200" rx="5" ry="4" fill="rgba(30,20,10,0.8)"/>
+      <!-- 嘴巴（讲话状） -->
+      <path d="M142 215 Q150 222 158 215" stroke="rgba(140,80,60,0.7)" stroke-width="2" fill="none"/>
+      <!-- 右手（举起笔） -->
+      <path d="M225 280 Q250 265 258 245 Q262 235 255 230 Q248 225 242 232 L230 255 L225 280" fill="rgba(195,155,110,0.85)"/>
+      <!-- 笔 -->
+      <rect x="254" y="205" width="5" height="35" rx="2" fill="rgba(220,220,220,0.8)" transform="rotate(-20 256 220)"/>
+      <!-- 底部光晕 -->
+      <radialGradient id="footGlow" cx="50%" cy="100%" r="50%">
+        <stop offset="0%" stop-color="rgba(255,120,30,0.15)"/>
+        <stop offset="100%" stop-color="rgba(255,80,20,0)"/>
+      </radialGradient>
+      <ellipse cx="150" cy="390" rx="120" ry="30" fill="url(#footGlow)"/>
+    </svg>
   </div>
 
   <!-- 状态栏 -->
@@ -1132,7 +1190,7 @@
 
   <!-- 执照条 -->
   <div class="cert-badge">
-    <span>孙悟险~明亚 &nbsp;执业证号：26050037000080062024000124</span>
+    <span>孙悟险~盛大 &nbsp;执业证号：26050037000080062024000124</span>
   </div>
 
   <!-- 小时榜 -->
@@ -1144,8 +1202,8 @@
       <div class="host-avatar">孙</div>
       <div class="host-meta">
         <div class="host-name">
-          孙悟险~明亚
-          <span style="font-size:11px;background:#1E90FF;color:white;padding:1px 5px;border-radius:3px;font-weight:500">明亚保险经纪</span>
+          孙悟险~盛大
+          <span style="font-size:11px;background:#1E90FF;color:white;padding:1px 5px;border-radius:3px;font-weight:500">盛大保险经纪</span>
         </div>
         <div class="host-cert">34本场点赞</div>
       </div>
@@ -1284,8 +1342,8 @@
     </div>
   </div>
 
-  <!-- 蒙层 -->
-  <div class="panel-overlay" id="panelOverlay" onclick="closeCart()"></div>
+  <!-- 蒙层（默认隐藏，openCart时添加open类） -->
+  <div class="panel-overlay" id="panelOverlay" onclick="closeCart()" style="opacity:0;pointer-events:none;"></div>
 
   <!-- 购物车面板 -->
   <div class="cart-panel" id="cartPanel">
