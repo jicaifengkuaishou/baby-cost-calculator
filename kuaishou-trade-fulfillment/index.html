@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>C端自购增值服务 · 产品方案</title>
+  <style>
+    :root {
+      --ks-orange: #ff5f2e;
+      --ks-orange-light: #fff3ef;
+      --ks-orange-dark: #e04820;
+      --ks-red: #e8112d;
+      --ks-green: #00c27a;
+      --ks-green-light: #e8faf3;
+      --ks-blue: #1677ff;
+      --ks-blue-light: #e8f3ff;
+      --ks-yellow: #ffb800;
+      --ks-yellow-light: #fff8e6;
+      --ks-purple: #7c5cfc;
+      --ks-purple-light: #f0edff;
+      --gray-1: #f7f8fa;
+      --gray-2: #f0f1f4;
+      --gray-3: #dde0e8;
+      --gray-4: #c4c8d0;
+      --gray-5: #909499;
+      --gray-7: #4a4e57;
+      --gray-9: #1a1d24;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: #f5f6f8;
+      color: var(--gray-9);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body { max-width: 480px; margin: 0 auto; }
+
+    /* ─── 顶部导航 ─── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top));
+      border-bottom: 1px solid var(--gray-2);
+    }
+    .nav-title { font-size: 16px; font-weight: 600; color: var(--gray-9); flex: 1; text-align: center; }
+    .nav-tab {
+      font-size: 13px; color: var(--gray-5); text-decoration: none;
+      padding: 6px 12px; border-radius: 20px; transition: .2s; white-space: nowrap;
+    }
+    .nav-tab.active { color: var(--ks-orange); background: var(--ks-orange-light); font-weight: 600; }
+    .nav-tabs { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    /* ─── Hero ─── */
+    .hero {
+      position: relative;
+      padding: 40px 24px 36px;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(255,184,0,.3) 0, transparent 45%),
+        radial-gradient(circle at 10% 80%, rgba(255,68,68,.2) 0, transparent 50%),
+        linear-gradient(160deg, #ff6b35 0%, #e8112d 100%);
+      color: #fff;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "🛡️";
+      position: absolute; right: -20px; top: -10px;
+      font-size: 140px; opacity: .1; transform: rotate(-12deg);
+    }
+    .hero-badge {
+      display: inline-block; font-size: 12px; padding: 4px 12px;
+      background: rgba(255,255,255,.2); border-radius: 999px;
+      backdrop-filter: blur(6px); margin-bottom: 16px;
+    }
+    .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: .5px; line-height: 1.25; }
+    .hero h1 .accent { color: #FFE066; }
+    .hero-sub { font-size: 14px; opacity: .9; margin-top: 12px; line-height: 1.7; }
+
+    .hero-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 24px; }
+    .hero-stat {
+      background: rgba(255,255,255,.12); border-radius: 12px;
+      padding: 14px 10px; text-align: center; backdrop-filter: blur(8px);
+    }
+    .hero-stat-num { font-size: 22px; font-weight: 800; }
+    .hero-stat-label { font-size: 11px; opacity: .85; margin-top: 4px; }
+
+    /* ─── 通用 Section ─── */
+    section { padding: 28px 16px; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; padding: 4px 10px;
+      border-radius: 999px; margin-bottom: 10px;
+    }
+    .tag-bg { background: var(--ks-orange-light); color: var(--ks-orange); }
+    .tag-model { background: var(--ks-blue-light); color: var(--ks-blue); }
+    .tag-product { background: var(--ks-green-light); color: var(--ks-green); }
+    .tag-flow { background: var(--ks-purple-light); color: var(--ks-purple); }
+    .tag-refund { background: #fff0f4; color: #ff6b8a; }
+    .tag-team { background: var(--ks-yellow-light); color: var(--ks-yellow); }
+
+    h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+    h3 { font-size: 17px; font-weight: 700; margin: 20px 0 10px; color: var(--gray-9); }
+    h4 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; color: var(--gray-7); }
+    p { font-size: 14px; color: var(--gray-7); line-height: 1.7; margin-bottom: 8px; }
+
+    /* ─── 卡片 ─── */
+    .card {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 18px; margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: var(--gray-9);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-title-icon { font-size: 18px; }
+    .card-title-badge {
+      font-size: 11px; font-weight: 500; padding: 2px 8px;
+      border-radius: 10px; background: var(--ks-orange-light); color: var(--ks-orange);
+    }
+
+    /* ─── 数据指标卡 ─── */
+    .stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .stat-card {
+      background: #fff; border-radius: var(--radius-md);
+      padding: 16px; text-align: center;
+      border: 1px solid var(--gray-2);
+    }
+    .stat-card-num {
+      font-size: 28px; font-weight: 800;
+      background: linear-gradient(135deg, var(--ks-orange), var(--ks-red));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-card-label { font-size: 12px; color: var(--gray-5); margin-top: 4px; }
+    .stat-card-note { font-size: 11px; color: var(--gray-4); margin-top: 2px; }
+
+    /* ─── 表格 ─── */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 12px 0; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: var(--radius-md); overflow: hidden; min-width: 320px; }
+    th, td { padding: 10px 12px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--gray-2); }
+    th { background: var(--gray-1); color: var(--gray-7); font-weight: 600; font-size: 12px; white-space: nowrap; }
+    td { color: var(--gray-7); }
+    tr:last-child td { border-bottom: none; }
+
+    /* ─── 标签 ─── */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+    .badge-orange { background: var(--ks-orange-light); color: var(--ks-orange); }
+    .badge-blue { background: var(--ks-blue-light); color: var(--ks-blue); }
+    .badge-green { background: var(--ks-green-light); color: var(--ks-green); }
+    .badge-yellow { background: var(--ks-yellow-light); color: var(--ks-yellow); }
+    .badge-purple { background: var(--ks-purple-light); color: var(--ks-purple); }
+    .badge-red { background: #fff0f4; color: #ff6b8a; }
+
+    /* ─── 服务产品卡 ─── */
+    .product-card {
+      background: #fff; border-radius: var(--radius-lg);
+      padding: 18px; margin-bottom: 12px;
+      border: 1px solid var(--gray-2); position: relative; overflow: hidden;
+    }
+    .product-card::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+    }
+    .product-card.screen::before { background: var(--ks-blue); }
+    .product-card.replace::before { background: var(--ks-green); }
+    .product-card.warranty::before { background: var(--ks-orange); }
+    .product-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .product-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .screen .product-icon { background: var(--ks-blue-light); }
+    .replace .product-icon { background: var(--ks-green-light); }
+    .warranty .product-icon { background: var(--ks-orange-light); }
+    .product-name { font-size: 16px; font-weight: 700; flex: 1; }
+    .product-dur { font-size: 12px; color: var(--gray-5); }
+    .product-desc { font-size: 13px; color: var(--gray-7); line-height: 1.6; margin-bottom: 10px; }
+    .product-rules { background: var(--gray-1); border-radius: var(--radius-sm); padding: 10px 12px; }
+    .product-rule-item { font-size: 12px; color: var(--gray-5); margin-bottom: 4px; display: flex; gap: 6px; }
+    .product-rule-item:last-child { margin-bottom: 0; }
+    .product-rule-item .label { font-weight: 600; color: var(--gray-7); white-space: nowrap; }
+
+    /* ─── 竞品对比 ─── */
+    .compare-grid { display: grid; grid-template-columns: 80px 1fr; gap: 0; }
+    .compare-cell {
+      padding: 10px 12px; font-size: 12px; border: 1px solid var(--gray-2);
+      display: flex; align-items: center;
+    }
+    .compare-cell.header { background: var(--gray-1); font-weight: 700; color: var(--gray-7); }
+
+    /* ─── 流程图 ─── */
+    .flow-chain { display: flex; flex-direction: column; gap: 0; }
+    .flow-node {
+      background: #fff; border: 1px solid var(--gray-2); border-radius: var(--radius-md);
+      padding: 14px 16px; position: relative;
+    }
+    .flow-node-num {
+      position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--ks-orange); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .flow-node-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .flow-node-desc { font-size: 12px; color: var(--gray-5); line-height: 1.5; }
+    .flow-arrow { text-align: center; font-size: 18px; color: var(--gray-3); padding: 4px 0; }
+
+    /* ─── 状态机 ─── */
+    .state-machine { display: flex; gap: 6px; flex-wrap: wrap; }
+    .state-item {
+      flex: 1; min-width: 70px; text-align: center;
+      padding: 12px 8px; border-radius: var(--radius-md);
+      font-size: 13px; font-weight: 600;
+      border: 2px solid;
+    }
+    .state-pending { background: var(--ks-yellow-light); border-color: var(--ks-yellow); color: var(--ks-yellow); }
+    .state-active { background: var(--ks-green-light); border-color: var(--ks-green); color: var(--ks-green); }
+    .state-expired { background: var(--gray-1); border-color: var(--gray-3); color: var(--gray-5); }
+    .state-closed { background: #fff0f4; border-color: #ff6b8a; color: #ff6b8a; }
+    .state-desc { font-size: 11px; color: var(--gray-5); font-weight: 400; margin-top: 4px; }
+
+    /* ─── 退款场景 ─── */
+    .refund-scenario {
+      background: #fff; border-radius: var(--radius-md);
+      padding: 14px; margin-bottom: 10px;
+      border-left: 3px solid var(--ks-orange);
+    }
+    .refund-scenario-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .refund-scenario-table { width: 100%; font-size: 12px; }
+    .refund-scenario-table th { font-size: 11px; }
+    .refund-scenario-table td { padding: 8px 10px; }
+
+    /* ─── 运营系统 ─── */
+    .ops-module {
+      background: #fff; border-radius: var(--radius-md);
+      padding: 16px; margin-bottom: 10px;
+      border: 1px solid var(--gray-2);
+    }
+    .ops-module-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .ops-module-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .ops-module-title { font-size: 14px; font-weight: 700; flex: 1; }
+    .ops-field { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--gray-1); }
+    .ops-field:last-child { border-bottom: none; }
+    .ops-field-name { font-size: 12px; font-weight: 600; color: var(--gray-7); min-width: 90px; }
+    .ops-field-desc { font-size: 12px; color: var(--gray-5); flex: 1; }
+
+    /* ─── 域分工 ─── */
+    .domain-card {
+      background: #fff; border-radius: var(--radius-md);
+      padding: 14px; margin-bottom: 8px;
+      display: flex; gap: 10px; align-items: flex-start;
+      border: 1px solid var(--gray-2);
+    }
+    .domain-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .domain-content { flex: 1; }
+    .domain-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .domain-desc { font-size: 12px; color: var(--gray-5); line-height: 1.5; }
+    .domain-owner { font-size: 11px; color: var(--ks-orange); margin-top: 4px; }
+
+    /* ─── 资金流 ─── */
+    .fund-flow {
+      background: #fff; border-radius: var(--radius-md);
+      padding: 14px; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid var(--gray-2);
+    }
+    .fund-node {
+      flex: 1; text-align: center; padding: 10px 6px;
+      border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
+    }
+    .fund-arrow { font-size: 18px; color: var(--gray-3); }
+    .fund-node.from { background: var(--ks-blue-light); color: var(--ks-blue); }
+    .fund-node.to { background: var(--ks-orange-light); color: var(--ks-orange); }
+    .fund-detail { font-size: 11px; color: var(--gray-5); text-align: center; margin-top: 4px; }
+
+    /* ─── 里程碑 ─── */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 2px; background: var(--gray-3);
+    }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -20px; top: 4px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--ks-orange); border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--ks-orange);
+    }
+    .timeline-date { font-size: 12px; font-weight: 700; color: var(--ks-orange); }
+    .timeline-content { font-size: 13px; color: var(--gray-7); margin-top: 2px; }
+
+    /* ─── 底部 ─── */
+    .footer { padding: 32px 16px; text-align: center; }
+    .footer p { font-size: 12px; color: var(--gray-4); }
+    .footer-version { font-size: 11px; color: var(--gray-4); margin-top: 8px; }
+
+    /* ─── 高亮提示 ─── */
+    .highlight-box {
+      background: linear-gradient(135deg, var(--ks-orange-light), #fff8f4);
+      border-radius: var(--radius-md); padding: 14px;
+      border: 1px solid #ffe0d0; margin: 12px 0;
+    }
+    .highlight-box h4 { color: var(--ks-orange); margin-top: 0; }
+    .highlight-box p { color: var(--gray-7); font-size: 13px; }
+
+    /* ─── 互斥分组示意 ─── */
+    .group-demo { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+    .group-section {
+      flex: 1; min-width: 140px; background: var(--gray-1);
+      border-radius: var(--radius-sm); padding: 10px;
+    }
+    .group-section-title { font-size: 11px; font-weight: 700; color: var(--gray-7); margin-bottom: 6px; }
+    .group-options { display: flex; flex-direction: column; gap: 4px; }
+    .group-option {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--gray-7);
+      padding: 4px 8px; border-radius: 6px; background: #fff;
+    }
+    .group-option.selected { background: var(--ks-orange-light); color: var(--ks-orange); font-weight: 600; }
+    .radio-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gray-3); flex-shrink: 0; }
+    .group-option.selected .radio-dot { border-color: var(--ks-orange); background: var(--ks-orange); }
+    .checkbox-box { width: 14px; height: 14px; border-radius: 4px; border: 2px solid var(--gray-3); flex-shrink: 0; }
+    .group-option.selected .checkbox-box { border-color: var(--ks-green); background: var(--ks-green); }
+    .group-option.selected .checkbox-box::after { content: '✓'; color: #fff; font-size: 10px; display: flex; align-items: center; justify-content: center; height: 100%; }
+
+    /* ─── 提单页模拟 ─── */
+    .checkout-mock {
+      background: #fff; border-radius: var(--radius-md); padding: 14px;
+      border: 1px solid var(--gray-2); margin: 10px 0;
+    }
+    .checkout-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-1); }
+    .checkout-item:last-child { border-bottom: none; }
+    .checkout-item-img { width: 50px; height: 50px; border-radius: 8px; background: var(--gray-2); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .checkout-item-info { flex: 1; }
+    .checkout-item-name { font-size: 13px; font-weight: 600; }
+    .checkout-item-price { font-size: 12px; color: var(--ks-red); margin-top: 2px; }
+    .checkout-service { background: var(--ks-orange-light); border-radius: 8px; padding: 10px; margin-top: 8px; }
+    .checkout-service-title { font-size: 12px; font-weight: 700; color: var(--ks-orange); margin-bottom: 6px; }
+    .checkout-total { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--gray-2); }
+    .checkout-total-label { font-size: 13px; color: var(--gray-5); }
+    .checkout-total-amount { font-size: 20px; font-weight: 800; color: var(--ks-red); }
+  </style>
+</head>
+<body>
+
+<!-- ═══ 导航 ═══ -->
+<nav class="nav">
+  <div class="nav-tabs">
+    <a class="nav-tab active" href="#bg">背景</a>
+    <a class="nav-tab" href="#model">模式</a>
+    <a class="nav-tab" href="#product">服务</a>
+    <a class="nav-tab" href="#ops">运营</a>
+    <a class="nav-tab" href="#purchase">购中</a>
+    <a class="nav-tab" href="#fulfill">购后</a>
+    <a class="nav-tab" href="#refund">退款</a>
+    <a class="nav-tab" href="#team">协作</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     一、需求背景
+════════════════════════════════════════ -->
+<section id="bg">
+  <div class="hero">
+    <span class="hero-badge">V1.0 · 2026-07-21</span>
+    <h1>C端自购<span class="accent">增值服务</span></h1>
+    <p class="hero-sub">3C数码及家电市场从基础产品购买向售后保障服务体验转变<br/>上线延保/换新/碎屏保障，构建平台服务保障心智</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">56.5%</div>
+        <div class="hero-stat-label">用户认知率</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">19.4%</div>
+        <div class="hero-stat-label">近一年购买率</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">527万</div>
+        <div class="hero-stat-label">Q4预测收益</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📊</span>市场痛点</div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-num">60%</div>
+        <div class="stat-card-label">用户关注产品质量</div>
+        <div class="stat-card-note">购前决策核心因素</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num">43.6%</div>
+        <div class="stat-card-label">已购用户不推荐</div>
+        <div class="stat-card-note">售后没保障致流失</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num">66%</div>
+        <div class="stat-card-label">退款因质量缺陷</div>
+        <div class="stat-card-note">商品故障占比高</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num">71.8%</div>
+        <div class="stat-card-label">3C原声投诉占比</div>
+        <div class="stat-card-note">手机数码为焦点</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔍</span>竞品对比</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>平台</th><th>覆盖</th><th>用户心智</th><th>典型服务</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="badge badge-orange">淘宝/天猫</span></td><td>成熟完善</td><td>服务标准化</td><td>碎屏无忧、全保换新、只换不修</td></tr>
+          <tr><td><span class="badge badge-red">京东</span></td><td>自营+第三方</td><td>品质标杆</td><td>碎屏+电池保、电量保障、只换不修</td></tr>
+          <tr><td><span class="badge badge-blue">抖音</span></td><td>快速增长期</td><td>种草+转化</td><td>屏电无忧、碎屏保障、全保换新</td></tr>
+          <tr><td><span class="badge badge-yellow">拼多多</span></td><td>商家自履约</td><td>供给+低价</td><td>—</td></tr>
+          <tr style="background: var(--ks-orange-light);"><td><span class="badge badge-green">快手</span></td><td>一期建设中</td><td>待建立</td><td>延保/质保换新/碎屏保障</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🎯</span>定量目标</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>类目</th><th>服务</th><th>费率</th><th>转化率</th><th>Q4收益</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="3">手机</td><td>质保换新</td><td>2%</td><td>2%</td><td>123.10万</td></tr>
+          <tr><td>延长保修</td><td>1%</td><td>1%</td><td>30.78万</td></tr>
+          <tr><td>碎屏保障</td><td>4%</td><td>2%</td><td>246.20万</td></tr>
+          <tr><td rowspan="2">非手机</td><td>质保换新</td><td>5%</td><td>0.5%</td><td>90.85万</td></tr>
+          <tr><td>延长保修</td><td>2%</td><td>0.5%</td><td>36.34万</td></tr>
+          <tr style="background: var(--ks-green-light);"><td colspan="4" style="font-weight:700;">短期小计</td><td style="font-weight:800; color:var(--ks-green);">527.27万</td></tr>
+          <tr style="background: var(--ks-orange-light);"><td colspan="4" style="font-weight:700;">2年预测（2027-2028）</td><td style="font-weight:800; color:var(--ks-orange);">6,944万</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px; color:var(--gray-5); margin-top:8px;">* 一期准入商家5900+，后续全量商家。参考：抖音2025.10上线，2026年服务费收益3亿元+</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     二、业务模式
+════════════════════════════════════════ -->
+<section id="model">
+  <span class="section-tag tag-model">📦 业务模式</span>
+  <h2>保险 × 电商产品方案</h2>
+  <p>上海穹秩入驻快手小店开店，上架服务商品。用户购买主商品时勾选增值服务，实物商品订单和服务商品订单合并支付，资金分账至不同商家账户。</p>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔗</span>业务主体关系</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="background:var(--ks-blue-light); border-radius:12px; padding:14px; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:var(--ks-blue);">服务订购者 / 受益者</div>
+        <div style="font-size:12px; color:var(--gray-5); margin-top:4px;">消费者 → 向平台购买增值服务，商品故障可享服务</div>
+      </div>
+      <div style="text-align:center; color:var(--gray-3); font-size:18px;">⬇</div>
+      <div style="background:var(--ks-orange-light); border-radius:12px; padding:14px; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:var(--ks-orange);">服务提供方</div>
+        <div style="font-size:12px; color:var(--gray-5); margin-top:4px;">平台 → 提供增值服务，管控服务商、主品挂载、把控保障</div>
+      </div>
+      <div style="text-align:center; color:var(--gray-3); font-size:18px;">⬇</div>
+      <div style="background:var(--ks-green-light); border-radius:12px; padding:14px; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:var(--ks-green);">履约方</div>
+        <div style="font-size:12px; color:var(--gray-5); margin-top:4px;">服务商（上海穹秩）→ 承接售后流程，检测、换新、残值处理</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">💰</span>资金流</div>
+    <div class="fund-flow">
+      <div class="fund-node from">消费者<br/>钱包/三方</div>
+      <span class="fund-arrow">→</span>
+      <div class="fund-node to">商家<br/>货款账户</div>
+    </div>
+    <div class="fund-detail">主商品订单 · 时效：实时</div>
+
+    <div class="fund-flow">
+      <div class="fund-node from">消费者<br/>钱包/三方</div>
+      <span class="fund-arrow">→</span>
+      <div class="fund-node to">穹秩<br/>货款账户</div>
+    </div>
+    <div class="fund-detail">增值服务费 · 时效：实时 · 屏蔽支付渠道优惠</div>
+
+    <div class="fund-flow">
+      <div class="fund-node to">穹秩<br/>货款账户</div>
+      <span class="fund-arrow">→</span>
+      <div class="fund-node from">消费者<br/>钱包/三方</div>
+    </div>
+    <div class="fund-detail">增值服务退款 · 支付单原路退款 · 兜底落买家钱包</div>
+
+    <div style="background:var(--gray-1); border-radius:8px; padding:10px; margin-top:8px;">
+      <div style="font-size:12px; color:var(--gray-7); font-weight:600; margin-bottom:4px;">服务商结算</div>
+      <div style="font-size:12px; color:var(--gray-5);">一期财务线下月结 · 账期：订单确认收货+7天</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🏪</span>入驻方案</div>
+    <p style="font-size:13px;">上海穹秩入驻快手小店，店铺类型「普通企业店」，主营类目「自选增值服务」</p>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+      <span class="badge badge-blue">B端不可见</span>
+      <span class="badge badge-blue">C端不可搜索</span>
+      <span class="badge badge-green">独立货款账户</span>
+      <span class="badge badge-yellow">0元类目（免保证金）</span>
+      <span class="badge badge-orange">0TR配置</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     三、服务产品
+════════════════════════════════════════ -->
+<section id="product">
+  <span class="section-tag tag-product">🛡️ 服务产品</span>
+  <h2>三大增值服务</h2>
+  <p>一期针对3C家电数码类目开放自选增值服务，手机类目开放全部三种服务，非手机类目开放质保换新和延长保修。</p>
+
+  <!-- 碎屏保障 -->
+  <div class="product-card screen">
+    <div class="product-header">
+      <div class="product-icon">📱</div>
+      <div class="product-name">碎屏保障</div>
+      <div class="product-dur">1年 / 2年 / 3年</div>
+    </div>
+    <div class="product-desc">
+      产品正常使用过程中，因不慎跌落、碰撞、挤压等意外导致屏幕破裂（不含进液、闪屏、花屏、折痕、划痕、磨损、黑屏等），在服务限额内提供一次换屏服务。
+    </div>
+    <div class="product-rules">
+      <div class="product-rule-item"><span class="label">生效时间：</span><span>签收后第16天0时生效</span></div>
+      <div class="product-rule-item"><span class="label">退款规则：</span><span>签收次日起7天内未使用可退款；第8-15天未激活可联系服务商线下退</span></div>
+    </div>
+    <div style="margin-top:8px;">
+      <span class="badge badge-blue">仅手机类目</span>
+      <span class="badge badge-orange">意外损保障</span>
+    </div>
+  </div>
+
+  <!-- 质保换新 -->
+  <div class="product-card replace">
+    <div class="product-header">
+      <div class="product-icon">🔄</div>
+      <div class="product-name">质保换新</div>
+      <div class="product-dur">1年 / 2年 / 3年</div>
+    </div>
+    <div class="product-desc">
+      产品正常使用过程中出现三包范围内（含环境因素、电压不稳因素）的机械或电气元件性能故障导致的机器故障（不含自行拆机、人为故意损毁），在服务限额内提供一次换新服务。
+    </div>
+    <div class="product-rules">
+      <div class="product-rule-item"><span class="label">生效时间：</span><span>签收后第16天0时生效</span></div>
+      <div class="product-rule-item"><span class="label">退款规则：</span><span>签收次日起7天内未使用可退款；第8-15天未激活可联系服务商线下退</span></div>
+    </div>
+    <div style="margin-top:8px;">
+      <span class="badge badge-green">手机+非手机</span>
+      <span class="badge badge-orange">性能故障换新</span>
+      <span class="badge badge-blue">一次换新</span>
+    </div>
+  </div>
+
+  <!-- 延长保修 -->
+  <div class="product-card warranty">
+    <div class="product-header">
+      <div class="product-icon">🔧</div>
+      <div class="product-name">延长保修</div>
+      <div class="product-dur">1年 / 2年 / 3年</div>
+    </div>
+    <div class="product-desc">
+      产品正常使用过程中出现三包范围内（含环境因素、电压不稳因素）的机械或电气元件性能故障（不含自行拆机、人为故意损毁），在服务限额内提供维修服务。
+    </div>
+    <div class="product-rules">
+      <div class="product-rule-item"><span class="label">生效时间：</span><span>整机保修结束后次日生效</span></div>
+      <div class="product-rule-item"><span class="label">退款规则：</span><span>签收次日起7天内未使用可退款；服务已生效则不能退款</span></div>
+    </div>
+    <div style="margin-top:8px;">
+      <span class="badge badge-orange">手机+非手机</span>
+      <span class="badge badge-green">维修服务</span>
+      <span class="badge badge-yellow">续接原厂保修</span>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <h4>📋 准入类目（以三级类目为准）</h4>
+    <p>一期准入商家5900+，上线前给出最新类目名单和商家白名单。后续会不断丰富增值服务矩阵，包括全保换新、电池保障、清洗服务、送装服务等。</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     四、运营系统
+════════════════════════════════════════ -->
+<section id="ops">
+  <span class="section-tag tag-bg">⚙️ 运营系统</span>
+  <h2>增值服务运营后台</h2>
+  <p>运营人员统一配置中心，负责所有配置管理。审批流：变更人 → 李凯（+1），变更后全量生效。</p>
+
+  <!-- 费率表管理 -->
+  <div class="ops-module">
+    <div class="ops-module-header">
+      <div class="ops-module-icon" style="background:var(--ks-orange-light);">📊</div>
+      <div class="ops-module-title">费率表管理</div>
+      <span class="badge badge-orange">核心</span>
+    </div>
+    <p style="font-size:12px; color:var(--gray-5); margin-bottom:8px;">规则：主商品三级类目 × 价格区间 × 服务商品ID = 固定服务费</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>费率ID</th><th>类目ID</th><th>价格区间</th><th>服务商品</th><th>服务费</th></tr></thead>
+        <tbody>
+          <tr><td>R001</td><td>100001</td><td>500-1000</td><td>延保1年</td><td>¥69</td></tr>
+          <tr><td>R002</td><td>100001</td><td>1000-3000</td><td>延保1年</td><td>¥99</td></tr>
+          <tr><td>R003</td><td>100001</td><td>3000-5000</td><td>延保1年</td><td>¥149</td></tr>
+          <tr><td>R004</td><td>100001</td><td>5000-10000</td><td>延保1年</td><td>¥199</td></tr>
+          <tr><td>R005</td><td>100001</td><td>500-1000</td><td>换新1年</td><td>¥99</td></tr>
+          <tr><td>R006</td><td>100001</td><td>1000-3000</td><td>换新1年</td><td>¥139</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+      <span class="badge badge-blue">Excel批量导入</span>
+      <span class="badge badge-blue">覆盖/追加模式</span>
+      <span class="badge badge-green">单条新增/编辑</span>
+      <span class="badge badge-yellow">定价查询</span>
+      <span class="badge badge-red">单条失效</span>
+    </div>
+  </div>
+
+  <!-- 服务商管理 -->
+  <div class="ops-module">
+    <div class="ops-module-header">
+      <div class="ops-module-icon" style="background:var(--ks-green-light);">🏢</div>
+      <div class="ops-module-title">服务商管理</div>
+    </div>
+    <div class="ops-field"><span class="ops-field-name">服务商ID</span><span class="ops-field-desc">自动生成</span></div>
+    <div class="ops-field"><span class="ops-field-name">服务商名称</span><span class="ops-field-desc">公司名称</span></div>
+    <div class="ops-field"><span class="ops-field-name">承接服务商品</span><span class="ops-field-desc">可承接的服务商品ID列表（延保1年、换新2年…）</span></div>
+    <div class="ops-field"><span class="ops-field-name">承接主品类目</span><span class="ops-field-desc">可承接的主商品三级类目ID列表</span></div>
+    <div class="ops-field"><span class="ops-field-name">承接主商品ID</span><span class="ops-field-desc">可承接的主商品ID列表</span></div>
+    <div class="ops-field"><span class="ops-field-name">承接店铺ID</span><span class="ops-field-desc">可承接的店铺ID列表</span></div>
+    <div class="ops-field"><span class="ops-field-name">服务生效时间</span><span class="ops-field-desc">收货后X天0时生效</span></div>
+    <div class="ops-field"><span class="ops-field-name">联系方式</span><span class="ops-field-desc">客服电话 / 在线客服链接</span></div>
+    <div class="ops-field"><span class="ops-field-name">分成比例</span><span class="ops-field-desc">服务费分成比例</span></div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+      <span class="badge badge-green">新增/编辑</span>
+      <span class="badge badge-red">删除</span>
+      <span class="badge badge-blue">接口测试</span>
+    </div>
+  </div>
+
+  <!-- 分流规则 -->
+  <div class="ops-module">
+    <div class="ops-module-header">
+      <div class="ops-module-icon" style="background:var(--ks-purple-light);">🔀</div>
+      <div class="ops-module-title">分流规则</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>优先级</th><th>维度</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>商品ID</td><td>主商品命中 → 指定服务商</td></tr>
+          <tr><td>2</td><td>店铺ID</td><td>主商品所属店铺命中 → 指定服务商</td></tr>
+          <tr><td>3</td><td>主播ID</td><td>主播命中 → 指定服务商</td></tr>
+          <tr><td>4</td><td>服务商品ID</td><td>服务商品命中 → 指定服务商</td></tr>
+          <tr><td>5</td><td>兜底</td><td>多服务商按流量配比分</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+      <span class="badge badge-purple">拖拽排序</span>
+      <span class="badge badge-green">新增规则</span>
+      <span class="badge badge-red">删除规则</span>
+    </div>
+  </div>
+
+  <!-- 黑名单管理 -->
+  <div class="ops-module">
+    <div class="ops-module-header">
+      <div class="ops-module-icon" style="background:#fff0f4;">🚫</div>
+      <div class="ops-module-title">黑名单管理</div>
+    </div>
+    <p style="font-size:12px; color:var(--gray-5); margin-bottom:8px;">商品黑名单：主商品ID在黑名单 → 不展示任何增值服务</p>
+    <div class="ops-field"><span class="ops-field-name">商品ID</span><span class="ops-field-desc">String（必填）屏蔽的主商品商品ID</span></div>
+    <div class="ops-field"><span class="ops-field-name">屏蔽原因</span><span class="ops-field-desc">String（选填）如：品牌方要求、特殊售后政策</span></div>
+    <div class="ops-field"><span class="ops-field-name">操作人</span><span class="ops-field-desc">自动取当前运营</span></div>
+    <div class="ops-field"><span class="ops-field-name">添加时间</span><span class="ops-field-desc">自动生成</span></div>
+    <div style="margin-top:8px;">
+      <span class="badge badge-red">Excel上传：商品ID, 屏蔽原因（一行一条）</span>
+    </div>
+  </div>
+
+  <!-- 全局配置 -->
+  <div class="ops-module">
+    <div class="ops-module-header">
+      <div class="ops-module-icon" style="background:var(--ks-yellow-light);">🌍</div>
+      <div class="ops-module-title">全局配置</div>
+    </div>
+    <div class="ops-field"><span class="ops-field-name">价格门槛下限</span><span class="ops-field-desc">低于此价格不展示增值服务</span></div>
+    <div class="ops-field"><span class="ops-field-name">价格门槛上限</span><span class="ops-field-desc">高于此价格不展示增值服务</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     五、购中链路
+════════════════════════════════════════ -->
+<section id="purchase">
+  <span class="section-tag tag-flow">🛒 购中链路</span>
+  <h2>核心交易流程</h2>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📋</span>提单页展示逻辑</div>
+    <div class="flow-chain">
+      <div class="flow-node">
+        <div class="flow-node-num">1</div>
+        <div class="flow-node-title">交易侧请求增值服务列表</div>
+        <div class="flow-node-desc">通过主商品ID、三级类目ID、商品原价请求保险侧</div>
+      </div>
+      <div class="flow-arrow">⬇</div>
+      <div class="flow-node">
+        <div class="flow-node-num">2</div>
+        <div class="flow-node-title">保险侧多重校验</div>
+        <div class="flow-node-desc">
+          ① 商品上架状态检查 → ② 风控校验（用户/商家） → ③ 全局价格门槛校验 → ④ 黑名单校验 → ⑤ 匹配费率表
+        </div>
+      </div>
+      <div class="flow-arrow">⬇</div>
+      <div class="flow-node">
+        <div class="flow-node-num">3</div>
+        <div class="flow-node-title">返回可展示服务及单价</div>
+        <div class="flow-node-desc">命中费率表 → 返回服务商品ID + 单价；未命中 → 不展示</div>
+      </div>
+      <div class="flow-arrow">⬇</div>
+      <div class="flow-node">
+        <div class="flow-node-num">4</div>
+        <div class="flow-node-title">分组展示 & 用户勾选</div>
+        <div class="flow-node-desc">按服务类型分组，组内年限单选，跨组可多选</div>
+      </div>
+      <div class="flow-arrow">⬇</div>
+      <div class="flow-node">
+        <div class="flow-node-num">5</div>
+        <div class="flow-node-title">合单下单 & 二次校验</div>
+        <div class="flow-node-desc">创建1+N笔订单，保险侧二次校验后合并支付</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔀</span>分组与互斥规则</div>
+    <p style="font-size:13px;">按服务类型分组，同组不同年限<strong>单选</strong>，跨组<strong>可多选</strong></p>
+    <div class="group-demo">
+      <div class="group-section">
+        <div class="group-section-title">延长保修（单选）</div>
+        <div class="group-options">
+          <div class="group-option"><div class="radio-dot"></div>1年 ¥99</div>
+          <div class="group-option selected"><div class="radio-dot"></div>2年 ¥149</div>
+          <div class="group-option"><div class="radio-dot"></div>3年 ¥199</div>
+        </div>
+      </div>
+      <div class="group-section">
+        <div class="group-section-title">碎屏保障（单选）</div>
+        <div class="group-options">
+          <div class="group-option selected"><div class="radio-dot"></div>1年 ¥69</div>
+          <div class="group-option"><div class="radio-dot"></div>2年 ¥119</div>
+          <div class="group-option"><div class="radio-dot"></div>3年 ¥169</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--ks-green-light); border-radius:8px; padding:8px 12px; margin-top:8px;">
+      <span style="font-size:12px; color:var(--ks-green); font-weight:600;">✓ 跨组多选：</span>
+      <span style="font-size:12px; color:var(--gray-7);">延保2年 + 碎屏1年 = ¥149 + ¥69 = ¥218</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🧮</span>服务费计算规则</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>场景</th><th>计算方式</th><th>示例</th></tr></thead>
+        <tbody>
+          <tr><td>购买1件主品</td><td>勾选延保A + 换新B</td><td>服务费 = A + B</td></tr>
+          <tr><td>购买n件主品</td><td>每件主品服务费×n</td><td>服务费 = (A+B) × n</td></tr>
+          <tr><td>不同SKU</td><td>各SKU服务独立计算</td><td>SKU1选延保，SKU2选碎屏</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box" style="margin-top:8px;">
+      <p style="font-size:12px; margin:0;">⚠️ 服务数量强制等于主商品购买数量，用户不可单独修改。主商品数量修改时，服务费自动联动重算。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📱</span>提单页模拟</div>
+    <div class="checkout-mock">
+      <div class="checkout-item">
+        <div class="checkout-item-img">📱</div>
+        <div class="checkout-item-info">
+          <div class="checkout-item-name">iPhone 16 Pro 256G</div>
+          <div class="checkout-item-price">¥8,999 × 1</div>
+        </div>
+      </div>
+      <div class="checkout-service">
+        <div class="checkout-service-title">🛡️ 增值服务</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="badge badge-orange">延保2年 ¥149</span>
+          <span class="badge badge-blue">碎屏1年 ¥69</span>
+        </div>
+      </div>
+      <div class="checkout-total">
+        <span class="checkout-total-label">合计（含增值服务）</span>
+        <span class="checkout-total-amount">¥9,217</span>
+      </div>
+    </div>
+    <p style="font-size:11px; color:var(--gray-5); margin-top:6px;">* 合并支付金额 = 主商品优惠后金额 + 增值服务金额</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📦</span>下单后处理</div>
+    <div class="flow-chain">
+      <div class="flow-node">
+        <div class="flow-node-num">1</div>
+        <div class="flow-node-title">合单支付成功</div>
+        <div class="flow-node-desc">交易侧创建1+N笔订单，主商品+各服务订单</div>
+      </div>
+      <div class="flow-arrow">⬇</div>
+      <div class="flow-node">
+        <div class="flow-node-num">2</div>
+        <div class="flow-node-title">保险创建服务单 & 打标</div>
+        <div class="flow-node-desc">监听下单成功通知，创建服务单（待生效状态），主商品订单打增值服务标</div>
+      </div>
+      <div class="flow-arrow">⬇</div>
+      <div class="flow-node">
+        <div class="flow-node-num">3</div>
+        <div class="flow-node-title">写入服务商ID & 同步</div>
+        <div class="flow-node-desc">按分流规则确定服务商，已收货第X天0时服务转为生效中</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🛒</span>购物车 & 订单列表</div>
+    <h4>购物车</h4>
+    <p style="font-size:13px;">主商品信息下方展示已选增值服务简要信息，点击进入服务选择面板，支持重新选择/取消，遵循分组互斥规则。修改后购物车金额实时更新。</p>
+    <h4>订单列表</h4>
+    <p style="font-size:13px;">新增增值服务标签，标签内容根据用户实际购买的服务类型透出。</p>
+    <h4>取消订单</h4>
+    <div class="highlight-box" style="margin-top:8px;">
+      <p style="font-size:12px; margin:0;">⚠️ 用户未支付取消订单时，弹窗提示"以下订单需要合并取消"，主商品和服务订单一起展示，用户确认后一并取消。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     六、购后链路
+════════════════════════════════════════ -->
+<section id="fulfill">
+  <span class="section-tag tag-flow">📦 购后链路</span>
+  <h2>履约 & 服务单</h2>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔄</span>服务单状态机</div>
+    <div class="state-machine">
+      <div class="state-item state-pending">
+        待生效
+        <div class="state-desc">下单～签收后第7天</div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--gray-3);font-size:18px;">→</div>
+      <div class="state-item state-active">
+        生效中
+        <div class="state-desc">签收后第8天0时</div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--gray-3);font-size:18px;">→</div>
+      <div class="state-item state-expired">
+        已失效
+        <div class="state-desc">超过保障期</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:8px;">
+      <div class="state-item state-closed" style="display:inline-block; min-width:120px;">
+        已关闭
+        <div class="state-desc">退款成功</div>
+      </div>
+    </div>
+    <div style="background:var(--gray-1); border-radius:8px; padding:10px; margin-top:12px;">
+      <div style="font-size:12px; color:var(--gray-5);">
+        <strong style="color:var(--gray-7);">触发条件：</strong>待生效→下单成功；生效中→定时任务；已失效→定时任务；已关闭→退款完成
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📄</span>履约页面</div>
+    <p style="font-size:13px;">权益&交易侧提供履约入口，保险侧提供履约页面</p>
+    <div style="background:var(--gray-1); border-radius:12px; padding:16px; margin-top:8px;">
+      <div style="text-align:center; margin-bottom:12px;">
+        <div style="font-size:32px;">🛡️</div>
+        <div style="font-size:15px; font-weight:700; margin-top:4px;">碎屏保障 · 1年</div>
+        <div style="font-size:12px; color:var(--ks-green); font-weight:600; margin-top:4px;">● 生效中</div>
+      </div>
+      <div style="border-top:1px solid var(--gray-2); padding-top:12px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:12px; color:var(--gray-5);">服务商品</span>
+          <span style="font-size:12px; font-weight:600;">碎屏保障1年</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:12px; color:var(--gray-5);">主商品</span>
+          <span style="font-size:12px; font-weight:600;">iPhone 16 Pro</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:12px; color:var(--gray-5);">生效期</span>
+          <span style="font-size:12px;">2026.08.15 - 2027.08.14</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:12px; color:var(--gray-5);">服务商</span>
+          <span style="font-size:12px; font-weight:600;">上海穹秩</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button style="flex:1; padding:10px; background:var(--ks-orange); color:#fff; border:none; border-radius:20px; font-size:13px; font-weight:600;">📞 联系服务商</button>
+        <button style="flex:1; padding:10px; background:#fff; color:var(--gray-7); border:1px solid var(--gray-3); border-radius:20px; font-size:13px;">📋 规则详情</button>
+      </div>
+    </div>
+    <p style="font-size:11px; color:var(--gray-5); margin-top:8px;">* 一期点击「联系服务商」跳转小程序/电话，二期迭代为服务商回传进度展示</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📍</span>履约入口</div>
+    <h4>订单详情页</h4>
+    <p style="font-size:13px;">新增两个入口：地址下方 + 服务权益列表，点击「查看详情」跳转履约页面</p>
+    <h4>B端订单</h4>
+    <p style="font-size:13px;">订单列表/详情新增服务标签：用户自购延长保修/质保换新/碎屏保障。点击tag跳转服务详情。</p>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+      <span class="badge badge-orange">用户自购延长保修</span>
+      <span class="badge badge-green">用户自购质保换新</span>
+      <span class="badge badge-blue">用户自购碎屏保障</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🚚</span>履约域适配</div>
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div style="display:flex; gap:8px; align-items:center; padding:8px 12px; background:var(--ks-green-light); border-radius:8px;">
+        <span style="color:var(--ks-green); font-size:14px;">✓</span>
+        <span style="font-size:12px;">屏蔽所有物流时效表达</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; padding:8px 12px; background:var(--ks-green-light); border-radius:8px;">
+        <span style="color:var(--ks-green); font-size:14px;">✓</span>
+        <span style="font-size:12px;">虚拟商品无履约售后，免发货考核</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; padding:8px 12px; background:var(--ks-green-light); border-radius:8px;">
+        <span style="color:var(--ks-green); font-size:14px;">✓</span>
+        <span style="font-size:12px;">免晚发判责/无法发货判责</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; padding:8px 12px; background:var(--ks-green-light); border-radius:8px;">
+        <span style="color:var(--ks-green); font-size:14px;">✓</span>
+        <span style="font-size:12px;">屏蔽拆单/合单发货/修改物流/追加包裹</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; padding:8px 12px; background:var(--ks-green-light); border-radius:8px;">
+        <span style="color:var(--ks-green); font-size:14px;">✓</span>
+        <span style="font-size:12px;">屏蔽C端时效表达/明日达/西北集运</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     七、退款规则
+════════════════════════════════════════ -->
+<section id="refund">
+  <span class="section-tag tag-refund">↩️ 退款规则</span>
+  <h2>退款体系</h2>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📋</span>核心规则</div>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td style="font-weight:700; width:80px;">退款条件</td><td>仅「待生效」状态提供退款入口，支持单独退/联动退</td></tr>
+          <tr><td style="font-weight:700;">退款方式</td><td>走仅退款，穹秩商家自动同意，无逆向物流</td></tr>
+          <tr><td style="font-weight:700;">退款金额</td><td>等于增值服务支付价格</td></tr>
+          <tr><td style="font-weight:700;">资金链路</td><td>支付单原路退款，兜底落买家钱包</td></tr>
+          <tr><td style="font-weight:700;">TR</td><td>配置0TR，退款不涉及TR退还</td></tr>
+          <tr><td style="font-weight:700;">售后考核</td><td>售后服务分、商品品退等不做店铺分考核</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔗</span>场景A：主商品退款联动</div>
+    <div class="refund-scenario">
+      <div class="refund-scenario-title">主商品退款 → 增值服务联动处理</div>
+      <div class="table-wrap">
+        <table class="refund-scenario-table">
+          <thead><tr><th>主商品退款节点</th><th>增值服务处理</th></tr></thead>
+          <tbody>
+            <tr><td>未发货退款</td><td><span class="badge badge-green">自动全额退</span></td></tr>
+            <tr><td>已发货未签收</td><td><span class="badge badge-green">自动全额退</span><br/><span style="font-size:11px; color:var(--gray-5);">服务尚未激活</span></td></tr>
+            <tr><td>签收后仅退/退货</td><td>未生效→<span class="badge badge-green">自动全额退</span><br/>已生效→<span class="badge badge-red">不自动退</span>（联系服务商）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">👤</span>场景B：单独退增值服务</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>服务单状态</th><th>是否支持退款</th></tr></thead>
+        <tbody>
+          <tr><td>待生效</td><td><span class="badge badge-green">✅ 支持全额退</span></td></tr>
+          <tr><td>生效中</td><td><span class="badge badge-red">❌ 不支持</span><br/><span style="font-size:11px; color:var(--gray-5);">特殊case联系服务商按比例退</span></td></tr>
+          <tr><td>已失效</td><td><span class="badge badge-red">❌ 不支持</span></td></tr>
+          <tr><td>已关闭</td><td><span class="badge badge-red">❌ 不支持</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📦</span>多件不同商品退款</div>
+    <p style="font-size:13px;">增值服务与各SKU绑定，独立退款。退sku1 → 仅退sku1的增值服务，sku2不受影响。</p>
+    <div style="background:var(--gray-1); border-radius:10px; padding:14px; margin-top:8px;">
+      <div style="font-size:12px; color:var(--gray-5); margin-bottom:8px;">示例：一单购买手机（延保+碎屏）+ 耳机（延保）</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px; background:#fff; border-radius:8px; padding:10px; border:1px solid var(--gray-2);">
+          <div style="font-size:13px; font-weight:700;">📱 SKU1：手机</div>
+          <div style="font-size:11px; color:var(--gray-5); margin-top:4px;">延保A + 碎屏B</div>
+          <div style="margin-top:6px;"><span class="badge badge-red">退手机→退A+B</span></div>
+        </div>
+        <div style="flex:1; min-width:140px; background:#fff; border-radius:8px; padding:10px; border:1px solid var(--gray-2);">
+          <div style="font-size:13px; font-weight:700;">🎧 SKU2：耳机</div>
+          <div style="font-size:11px; color:var(--gray-5); margin-top:4px;">延保A</div>
+          <div style="margin-top:6px;"><span class="badge badge-green">不受影响</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📦</span>多件相同商品退款</div>
+    <p style="font-size:13px;">同款N件，增值服务N份。退M件 → 退M份增值服务，未退件数的服务继续有效。</p>
+    <div style="background:var(--gray-1); border-radius:10px; padding:14px; margin-top:8px;">
+      <div style="font-size:12px; color:var(--gray-5); margin-bottom:8px;">示例：购买3台空调各带1份增值服务</div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <div style="background:#fff; border-radius:8px; padding:8px 12px; border:1px solid var(--gray-2); font-size:12px;">商品1+服务</div>
+        <div style="background:#fff; border-radius:8px; padding:8px 12px; border:1px solid var(--gray-2); font-size:12px;">商品2+服务</div>
+        <div style="background:#fff; border-radius:8px; padding:8px 12px; border:1px solid var(--gray-2); font-size:12px;">商品3+服务</div>
+      </div>
+      <div style="margin-top:8px; text-align:center;">
+        <span style="font-size:12px; color:var(--ks-orange); font-weight:600;">退商品1 → 退1份服务费，其余2份继续有效</span>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:8px;">
+      <p style="font-size:12px; margin:0;">⚠️ 同SKU买多件：申请退款的每种服务数量<strong>不可修改</strong>，默认等于购买数量。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     八、跨域协作
+════════════════════════════════════════ -->
+<section id="team">
+  <span class="section-tag tag-team">👥 跨域协作</span>
+  <h2>各域分工</h2>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-orange-light);">🛡️</div>
+    <div class="domain-content">
+      <div class="domain-name">保险域</div>
+      <div class="domain-desc">上架服务商品、运营系统、匹配规则、定价、服务商管理与分流、履约页面</div>
+      <div class="domain-owner">@王昱淇</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-blue-light);">🏪</div>
+    <div class="domain-content">
+      <div class="domain-name">店铺域</div>
+      <div class="domain-desc">上海穹秩入驻快手小店，B端/C端不可见不可搜索</div>
+      <div class="domain-owner">@于林洁 @林婧</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-green-light);">📦</div>
+    <div class="domain-content">
+      <div class="domain-name">商品域</div>
+      <div class="domain-desc">服务商品创建：新增服务类目/商品编辑/屏蔽/类目隐藏，支持单SKU、无限库存、无发货履约</div>
+      <div class="domain-owner">@于秀丽 @王鸿峰</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-purple-light);">🛒</div>
+    <div class="domain-content">
+      <div class="domain-name">交易域</div>
+      <div class="domain-desc">提单-订列-订详-购物车展示增值服务&价格，支持和实物商品合并下单</div>
+      <div class="domain-owner">@徐世鑫</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:#fff0f4;">🎁</div>
+    <div class="domain-content">
+      <div class="domain-name">权益域</div>
+      <div class="domain-desc">订详提供增值服务的履约入口，服务状态机展示</div>
+      <div class="domain-owner">@崔美伦</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-yellow-light);">🚚</div>
+    <div class="domain-content">
+      <div class="domain-name">履约域</div>
+      <div class="domain-desc">屏蔽所有物流时效表达，虚拟商品无履约售后，免发货链路考核</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-orange-light);">💳</div>
+    <div class="domain-content">
+      <div class="domain-name">C端支付</div>
+      <div class="domain-desc">服务费流转至穹秩货款账户，屏蔽支付渠道优惠，支持支付单原路退款</div>
+      <div class="domain-owner">@覃海凌</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-blue-light);">↩️</div>
+    <div class="domain-content">
+      <div class="domain-name">售后域</div>
+      <div class="domain-desc">支持服务单独退款，联动退款逻辑校验</div>
+      <div class="domain-owner">@张丽娜</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-green-light);">🏦</div>
+    <div class="domain-content">
+      <div class="domain-name">B端支付&结算</div>
+      <div class="domain-desc">新增穹秩货款账户，服务订单配置0TR，类目加入0元类目，正常账期结算</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:#fff0f4">📊</div>
+    <div class="domain-content">
+      <div class="domain-name">基础营销</div>
+      <div class="domain-desc">对「自选增值服务」类目商品禁止电商平台券补贴</div>
+      <div class="domain-owner">@吴婷婷</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-purple-light);">📈</div>
+    <div class="domain-content">
+      <div class="domain-name">策略域</div>
+      <div class="domain-desc">增值服务费定价、商家准入白名单、类目准入名单</div>
+      <div class="domain-owner">@鲍孝慈</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-yellow-light);">🤝</div>
+    <div class="domain-content">
+      <div class="domain-name">商务域</div>
+      <div class="domain-desc">服务商品供给：服务商招标采购、合作协议确定</div>
+      <div class="domain-owner">@葛亮</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-orange-light);">⚖️</div>
+    <div class="domain-content">
+      <div class="domain-name">法务合规</div>
+      <div class="domain-desc">用户购买协议、服务商协议、穹秩入驻发品合规、经营范围</div>
+      <div class="domain-owner">@卜慧娟 @张秀平</div>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <div class="domain-icon" style="background:var(--ks-green-light);">🧾</div>
+    <div class="domain-content">
+      <div class="domain-name">财务&税务</div>
+      <div class="domain-desc">服务费入账、结算；服务费开票（穹秩→消费者）</div>
+      <div class="domain-owner">@李小满</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     项目节奏
+════════════════════════════════════════ -->
+<section id="timeline">
+  <span class="section-tag tag-bg">📅 项目节奏</span>
+  <h2>关键里程碑</h2>
+  <div class="card">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">10月初</div>
+        <div class="timeline-content">类目新增完毕（一级「其他」→ 二级「自选增值服务」）</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">10月中旬</div>
+        <div class="timeline-content">C端自购增值服务正式上线</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:12px;">
+      <h4>🚀 后续规划</h4>
+      <p>不断丰富增值服务矩阵：全保换新、电池保障、清洗服务、送装服务……</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 底部 ═══ -->
+<div class="footer">
+  <p>C端自购增值服务 · 产品方案 V1.0</p>
+  <p class="footer-version">撰写：@王昱淇 · 2026-07-21 · 快手电商保险域</p>
+</div>
+
+<script>
+  // 导航高亮
+  const tabs = document.querySelectorAll('.nav-tab');
+  const sections = document.querySelectorAll('section');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tabs.forEach(tab => {
+          tab.classList.toggle('active', tab.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // 平滑滚动
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(tab.getAttribute('href'));
+      if (target) {
+        window.scrollTo({ top: target.offsetTop - 60, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
